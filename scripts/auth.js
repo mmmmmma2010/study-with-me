@@ -2,7 +2,7 @@
   // SHA-256 hash of "username:password"
   // Default: admin / StudyWithMe2026
   // To change it, run: python3 scripts/set_password.py
-  const EXPECTED_HASH = "e39851c929ae0c7c11f687b7405452034993513bab518e6917dade7ac3f28e39";
+  const EXPECTED_HASH = "9e6e8eee8357b5fa13221da03466fcda8ea489c0d1f11dfdd99f8aea611a7ca8";
   const STORAGE_AUTH = "swm_auth_token_v1";
 
   async function sha256Hex(text) {
