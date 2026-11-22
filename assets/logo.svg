@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="swm-bg" x1="12" y1="8" x2="116" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="50%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="swm-accent" x1="48" y1="24" x2="88" y2="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded squircle backdrop -->
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#swm-bg)"/>
+  <rect x="9.5" y="9.5" width="109" height="109" rx="26.5" stroke="rgba(255,255,255,0.22)" stroke-width="3"/>
+
+  <!-- Open Book Pages -->
+  <path d="M26 42C26 37.5817 29.5817 34 34 34H58C61.3137 34 64 36.6863 64 40V92C64 89.7909 61.3137 88 58 88H34C29.5817 88 26 84.4183 26 80V42Z" fill="rgba(255,255,255,0.95)"/>
+  <path d="M102 42C102 37.5817 98.4183 34 94 34H70C66.6863 34 64 36.6863 64 40V92C64 89.7909 66.6863 88 70 88H94C98.4183 88 102 84.4183 102 80V42Z" fill="rgba(255,255,255,0.86)"/>
+
+  <!-- Subtle page lines (left: code/system, right: language) -->
+  <rect x="34" y="46" width="20" height="4" rx="2" fill="#4f46e5" opacity="0.75"/>
+  <rect x="34" y="56" width="16" height="4" rx="2" fill="#64748b" opacity="0.45"/>
+  <rect x="34" y="66" width="22" height="4" rx="2" fill="#64748b" opacity="0.45"/>
+  <rect x="34" y="76" width="13" height="4" rx="2" fill="#06b6d4" opacity="0.75"/>
+
+  <rect x="74" y="46" width="18" height="4" rx="2" fill="#2563eb" opacity="0.75"/>
+  <rect x="74" y="56" width="20" height="4" rx="2" fill="#64748b" opacity="0.45"/>
+  <rect x="74" y="66" width="14" height="4" rx="2" fill="#64748b" opacity="0.45"/>
+
+  <!-- Glowing Bookmark / Growth Spark -->
+  <path d="M74 30H88V62L81 56L74 62V30Z" fill="url(#swm-accent)"/>
+
+  <!-- Learning Spark Star -->
+  <path d="M64 18L66.8 25.2L74 28L66.8 30.8L64 38L61.2 30.8L54 28L61.2 25.2L64 18Z" fill="#fde68a"/>
+</svg>
