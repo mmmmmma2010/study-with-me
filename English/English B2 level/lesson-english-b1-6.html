@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 6: لو كنتُ غنيًا... — English B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Cairo',Tahoma,'Segoe UI',sans-serif; font-size:18px; line-height:1.9; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .progress { max-width:420px; margin:14px auto 0; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; }
+  .progress div { height:100%; background:#fde68a; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:210px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); }
+  .emoji { font-size:2.6rem; line-height:1.2; }
+  .word { font-size:1.4rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.15rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  /* Reality vs dream */
+  .worlds { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0; }
+  .world { border-radius:14px; padding:14px; text-align:center; }
+  .world.real { background:#f1f5f9; border:2px solid #94a3b8; }
+  .world.dream { background:rgba(79,70,229,.08); border:2px dashed var(--primary); }
+  .world .big { font-size:2.4rem; }
+  @media (max-width:700px) { .worlds { grid-template-columns:1fr; } }
+  /* Timeline */
+  .timeline-viz { position:relative; height:150px; margin:20px 10px; direction:ltr; }
+  .tl-line { position:absolute; top:64px; left:0; right:0; height:4px; background:linear-gradient(90deg,#94a3b8,#4f46e5,#06b6d4); border-radius:4px; }
+  .tl-now { position:absolute; top:34px; height:64px; border-left:3px solid var(--v); }
+  .tl-now span, .tl-event span { position:absolute; top:-28px; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; background:var(--card); padding:0 6px; }
+  .tl-now span { color:var(--v); }
+  .tl-event { position:absolute; top:56px; width:20px; height:20px; margin-left:-10px; border-radius:50%; background:var(--o); border:3px solid #fff; box-shadow:0 0 0 2px var(--o); }
+  .tl-event span { top:28px; color:var(--o); }
+  .tl-range { position:absolute; top:60px; height:12px; background:rgba(79,70,229,.35); border-radius:6px; }
+  .tl-range span { position:absolute; top:-34px; left:50%; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; color:var(--primary); background:var(--card); padding:0 6px; }
+  .tl-cloud { position:absolute; top:84px; transform:translateX(-50%); white-space:nowrap; border:2px dashed var(--primary); border-radius:999px; padding:0 12px; font-weight:700; font-size:.85rem; color:var(--primary); background:#fff; }
+  .tl-labels { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; color:var(--muted); font-size:.85rem; font-weight:700; }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; }
+  .bubble { max-width:80%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:110px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:200px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>الدرس 6: لو كنتُ غنيًا... <span class="tl">— If I were rich...</span></h1>
+  <p>تحدّث عن المواقف الخيالية والأحلام، وقدّم النصيحة. <span class="tl">Talk about imaginary situations, dreams and advice.</span></p>
+  <div class="badges">
+    <span class="badge">اللغة: الإنجليزية</span>
+    <span class="badge">المستوى: B1</span>
+    <span class="badge">الدرس 6 من 15</span>
+    <span class="badge">وقت الدراسة: 30 دقيقة</span>
+    <span class="badge tl">Second conditional · If I were you</span>
+  </div>
+  <div class="progress"><div style="width:40%"></div></div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 السرعة: عادية</button>
+  <span>النتيجة: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ حفظ PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section id="goals">
+    <h2>🎯 أهداف الدرس <span class="tl">— Can-do goals</span></h2>
+    <div class="cando">
+      <label><input type="checkbox"><span class="tl">I can talk about imaginary or unlikely situations with if + past, would + verb.</span> — أستطيع أن أتحدث عن مواقف خيالية أو بعيدة الاحتمال.</label>
+      <label><input type="checkbox"><span class="tl">I can choose between the first and the second conditional.</span> — أستطيع أن أفرّق بين «إذا» و«لو».</label>
+      <label><input type="checkbox"><span class="tl">I can give advice with "If I were you, I'd..."</span> — أستطيع أن أنصح شخصًا.</label>
+      <label><input type="checkbox"><span class="tl">I can pronounce I'd and wouldn't clearly.</span> — أستطيع أن أنطق <span class="tl">I'd</span> و <span class="tl">wouldn't</span>.</label>
+    </div>
+  </section>
+
+  <section id="warmup">
+    <h2>🌱 تمهيد <span class="tl">— Warm-up</span></h2>
+    <p>في الدرس 5 قلت: «<b>إذا</b> أمطرتْ، سنبقى في البيت». هذا احتمال <b>حقيقي</b>.</p>
+    <p>لكن العربية عندها كلمة أخرى للأحلام والخيال: «<b>لو</b> كنتُ غنيًا، <b>لاشتريتُ</b> بيتًا على البحر». أنت لست غنيًا الآن. هذا <b>خيال</b>.</p>
+    <p>بالإنجليزية: <span class="tl"><b>If I were rich, I'd buy a house by the sea.</b></span> <button class="say" data-text="If I were rich, I'd buy a house by the sea.">🔊</button></p>
+    <div class="callout note">📝 <b>Think:</b> <span class="tl">What would you do if you won a million dollars?</span><br>فكّر: ماذا كنت ستفعل لو ربحت مليون دولار؟</div>
+  </section>
+
+  <section id="words">
+    <h2>📚 الكلمات الجديدة <span class="tl">— New words: Money &amp; dreams</span></h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. — اضغط على البطاقة لتقلبها. المقطع المنبور باللون الأحمر.</p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🎟️</div><div class="word tl">win the lottery</div><button class="say" data-text="win the lottery">🔊</button><div class="hint">collocation</div></div>
+        <div class="back"><div class="word">يربح اليانصيب</div><span class="ipa">/wɪn ðə <b>ˈlɑː</b>.tər.i/</span><span class="tl">If I won the lottery, I'd travel.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💳</div><div class="word tl">afford</div><button class="say" data-text="afford">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يقدر على ثمن الشيء</div><span class="ipa">/ə<b>ˈfɔːrd</b>/</span><span class="tl">I can't afford a new car.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🐷</div><div class="word tl">save up (for)</div><button class="say" data-text="save up for">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يدّخر المال لـ</div><span class="ipa">/seɪv <b>ˈʌp</b>/</span><span class="tl">I'm saving up for a laptop.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🛍️</div><div class="word tl">spend (on)</div><button class="say" data-text="spend money on">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يُنفق على</div><span class="ipa">/<b>spend</b>/</span><span class="tl">She spends a lot on clothes.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💰</div><div class="word tl">salary</div><button class="say" data-text="salary">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">راتب</div><span class="ipa">/<b>ˈsæl</b>.ər.i/</span><span class="tl">If my salary were higher, I'd move.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧾</div><div class="word tl">debt</div><button class="say" data-text="debt">🔊</button><div class="hint">noun — b صامتة</div></div>
+        <div class="back"><div class="word">دَين</div><span class="ipa">/<b>det</b>/</span><span class="tl">He has a lot of debt.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">✅</div><div class="word tl">pay off</div><button class="say" data-text="pay off">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يسدّد (دَينًا) بالكامل</div><span class="ipa">/peɪ <b>ˈɔːf</b>/</span><span class="tl">First, I'd pay off my debts.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📊</div><div class="word tl">invest (in)</div><button class="say" data-text="invest in">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يستثمر في</div><span class="ipa">/ɪn<b>ˈvest</b>/</span><span class="tl">I would invest in a small business.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤲</div><div class="word tl">charity</div><button class="say" data-text="charity">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">جمعية خيرية / عمل خيري</div><span class="ipa">/<b>ˈtʃer</b>.ə.ti/</span><span class="tl">She gives money to charity.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🎁</div><div class="word tl">give away</div><button class="say" data-text="give away">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يتبرّع بـ / يعطي مجانًا</div><span class="ipa">/ɡɪv ə<b>ˈweɪ</b>/</span><span class="tl">I'd give away half of the money.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💎</div><div class="word tl">luxury</div><button class="say" data-text="luxury">🔊</button><div class="hint">noun + adjective</div></div>
+        <div class="back"><div class="word">رفاهية / فاخر</div><span class="ipa">/<b>ˈlʌk</b>.ʃər.i/</span><span class="tl">We stayed in a luxury hotel.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🏰</div><div class="word tl">mansion</div><button class="say" data-text="mansion">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">قصر / بيت ضخم</div><span class="ipa">/<b>ˈmæn</b>.ʃən/</span><span class="tl">He lives in a mansion in Zamalek.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚪</div><div class="word tl">quit</div><button class="say" data-text="quit">🔊</button><div class="hint">verb: quit – quit – quit</div></div>
+        <div class="back"><div class="word">يترك (عملًا) / يستقيل</div><span class="ipa">/<b>kwɪt</b>/</span><span class="tl">If I were rich, I'd quit my job.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👩‍🚀</div><div class="word tl">dream job</div><button class="say" data-text="dream job">🔊</button><div class="hint">collocation</div></div>
+        <div class="back"><div class="word">وظيفة الأحلام</div><span class="ipa">/<b>ˈdriːm</b> ˌdʒɑːb/</span><span class="tl">My dream job is to be a pilot.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌠</div><div class="word tl">come true</div><button class="say" data-text="come true">🔊</button><div class="hint">phrase</div></div>
+        <div class="back"><div class="word">يتحقّق (الحلم)</div><span class="ipa">/kʌm <b>ˈtruː</b>/</span><span class="tl">I hope your dream comes true.</span></div>
+      </div></div>
+    </div>
+    <div class="callout warning">⚠️ <b>انتبه:</b> نقول <span class="tl">spend money <b>on</b> something</span> و <span class="tl">invest <b>in</b> something</span>. وفي <span class="tl">debt</span> حرف <span class="tl">b</span> صامت: «دِت».</div>
+  </section>
+
+  <section id="grammar">
+    <h2>🎨 القاعدة بالألوان <span class="tl">— Grammar 1: The second conditional</span></h2>
+    <p class="instr">Look at these sentences. Are they real now?<span class="instr-ar">انظر إلى الجمل. هل هي حقيقية الآن؟</span></p>
+    <div class="sent tl"><span class="w x">If<small>لو</small></span><span class="w s">I<small>أنا</small></span><span class="w v">had<small>عندي (ماضٍ!)</small></span><span class="w o">more money,<small>مال أكثر</small></span><span class="w s">I<small>أنا</small></span><span class="w v">would buy<small>لاشتريتُ</small></span><span class="w o">a car<small>سيارة</small></span><button class="say" data-text="If I had more money, I would buy a car.">🔊</button></div>
+    <div class="sent tl"><span class="w x">If<small>لو</small></span><span class="w s">she<small>هي</small></span><span class="w v">lived<small>كانت تسكن</small></span><span class="w o">near the sea,<small>قرب البحر</small></span><span class="w s">she<small>هي</small></span><span class="w v">'d swim<small>لسبحت</small></span><span class="w x">every day<small>كل يوم</small></span><button class="say" data-text="If she lived near the sea, she'd swim every day.">🔊</button></div>
+    <div class="sent tl"><span class="w x">What<small>ماذا</small></span><span class="w v">would<small>كنت ستـ</small></span><span class="w s">you<small>أنت</small></span><span class="w v">do<small>تفعل</small></span><span class="w x">if<small>لو</small></span><span class="w s">you<small>أنت</small></span><span class="w v">won<small>ربحت</small></span><span class="w o">the lottery?<small>اليانصيب</small></span><button class="say" data-text="What would you do if you won the lottery?">🔊</button></div>
+    <p>لا! كلها <b>خيال</b> أو شيء <b>بعيد الاحتمال</b>. لاحظ: بعد <span class="tl">if</span> نستخدم <b>الماضي البسيط</b> <span class="tl">(had, lived, won)</span>، لكن المعنى عن <b>الآن أو المستقبل</b>، وليس عن الماضي.</p>
+
+    <div class="worlds">
+      <div class="world real">
+        <div class="big">🏠</div>
+        <b>Reality — الواقع الآن</b>
+        <p class="tl">I don't have much money.<br>I live in a small flat.</p>
+      </div>
+      <div class="world dream">
+        <div class="big">💭🏰</div>
+        <b>Imagination — الخيال</b>
+        <p class="tl">If I <b>had</b> a lot of money,<br>I <b>would live</b> in a mansion.</p>
+      </div>
+    </div>
+
+    <div class="timeline-viz">
+      <div class="tl-line"></div>
+      <div class="tl-range" style="left:5%;width:35%"><span>past simple form — شكل الماضي</span></div>
+      <div class="tl-now" style="left:60%"><span>NOW — المعنى هنا: الآن</span></div>
+      <div class="tl-cloud" style="left:72%">💭 If I had... I'd... (imaginary)</div>
+      <div class="tl-labels"><span>⬅ Past الماضي</span><span>Future المستقبل ➡</span></div>
+    </div>
+    <p>الشكل يشبه الماضي، لكن المعنى في الفقاعة 💭: موقف <b>خيالي</b> الآن أو في المستقبل.</p>
+
+    <table class="tl">
+      <tr><th>Part</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Condition 💭</td><td><mark>If</mark> + past simple</td><td>If I had time,</td></tr>
+      <tr><td>Result</td><td><mark>would / 'd</mark> + base verb</td><td>I'd learn Japanese. <button class="say" data-text="If I had time, I'd learn Japanese.">🔊</button></td></tr>
+      <tr><td>Negative ❌</td><td>If ... <mark>didn't</mark>, ... <mark>wouldn't</mark></td><td>If I didn't have a job, I wouldn't be happy. <button class="say" data-text="If I didn't have a job, I wouldn't be happy.">🔊</button></td></tr>
+      <tr><td>Question ❓</td><td><mark>What would</mark> you do <mark>if</mark> + past?</td><td>Where would you live if you could choose? <button class="say" data-text="Where would you live if you could choose?">🔊</button></td></tr>
+      <tr><td>Possible result</td><td><mark>could / might</mark> + base verb</td><td>If I spoke French, I could work in Paris. <button class="say" data-text="If I spoke French, I could work in Paris.">🔊</button></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>Rule:</b> الفاصلة مثل الدرس 5: <span class="tl">If I had money<b>,</b> I'd travel.</span> و <span class="tl">I'd travel if I had money.</span> (بدون فاصلة).</div>
+
+    <h3>👑 <span class="tl">Grammar 2: If I were...</span></h3>
+    <p>مع فعل <span class="tl">be</span> نستخدم <span class="tl"><b>were</b></span> مع كل الضمائر، حتى مع <span class="tl">I / he / she / it</span>. هذا هو الشكل الرسمي والأفضل في الكتابة:</p>
+    <ul>
+      <li class="tl">If I <b>were</b> rich, I'd help my family. <button class="say" data-text="If I were rich, I'd help my family.">🔊</button></li>
+      <li class="tl">If my brother <b>were</b> here, he'd know the answer. <button class="say" data-text="If my brother were here, he'd know the answer.">🔊</button></li>
+    </ul>
+    <div class="callout note">📝 <b>ملاحظة:</b> في الكلام غير الرسمي ستسمع أيضًا <span class="tl">If I <b>was</b> rich...</span>، وهذا مقبول في المحادثة. لكن في تعبير النصيحة نقول دائمًا <span class="tl">If I <b>were</b> you</span>.</div>
+
+    <h3>🤝 <span class="tl">Grammar 3: Giving advice — If I were you, I'd...</span></h3>
+    <div class="sent tl"><span class="w x">If I were you,<small>لو كنتُ مكانك</small></span><span class="w s">I<small>أنا</small></span><span class="w v">'d save up<small>لادّخرتُ</small></span><span class="w o">for a year<small>لمدة سنة</small></span><button class="say" data-text="If I were you, I'd save up for a year.">🔊</button></div>
+    <div class="sent tl"><span class="w x">If I were you,<small>لو كنتُ مكانك</small></span><span class="w s">I<small>أنا</small></span><span class="w v">wouldn't quit<small>ما تركتُ</small></span><span class="w o">my job<small>عملي</small></span><button class="say" data-text="If I were you, I wouldn't quit my job.">🔊</button></div>
+    <p>هذه طريقة <b>مهذبة</b> جدًا لتقديم النصيحة.</p>
+
+    <h3>🌳 <span class="tl">First or second conditional?</span> — «إذا» أم «لو»؟</h3>
+    <div class="diagram mermaid">
+flowchart TD
+  A["Is the situation real and possible? / هل الموقف حقيقي وممكن؟"] -->|"Yes, it may happen / ممكن (إذا)"| B["First: If + present, will. If it rains, I'll stay home."]
+  A -->|"No: imaginary or very unlikely / خيال أو بعيد (لو)"| C["Second: If + past, would. If I won the lottery, I'd travel."]
+  C --> D["Advice: If I were you, I'd..."]
+    </div>
+    <table>
+      <tr><th class="tl">First — إذا (حقيقي)</th><th class="tl">Second — لو (خيال)</th></tr>
+      <tr><td class="tl">If I <b>find</b> a better job, I'<b>ll</b> move. <button class="say" data-text="If I find a better job, I'll move.">🔊</button><br>(أبحث عن عمل، وهذا ممكن)</td><td class="tl">If I <b>found</b> a better job, I'<b>d</b> move. <button class="say" data-text="If I found a better job, I'd move.">🔊</button><br>(لا أبحث، أو الاحتمال ضعيف)</td></tr>
+    </table>
+  </section>
+
+  <section id="compare">
+    <h2>🔁 العربية مقابل الإنجليزية <span class="tl">— Arabic vs English</span></h2>
+    <div class="vs">
+      <div>
+        <h4>العربية</h4>
+        <div class="sent"><span class="w x">لو<small>if</small></span><span class="w v">كنتُ<small>were (ماضٍ)</small></span><span class="w o">غنيًا<small>rich</small></span><span class="w v">لاشتريتُ<small>would buy</small></span><span class="w o">بيتًا<small>a house</small></span></div>
+        <p>العربية: <b>لو + ماضٍ</b>، والنتيجة <b>لـ + ماضٍ</b>.</p>
+      </div>
+      <div>
+        <h4 class="tl">English</h4>
+        <div class="sent tl"><span class="w x">If</span><span class="w s">I</span><span class="w v">were</span><span class="w o">rich,</span><span class="w s">I</span><span class="w gap">would<small>إجباري!</small></span><span class="w v">buy</span><span class="w o">a house.</span></div>
+        <p>الإنجليزية: <span class="tl"><b>if + past</b></span>، والنتيجة <span class="tl"><b>would + base verb</b></span> (ليس ماضيًا).</p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>سهل عليك جدًا:</b> العربية تفرّق بين «<b>إذا</b>» و«<b>لو</b>» كما تفرّق الإنجليزية بين الشرطية الأولى والثانية!<br>«إذا» (ممكن) = <span class="tl">If + present, will</span> · «لو» (خيال) = <span class="tl">If + past, would</span>.<br>وكما في العربية، نستخدم <b>الماضي</b> بعد «لو» مع أن المعنى عن الآن.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (1):</b> بسبب «لاشتريتُ» بالماضي قد تقول <span class="tl">If I were rich, I bought a house ❌</span>. النتيجة تحتاج <span class="tl">would</span>: <span class="tl">I <b>would buy</b> ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (2):</b> لا تضع <span class="tl">would</span> في الجزءين: <span class="tl">If I would have money, I would travel ❌</span>. القاعدة مثل الدرس 5: <b>لا</b> <span class="tl">will / would</span> بعد <span class="tl">if</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (3):</b> لا تخلط الشرطيتين: <span class="tl">If I had money, I <b>will</b> travel ❌</span>. إما <span class="tl">have ... will</span> وإما <span class="tl">had ... would</span>.</div>
+  </section>
+
+  <section id="pron">
+    <h2>👄 النطق: <span class="tl">I'd</span> و <span class="tl">wouldn't</span></h2>
+    <p>في الكلام العادي، <span class="tl">would</span> تصبح <span class="tl">'d</span>: صوت <span class="ipa">/d/</span> صغير جدًا. لا تحذفه، لأن الجملة بدونه تصبح في المضارع!</p>
+    <table>
+      <tr><th>بدون <span class="tl">'d</span> (حقيقة الآن)</th><th>مع <span class="tl">'d</span> (خيال)</th></tr>
+      <tr><td><span class="tl">I buy a car.</span> <button class="say" data-text="I buy a car.">🔊</button></td><td><span class="tl">I'd buy a car.</span> <span class="ipa">/aɪd/</span> <button class="say" data-text="I'd buy a car.">🔊</button></td></tr>
+      <tr><td><span class="tl">We live by the sea.</span> <button class="say" data-text="We live by the sea.">🔊</button></td><td><span class="tl">We'd live by the sea.</span> <span class="ipa">/wiːd/</span> <button class="say" data-text="We'd live by the sea.">🔊</button></td></tr>
+      <tr><td><span class="tl">They help us.</span> <button class="say" data-text="They help us.">🔊</button></td><td><span class="tl">They'd help us.</span> <span class="ipa">/ðeɪd/</span> <button class="say" data-text="They'd help us.">🔊</button></td></tr>
+    </table>
+    <h3><span class="tl">would = wood</span> — الحرف <span class="tl">l</span> صامت!</h3>
+    <ul>
+      <li><span class="tl">would</span> <span class="ipa">/wʊd/</span> «وُد» (مثل <span class="tl">wood</span>) <button class="say" data-text="would">🔊</button></li>
+      <li><span class="tl">wouldn't</span> <span class="ipa">/<b>ˈwʊd</b>.ənt/</span> «وُدِنْت» <button class="say" data-text="wouldn't">🔊</button></li>
+      <li>في السؤال تكون <span class="tl">would</span> ضعيفة: <span class="tl">What would you do?</span> <span class="ipa">/wət wəd jə duː/</span> <button class="say" data-text="What would you do?">🔊</button></li>
+    </ul>
+    <div class="callout tip">💡 <b>نصيحة:</b> <span class="tl">I'd</span> قد تعني <span class="tl">I would</span> أو <span class="tl">I had</span>. انظر إلى الكلمة التالية: إذا جاء بعدها فعل في المصدر <span class="tl">(I'd <b>buy</b>)</span> فهي <span class="tl">would</span>.</div>
+    <div class="ex quiz" data-explain="الحرف l في would صامت: /wʊd/.">
+      <div class="q">🎧 <span class="tl">How do you say "would"?</span></div>
+      <button class="option tl">/wuːld/ — "woold"</button>
+      <button class="option tl" data-correct="true">/wʊd/ — like "wood"</button>
+      <button class="option tl">/waɪld/ — like "wild"</button>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section id="dialogue">
+    <h2>💬 حوار من الحياة <span class="tl">— Lunch break at the office</span></h2>
+    <p class="instr">Listen to Rana and Hossam. Find 5 second-conditional sentences and 1 piece of advice.<span class="instr-ar">استمع إلى رنا وحسام. ابحث عن 5 جمل شرطية ثانية ونصيحة واحدة.</span></p>
+    <button class="btn" id="playDialogue">▶️ استمع للحوار كاملًا</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Rana</div><div class="tl line">Hossam, look at this! Someone in Giza has just won fifty million pounds in the lottery.</div></div>
+      <div class="bubble b"><div class="who">Hossam</div><div class="tl line">Lucky person! What would you do if you won that much money?</div></div>
+      <div class="bubble a"><div class="who">Rana</div><div class="tl line">First, I'd pay off my parents' debts. Then I'd buy a flat by the sea in Alexandria.</div></div>
+      <div class="bubble b"><div class="who">Hossam</div><div class="tl line">Would you quit your job?</div></div>
+      <div class="bubble a"><div class="who">Rana</div><div class="tl line">No, I wouldn't. I love my work. But if I were rich, I'd only work three days a week! What about you?</div></div>
+      <div class="bubble b"><div class="who">Hossam</div><div class="tl line">I'd travel around the world. I've never been to South America. And I'd give away some of the money to charity.</div></div>
+      <div class="bubble a"><div class="who">Rana</div><div class="tl line">That's nice. You know, I used to dream about a mansion with a big garden.</div></div>
+      <div class="bubble b"><div class="who">Hossam</div><div class="tl line">Ha! But seriously, I want to buy a car next year, and I can't afford it now.</div></div>
+      <div class="bubble a"><div class="who">Rana</div><div class="tl line">If I were you, I'd start saving up now. If you save a little every month, you'll have enough by next summer.</div></div>
+      <div class="bubble b"><div class="who">Hossam</div><div class="tl line">You're right. If my salary were higher, it would be easier!</div></div>
+      <div class="bubble a"><div class="who">Rana</div><div class="tl line">Ask for a promotion, then! Who knows, maybe your dream will come true.</div></div>
+    </div>
+    <details><summary>👀 Answers</summary>
+      <table class="tl">
+        <tr><th>Type</th><th>Sentence</th></tr>
+        <tr><td>Second conditional</td><td>What would you do if you won that much money? · I'd pay off my parents' debts. · If I were rich, I'd only work three days a week. · I'd travel around the world. · If my salary were higher, it would be easier.</td></tr>
+        <tr><td>Advice</td><td>If I were you, I'd start saving up now.</td></tr>
+        <tr><td>First conditional (real!)</td><td>If you save a little every month, you'll have enough by next summer.</td></tr>
+      </table>
+      <p>لاحظ الفرق: ادخار المال كل شهر <b>ممكن</b>، لذلك قالت رنا <span class="tl">If you save..., you'll have</span> (الدرس 5). وانظر إلى المراجعة: <span class="tl">has just won</span> و <span class="tl">I've never been</span> (الدرسان 1 و 2)، و <span class="tl">I used to dream</span> (الدرس 3).</p>
+    </details>
+  </section>
+
+  <section id="practice">
+    <h2>🏋️ تدريب <span class="tl">— Practice</span></h2>
+
+    <h3 class="instr">A. Choose the correct answer.<span class="instr-ar">اختر الإجابة الصحيحة.</span></h3>
+
+    <div class="ex quiz" data-explain="خيال → if + past simple.">
+      <div class="q">1. <span class="tl">If I ___ a lot of money, I'd buy a mansion.</span></div>
+      <button class="option tl">have</button>
+      <button class="option tl" data-correct="true">had</button>
+      <button class="option tl">would have</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="النتيجة في الشرطية الثانية: would + base verb.">
+      <div class="q">2. <span class="tl">If she lived in London, she ___ English every day.</span></div>
+      <button class="option tl">will speak</button>
+      <button class="option tl">spoke</button>
+      <button class="option tl" data-correct="true">would speak</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="للنصيحة نقول دائمًا If I were you.">
+      <div class="q">3. <span class="tl">If I ___ you, I'd talk to the manager.</span></div>
+      <button class="option tl">am</button>
+      <button class="option tl" data-correct="true">were</button>
+      <button class="option tl">would be</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="لا نستخدم would بعد if.">
+      <div class="q">4. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">If I would win the lottery, I would travel.</button>
+      <button class="option tl">If I won the lottery, I will travel.</button>
+      <button class="option tl" data-correct="true">If I won the lottery, I'd travel.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="الامتحان غدًا، والنجاح ممكن → الشرطية الأولى.">
+      <div class="q">5. <span class="tl">My exam is tomorrow. If I ___, I'll celebrate with my friends.</span></div>
+      <button class="option tl" data-correct="true">pass</button>
+      <button class="option tl">passed</button>
+      <button class="option tl">would pass</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="لا أقدر على ثمنها الآن = afford.">
+      <div class="q">6. <span class="tl">I'd buy that laptop if I could ___ it.</span></div>
+      <button class="option tl">spend</button>
+      <button class="option tl" data-correct="true">afford</button>
+      <button class="option tl">invest</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">B. Complete with the correct form of the verb.<span class="instr-ar">أكمل بالشكل الصحيح للفعل بين القوسين.</span></h3>
+    <div class="ex fill">
+      <p class="tl">7. If I <input class="blank" data-answer="had"> (have) more time, I <input class="blank wide" data-answer="would learn|'d learn"> (learn) to play the oud.</p>
+      <p class="tl">8. If my brother <input class="blank" data-answer="were|was"> (be) here, he <input class="blank wide" data-answer="would help|'d help"> (help) us.</p>
+      <p class="tl">9. What <input class="blank" data-answer="would"> you do if you <input class="blank" data-answer="lost"> (lose) your job?</p>
+      <p class="tl">10. If I <input class="blank wide" data-answer="didn't have|did not have"> (not / have) a car, I <input class="blank wide" data-answer="would take|'d take"> (take) the metro.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">C. Reality → imagination. Rewrite the sentences.<span class="instr-ar">حوّل الواقع إلى جملة خيالية بالشرطية الثانية.</span></h3>
+    <div class="ex fill">
+      <p class="tl">11. I don't have enough money, so I can't travel.<br>→ If I <input class="blank wide" data-answer="had enough money"> , I <input class="blank wide" data-answer="could travel|would travel|'d travel">.</p>
+      <p class="tl">12. I don't live near my work, so my commute is long.<br>→ If I <input class="blank wide" data-answer="lived near my work"> , my commute <input class="blank wide" data-answer="wouldn't be long|would not be long|would be short|'d be short"> .</p>
+      <p class="tl">13. You want my advice? Don't quit your job.<br>→ If I <input class="blank" data-answer="were"> you, I <input class="blank wide" data-answer="wouldn't quit|would not quit"> my job.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">D. Put the words in order.<span class="instr-ar">رتّب الكلمات لتكوّن جملة.</span></h3>
+    <div class="ex builder" data-answer="What would you do if you won the lottery">
+      <div class="q">14. 🎟️</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex builder" data-answer="I would travel around the world if I had more money">
+      <div class="q">15. 🌍</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">E. Say it! 🎤<span class="instr-ar">قل الجملة بصوتك. انطق 'd بوضوح.</span></h3>
+    <div class="ex speak-check" data-text="If I were rich I'd buy a house by the sea|If I were rich I would buy a house by the sea|If I was rich I'd buy a house by the sea">
+      <div class="q">16. <span class="tl">If I were rich, I'd buy a house by the sea.</span> <button class="say" data-text="If I were rich, I'd buy a house by the sea.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+    <div class="ex speak-check" data-text="If I were you I wouldn't quit my job|If I were you I would not quit my job">
+      <div class="q">17. <span class="tl">If I were you, I wouldn't quit my job.</span> <button class="say" data-text="If I were you, I wouldn't quit my job.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+  </section>
+
+  <section id="task">
+    <h2>✍️ مهمة الكتابة <span class="tl">— Writing task (50–80 words)</span></h2>
+    <p class="instr">Answer the question: "What would you do if you won a million dollars?"<span class="instr-ar">أجب عن السؤال: ماذا كنت ستفعل لو ربحت مليون دولار؟ أرسل إجابتك لي في المحادثة وسأصححها.</span></p>
+    <ul class="tl">
+      <li>Three things you <b>would</b> do (family, travel, home, work).</li>
+      <li>One thing you <b>wouldn't</b> do.</li>
+      <li>Use at least two words: <b>pay off, save up, invest, give away, afford, charity</b>.</li>
+      <li>Bonus: one sentence with <b>If I were...</b></li>
+    </ul>
+    <details><summary>👀 Model answer (77 words)</summary>
+      <p class="tl">If I won a million dollars, I would do three things. First, I'd pay off my family's debts and buy my parents a new flat. Then I'd travel to Japan, because I've always wanted to see Kyoto. I'd also invest some money in a small coffee shop. I wouldn't quit my job, because I really enjoy it. If I were a millionaire, I'd give away part of the money to charity, too.</p>
+    </details>
+  </section>
+
+  <section id="mistakes">
+    <h2>🚫 الأخطاء الشائعة عند العرب <span class="tl">— Common mistakes</span></h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>لماذا؟</th></tr>
+      <tr><td class="tl">If I would have money, I would travel.</td><td class="tl">If I had money, I would travel.</td><td>لا <span class="tl">would</span> بعد <span class="tl">if</span>.</td></tr>
+      <tr><td class="tl">If I were rich, I bought a house.</td><td class="tl">If I were rich, I would buy a house.</td><td>«لاشتريتُ» = <span class="tl">would buy</span>، ليس ماضيًا.</td></tr>
+      <tr><td class="tl">If I had money, I will travel.</td><td class="tl">If I had money, I would travel.</td><td>لا تخلط الشرطيتين.</td></tr>
+      <tr><td class="tl">I would to buy a car.</td><td class="tl">I would buy a car.</td><td>بعد <span class="tl">would</span> المصدر بدون <span class="tl">to</span>.</td></tr>
+      <tr><td class="tl">If I am you, I will go.</td><td class="tl">If I were you, I'd go.</td><td>النصيحة: <span class="tl">If I were you, I'd...</span></td></tr>
+      <tr><td class="tl">I can't afford to it.</td><td class="tl">I can't afford it.</td><td><span class="tl">afford</span> + اسم مباشرة، أو <span class="tl">afford to + verb</span>.</td></tr>
+      <tr><td class="tl">I spend a lot of money in clothes.</td><td class="tl">I spend a lot of money on clothes.</td><td><span class="tl">spend ... on</span>.</td></tr>
+      <tr><td class="tl">"woold" / "I buy" (بدل I'd buy)</td><td class="tl">would /wʊd/ · I'd buy /aɪd baɪ/</td><td>الحرف <span class="tl">l</span> صامت، ولا تحذف <span class="tl">'d</span>.</td></tr>
+    </table>
+  </section>
+
+  <section id="summary">
+    <h2>📌 الخلاصة <span class="tl">— Summary</span></h2>
+    <ul>
+      <li>خيال أو احتمال بعيد الآن أو في المستقبل: <span class="tl"><b>If + past simple, would + base verb</b></span>.</li>
+      <li>الشكل ماضٍ، لكن المعنى <b>ليس</b> عن الماضي.</li>
+      <li>«إذا» (ممكن) = <span class="tl">if + present, will</span> · «لو» (خيال) = <span class="tl">if + past, would</span>.</li>
+      <li><span class="tl">If I / he / she <b>were</b>...</span> (و <span class="tl">was</span> مقبولة في الكلام غير الرسمي).</li>
+      <li>النصيحة: <span class="tl"><b>If I were you, I'd...</b></span></li>
+      <li>نتيجة ممكنة فقط: <span class="tl">could / might</span> بدل <span class="tl">would</span>.</li>
+      <li>انطق <span class="tl">would</span> «وُد»، ولا تحذف <span class="tl">'d</span> في <span class="tl">I'd</span>.</li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <h2>🔄 مراجعة سريعة <span class="tl">— Quick review (Lesson 5)</span></h2>
+    <p>هل تتذكر الشرطية الأولى و <span class="tl">when / unless</span>؟</p>
+    <div class="ex quiz" data-explain="احتمال حقيقي: if + present simple، لا will.">
+      <div class="q">R1. <span class="tl">If it ___ tomorrow, we'll put off the trip.</span></div>
+      <button class="option tl">will rain</button>
+      <button class="option tl" data-correct="true">rains</button>
+      <button class="option tl">would rain</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="unless = if not، ولا نضع بعدها نفيًا.">
+      <div class="q">R2. <span class="tl">We'll go to the beach ___ there's a sandstorm.</span></div>
+      <button class="option tl">if</button>
+      <button class="option tl" data-correct="true">unless</button>
+      <button class="option tl">when</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="بعد when نستخدم المضارع البسيط.">
+      <div class="q">R3. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">I'll text you when I will arrive.</button>
+      <button class="option tl" data-correct="true">I'll text you when I arrive.</button>
+      <button class="option tl">I text you when I will arrive.</button>
+      <div class="feedback"></div>
+    </div>
+    <p class="tl">Review words: forecast · heatwave · humid · picnic · cancel · put off · call off · clear up</p>
+  </section>
+
+  <section id="next">
+    <h2>➡️ الدرس التالي <span class="tl">— Next lesson</span></h2>
+    <p>الدرس 7: <span class="tl">It's made in Egypt</span>: المبني للمجهول <span class="tl">(passive)</span> في المضارع والماضي، لتصف كيف تُصنع الأشياء ومن أين تأتي. اكتب «التالي» لتبدأ.</p>
+  </section>
+
+</div>
+
+<footer>تعلّم خطوة بخطوة 🌍 · <span class="tl">English B1 · Lesson 6</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif" });
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("المتصفح لا يدعم الصوت. جرّب Chrome أو Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 السرعة: عادية" : "🐢 السرعة: بطيئة";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · ضع الفأرة على الخانة الحمراء لترى الإجابة." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition) — accepts alternatives separated by |
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "المتصفح لا يدعم التعرف على الصوت. جرّب Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ I'm listening... أستمع إليك...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var targets = box.getAttribute("data-text").split("|").map(norm);
+        var ok = targets.indexOf(norm(said)) !== -1;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again. حاول مرة أخرى.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ لم أسمع جيدًا. تأكد من إذن الميكروفون وحاول مرة أخرى."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>

@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درس 6: الخدمات المصغرة و API Gateway وقاطع الدائرة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #7c3aed);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 760px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; align-items: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.db { border-color: var(--good); }
+  .box.warn { border-color: var(--warn); background: rgba(245,158,11,.15); }
+  .box.bad { border-color: var(--bad); color: var(--bad); background: rgba(239,68,68,.08); }
+  .arrow { font-size: 1.4rem; color: var(--muted); }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>الخدمات المصغرة و API Gateway وقاطع الدائرة <span class="en">(Microservices, API Gateway &amp; Circuit Breaker)</span></h1>
+  <p>ستتعلم متى تقسّم النظام إلى خدمات، وكيف تمنع خدمة بطيئة واحدة من إسقاط النظام كله.</p>
+  <div class="badges">
+    <span class="badge">الدرس 6 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 45 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 4 فصلنا الأعمال البطيئة عن الدفع بالطوابير. وفي الدرس 5 نفّذنا عملية تمر بعدة خدمات بنمط Saga. اليوم نسأل السؤال الأكبر: لماذا عندنا عدة خدمات أصلًا؟ ومتى يكون هذا قرارًا خاطئًا؟</div>
+      <p>بدأت بوابة الدفع عندنا كتطبيق واحد كبير <span class="en">(Monolith)</span>. كود الدفع، وحسابات التجار، وتحويل الأرباح، وفحص الاحتيال، والتقارير، كلها في مستودع واحد، وتُنشر معًا.</p>
+      <p>الآن عندنا 60 مهندسًا في 8 فرق. كل نشر <span class="en">(Deploy)</span> ينتظر موافقة الجميع. خطأ صغير في كود التقارير يُسقط الدفع. وفريق الاحتيال يريد تحديث نموذجه كل يوم، لكن النشر مرة في الأسبوع فقط.</p>
+      <p>الحل الشائع: نقسّم التطبيق إلى <strong>خدمات مصغرة</strong> <span class="en">(Microservices)</span>. كل خدمة صغيرة، ولها فريق واحد وقاعدة بيانات خاصة، وتُنشر وحدها. لكن هذا القرار له ثمن كبير: كل استدعاء دالة صار الآن طلبًا عبر الشبكة. والشبكة بطيئة وغير موثوقة.</p>
+      <p>في هذا الدرس ستتعلم:</p>
+      <ul>
+        <li>متى تقسّم النظام، ومتى يكون "التطبيق الواحد المنظم" أفضل.</li>
+        <li>دور <span class="en">API Gateway</span>: التوجيه، والتحقق من الهوية، ومعرّف التتبع.</li>
+        <li>كيف تنتشر الأعطال بين الخدمات <span class="en">(Cascading Failure)</span>.</li>
+        <li>أدوات الحماية: المهلة، وإعادة المحاولة بحذر، وقاطع الدائرة، والحواجز <span class="en">(Bulkheads)</span>، والبديل <span class="en">(Fallback)</span>.</li>
+        <li>لماذا تتضاعف إعادة المحاولات عبر الطبقات.</li>
+      </ul>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">
+        🏬 <strong>تخيّل مركزًا تجاريًا كبيرًا.</strong>
+        <p>في البداية كان عندك محل واحد كبير يبيع كل شيء. موظف واحد مريض يبطئ المحل كله. وأي تغيير في قسم الملابس يحتاج إغلاق المحل كله يومًا. هذا هو <strong>التطبيق الواحد</strong>.</p>
+        <p>فقسّمته إلى محلات صغيرة: صيدلية، ومطعم، ومحل ملابس. كل محل له مدير ومخزن خاص، ويفتح ويغلق وحده. هذه هي <strong>الخدمات المصغرة</strong>.</p>
+        <p>عند المدخل يوجد <strong>مكتب استعلامات</strong>. يتحقق من هويتك، ويوجّهك إلى المحل الصحيح، ويعطيك رقم زيارة. أنت لا تحتاج أن تعرف أين كل محل. هذا هو <strong>API Gateway</strong>.</p>
+        <p>وفي كل بيت يوجد <strong>قاطع كهرباء</strong>. إذا حدث قصر في الثلاجة، يقطع القاطع الكهرباء عنها فقط، قبل أن يحترق البيت كله. بعد قليل تجرّب تشغيله مرة واحدة. إذا عمل، رجعت الكهرباء. وإذا لم يعمل، يبقى مقطوعًا. هذا هو <strong>قاطع الدائرة</strong> <span class="en">(Circuit Breaker)</span>.</p>
+        <p>وفي السفينة، الجسم مقسّم إلى غرف مغلقة. إذا دخل الماء غرفة واحدة، لا تغرق السفينة كلها. هذه هي <strong>الحواجز</strong> <span class="en">(Bulkheads)</span>.</p>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>التطبيق الواحد</td><td class="en">Monolith</td><td>كل الكود في تطبيق واحد يُنشر مرة واحدة.</td></tr>
+        <tr><td>التطبيق الواحد المنظم</td><td class="en">Modular Monolith</td><td>تطبيق واحد، لكن مقسّم داخليًا إلى وحدات بحدود واضحة.</td></tr>
+        <tr><td>الخدمات المصغرة</td><td class="en">Microservices</td><td>خدمات صغيرة مستقلة، تتواصل عبر الشبكة.</td></tr>
+        <tr><td>السياق المحدد</td><td class="en">Bounded Context</td><td>جزء من العمل له لغته وبياناته الخاصة، مثل "الدفع" أو "التحويلات".</td></tr>
+        <tr><td>التطبيق الواحد الموزّع</td><td class="en">Distributed Monolith</td><td>خدمات منفصلة شكلًا، لكنها تُنشر معًا وتتشارك قاعدة بيانات. أسوأ الاثنين.</td></tr>
+        <tr><td>بوابة الواجهات</td><td class="en">API Gateway</td><td>نقطة دخول واحدة لكل الطلبات الخارجية.</td></tr>
+        <tr><td>واجهة لكل عميل</td><td class="en">Backend for Frontend (BFF)</td><td>بوابة خاصة لكل نوع عميل: تطبيق الجوال، ولوحة التاجر.</td></tr>
+        <tr><td>اكتشاف الخدمات</td><td class="en">Service Discovery</td><td>طريقة تعرف بها الخدمة عناوين الخدمات الأخرى.</td></tr>
+        <tr><td>الانهيار المتتالي</td><td class="en">Cascading Failure</td><td>خدمة تبطئ، فتبطئ الخدمات التي تنتظرها، حتى يسقط النظام كله.</td></tr>
+        <tr><td>المهلة</td><td class="en">Timeout</td><td>أقصى وقت ننتظره قبل أن نعتبر الطلب فاشلًا.</td></tr>
+        <tr><td>قاطع الدائرة</td><td class="en">Circuit Breaker</td><td>يوقف الاستدعاءات لخدمة معطلة مؤقتًا، ويرفض الطلبات فورًا.</td></tr>
+        <tr><td>الرفض السريع</td><td class="en">Fail Fast</td><td>نرد بخطأ فورًا بدلًا من الانتظار حتى انتهاء المهلة.</td></tr>
+        <tr><td>الحواجز</td><td class="en">Bulkhead</td><td>موارد منفصلة لكل نوع عمل، حتى لا يأكل نوع واحد كل الموارد.</td></tr>
+        <tr><td>البديل</td><td class="en">Fallback</td><td>رد مقبول بديل عندما تفشل الخدمة، مثل قيمة افتراضية أو قرار مبسط.</td></tr>
+        <tr><td>تضاعف المحاولات</td><td class="en">Retry Amplification</td><td>كل طبقة تعيد المحاولة، فيتضاعف الحمل على الخدمة المعطلة.</td></tr>
+        <tr><td>التتبع الموزّع</td><td class="en">Distributed Tracing</td><td>تتبع طلب واحد عبر كل الخدمات بمعرّف واحد.</td></tr>
+        <tr><td>شبكة الخدمات</td><td class="en">Service Mesh</td><td>طبقة شبكة (مثل Envoy) تضيف المهلات والتشفير والقياس لكل خدمة بدون تغيير كودها.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>1. التطبيق الواحد ليس عيبًا</h3>
+      <p>كثير من الشركات الناجحة بدأت بتطبيق واحد وما زالت تستخدمه. التطبيق الواحد له مزايا حقيقية:</p>
+      <ul>
+        <li><strong>استدعاء الدالة سريع جدًا:</strong> نانو ثوانٍ، بدلًا من ميلي ثوانٍ عبر الشبكة.</li>
+        <li><strong>المعاملات سهلة:</strong> خصم المحفظة وتسجيل الدفتر في معاملة واحدة. لا حاجة لـ Saga!</li>
+        <li><strong>التتبع والاختبار سهلان:</strong> كل شيء في مكان واحد.</li>
+      </ul>
+      <p>المشكلة تبدأ عندما يكبر <strong>الفريق</strong>، وليس الكود. هذا هو <strong>قانون كونواي</strong> <span class="en">(Conway's Law)</span>: شكل النظام يشبه شكل الفرق التي تبنيه. إذا كان عندك 8 فرق تعمل في تطبيق واحد، فهي تتصادم كل يوم.</p>
+
+      <h3>2. متى تقسّم؟</h3>
+      <table>
+        <tr><th>إشارة جيدة للتقسيم ✅</th><th>إشارة سيئة ❌</th></tr>
+        <tr><td>فرق مختلفة تحتاج النشر في أوقات مختلفة.</td><td>"الخدمات المصغرة هي الطريقة الحديثة."</td></tr>
+        <tr><td>جزء يحتاج توسعًا مختلفًا جدًا. مثل: فحص الاحتيال يحتاج GPU.</td><td>الفريق كله 5 مهندسين.</td></tr>
+        <tr><td>جزء يحتاج عزلًا أمنيًا. مثل: بيانات البطاقات تحت <span class="en">PCI DSS</span>.</td><td>الحدود بين الأجزاء غير واضحة بعد.</td></tr>
+        <tr><td>عطل في جزء يجب ألا يُسقط جزءًا آخر.</td><td>كل طلب يحتاج 10 خدمات معًا لينجح.</td></tr>
+      </table>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> ابدأ بـ <strong>تطبيق واحد منظم</strong>. قسّمه إلى وحدات داخلية بحدود واضحة: كل وحدة لها جداولها، ولا تقرأ جداول وحدة أخرى مباشرة. عندما تظهر حاجة حقيقية، تُخرج وحدة واحدة كخدمة. هذا أسهل بكثير من دمج خدمات قسّمتها بالخطأ.</div>
+
+      <h3>3. قاعدة بيانات لكل خدمة</h3>
+      <p>إذا تشاركت خدمتان نفس الجداول، فهما ليستا مستقلتين. تغيير عمود واحد يُسقط الخدمة الأخرى. لذلك القاعدة: <strong>كل خدمة تملك بياناتها</strong>. والخدمات الأخرى تسألها عبر الـ API، أو تستمع لأحداثها (الدرس 4).</p>
+      <p>إذا كانت خدماتك تتشارك قاعدة بيانات وتُنشر معًا، فعندك <strong>تطبيق واحد موزّع</strong>: كل مشاكل الخدمات المصغرة (الشبكة، والتتبع الصعب)، وكل مشاكل التطبيق الواحد (الارتباط القوي). هذا أسوأ نتيجة ممكنة.</p>
+
+      <h3>4. كيف تتواصل الخدمات؟</h3>
+      <table>
+        <tr><th>الطريقة</th><th>متى تستخدمها</th><th>مثال</th></tr>
+        <tr><td>متزامن <span class="en">(REST / gRPC)</span></td><td>عندما تحتاج الجواب الآن لتكمل.</td><td>الدفع يسأل خدمة الاحتيال: هل أقبل؟</td></tr>
+        <tr><td>غير متزامن <span class="en">(Events)</span></td><td>عندما يكفي أن تعرف الخدمة الأخرى "لاحقًا".</td><td>الدفع ينشر "تم الدفع"، والإشعارات تستمع.</td></tr>
+      </table>
+      <p>كل استدعاء متزامن يضيف خدمة إلى <strong>سلسلة متتالية</strong>. تذكّر الدرس 1: الأجزاء المتتالية تُضرب توافريتها. لذلك قلّل الاستدعاءات المتزامنة، واستخدم الأحداث حيثما أمكن.</p>
+
+      <h3>5. API Gateway</h3>
+      <p>بدون بوابة، يجب أن يعرف تطبيق الجوال عنوان كل خدمة. ويجب أن تتحقق كل خدمة من الهوية بنفسها. البوابة تجمع هذه الأعمال المشتركة في مكان واحد:</p>
+      <ul>
+        <li><strong>التوجيه:</strong> <code>/v1/payments</code> إلى خدمة الدفع، و <code>/v1/payouts</code> إلى خدمة التحويلات.</li>
+        <li><strong>التحقق من الهوية:</strong> مفتاح الـ API أو التوكن. الطلب المرفوض لا يصل إلى أي خدمة.</li>
+        <li><strong>تحديد المعدل</strong> <span class="en">(Rate Limiting)</span>: سنبنيه في الدرس 7.</li>
+        <li><strong>إنهاء التشفير</strong> <span class="en">(TLS Termination)</span>.</li>
+        <li><strong>معرّف التتبع:</strong> البوابة تعطي كل طلب رقمًا مثل <code>X-Request-Id</code>، وكل خدمة تمرره للخدمة التالية.</li>
+        <li><strong>إدارة الإصدارات:</strong> <code>/v1</code> و <code>/v2</code> تعملان معًا أثناء الانتقال.</li>
+      </ul>
+      <div class="callout warning">⚠️ <strong>تحذير:</strong> لا تضع منطق العمل في البوابة. "حساب العمولة" مكانه خدمة الدفع، وليس البوابة. البوابة التي تعرف كل شيء تصبح تطبيقًا واحدًا جديدًا، وكل الفرق تنتظرها. وتذكّر: البوابة نفسها يجب أن تكون مكررة، وإلا فهي نقطة فشل واحدة (الدرس 1).</div>
+
+      <h3>6. اكتشاف الخدمات</h3>
+      <p>الخدمات تعمل على حاويات <span class="en">(Containers)</span> تتغير عناوينها كل دقيقة. لذلك لا نكتب العناوين في الكود. توجد طريقتان:</p>
+      <ul>
+        <li><strong>من جهة الخادم:</strong> الخدمة تطلب اسمًا ثابتًا مثل <code>risk.internal</code>، وموازن أحمال أو DNS يوجّهها. هذا ما يفعله <span class="en">Kubernetes Service</span>.</li>
+        <li><strong>من جهة العميل:</strong> الخدمة تسأل سجلًا <span class="en">(Registry)</span> مثل <span class="en">Consul</span> عن العناوين السليمة، ثم تختار واحدًا بنفسها.</li>
+      </ul>
+
+      <h3>7. أدوات الحماية الخمس</h3>
+      <p>في نظام موزّع، <strong>الخدمة البطيئة أخطر من الخدمة المتوقفة</strong>. الخدمة المتوقفة ترد بخطأ فورًا. أما البطيئة فتحجز موارد من ينتظرها، حتى تنفد.</p>
+      <table>
+        <tr><th>الأداة</th><th>ماذا تفعل</th><th>ماذا تحمي</th></tr>
+        <tr><td>المهلة <span class="en">(Timeout)</span></td><td>لا تنتظر أكثر من X ميلي ثانية.</td><td>تمنع حجز العمّال للأبد.</td></tr>
+        <tr><td>إعادة المحاولة بحذر</td><td>تأخير متزايد، وعشوائية، وحد أقصى، وفي طبقة واحدة فقط.</td><td>تتجاوز الأعطال القصيرة بدون أن تضاعف الحمل.</td></tr>
+        <tr><td>قاطع الدائرة</td><td>بعد عدة أخطاء، يرفض فورًا لفترة.</td><td>يعطي الخدمة المعطلة فرصة لتتعافى، ويوفر الوقت على المستخدم.</td></tr>
+        <tr><td>الحواجز <span class="en">(Bulkhead)</span></td><td>عدد محدد من العمّال لكل خدمة تابعة.</td><td>خدمة بطيئة تأكل حصتها فقط.</td></tr>
+        <tr><td>البديل <span class="en">(Fallback)</span></td><td>رد مبسط عندما تفشل الخدمة.</td><td>النظام يعمل بشكل أقل، بدلًا من أن يتوقف تمامًا.</td></tr>
+      </table>
+
+      <h3>8. حالات قاطع الدائرة</h3>
+      <ul>
+        <li><strong>مغلق</strong> <span class="en">(Closed)</span>: الوضع الطبيعي. الطلبات تمر، ونعد الأخطاء.</li>
+        <li><strong>مفتوح</strong> <span class="en">(Open)</span>: الأخطاء تجاوزت الحد. نرفض كل الطلبات فورًا، بدون أن نتصل بالخدمة.</li>
+        <li><strong>نصف مفتوح</strong> <span class="en">(Half-Open)</span>: بعد مدة، نسمح بطلب تجريبي واحد. إذا نجح، نعود إلى "مغلق". وإذا فشل، نعود إلى "مفتوح" ونبدأ الانتظار من جديد.</li>
+      </ul>
+      <div class="callout note">📝 <strong>لاحظ الأسماء:</strong> مثل الكهرباء تمامًا. الدائرة "المغلقة" تمرر التيار، و"المفتوحة" تقطعه. كثيرون يخلطون بينهما في البداية.</div>
+
+      <h3>9. التتبع الموزّع</h3>
+      <p>طلب دفع واحد يمر عبر البوابة، ثم خدمة الدفع، ثم الاحتيال، ثم قاعدة البيانات. إذا كان بطيئًا، أين البطء؟ بدون تتبع، كل خدمة تقول "أنا سريعة".</p>
+      <p>الحل: البوابة تنشئ معرّف تتبع، وكل خدمة تمرره في الـ Headers وتكتبه في كل سطر من سجلاتها. أدوات مثل <span class="en">OpenTelemetry</span> و <span class="en">Jaeger</span> ترسم الرحلة كاملة مع زمن كل خطوة.</p>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>بنية بوابة الدفع بعد التقسيم</h3>
+      <div class="diagram mermaid">
+flowchart LR
+  M["تطبيق الجوال"] --> GW["API Gateway"]
+  D["لوحة التاجر"] --> GW
+  API["خوادم التجار"] --> GW
+  GW --> PAY["Payments"]
+  GW --> PO["Payouts"]
+  GW --> REP["Reports"]
+  PAY -- "sync + breaker" --> RISK["Risk"]
+  PAY --> PDB[("Payments DB")]
+  PO --> PODB[("Payouts DB")]
+  RISK --> RDB[("Risk DB")]
+  PAY -- "events" --> Q[["payment-events"]]
+  Q --> NOTIF["Notifications"]
+  Q --> REP
+      </div>
+      <p>لاحظ: كل خدمة لها قاعدة بياناتها. والاستدعاء المتزامن الوحيد في مسار الدفع هو خدمة الاحتيال، وهو محمي بقاطع دائرة. أما الإشعارات والتقارير فتستمع للأحداث، فلا تؤثر على سرعة الدفع.</p>
+
+      <h3>رحلة طلب عبر البوابة</h3>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant C as Merchant Server
+  participant G as API Gateway
+  participant P as Payments
+  participant R as Risk
+  C->>G: POST /v1/payments (X-Api-Key)
+  G->>G: verify key, assign X-Request-Id
+  G->>P: forward + X-Merchant-Id + X-Request-Id
+  P->>R: score (timeout 300ms, same X-Request-Id)
+  R-->>P: low risk
+  P-->>G: 201 Created
+  G-->>C: 201 + X-Request-Id
+      </div>
+
+      <h3>حالات قاطع الدائرة</h3>
+      <div class="diagram mermaid">
+stateDiagram-v2
+  [*] --> Closed
+  Closed --> Open : failures reach threshold
+  Open --> HalfOpen : reset timeout passed
+  HalfOpen --> Closed : trial request succeeds
+  HalfOpen --> Open : trial request fails
+      </div>
+
+      <h3>الانهيار المتتالي خطوة بخطوة</h3>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: الوضع الطبيعي</h4>
+          <div class="mem"><div class="box">Gateway</div><span class="arrow">→</span><div class="box">Payments: 200 workers</div><span class="arrow">→</span><div class="box db">Risk: 50ms</div></div>
+          <p>100 طلب في الثانية، كل طلب 50ms. حسب قانون ليتل (الدرس 1): \(100 \times 0.05 = 5\) عمّال مشغولون فقط من 200.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: خدمة الاحتيال تبطئ</h4>
+          <div class="mem"><div class="box">Gateway</div><span class="arrow">→</span><div class="box warn">Payments</div><span class="arrow">→</span><div class="box bad">Risk: 30s 🐢</div></div>
+          <p>قاعدة بيانات الاحتيال فيها استعلام عالق. كل طلب يأخذ 30 ثانية. خدمة الاحتيال لم تتوقف، فهي ترد فقط ببطء شديد.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: عمّال الدفع ينفدون</h4>
+          <div class="mem"><div class="box">Gateway</div><span class="arrow">→</span><div class="box bad">Payments: 200/200 busy</div><span class="arrow">→</span><div class="box bad">Risk</div></div>
+          <p>بدون مهلة: \(100 \times 30 = 3000\) طلب متزامن مطلوب، والمتاح 200 فقط. بعد ثانيتين، كل العمّال ينتظرون. حتى الطلبات التي لا تحتاج الاحتيال، مثل "حالة الدفع"، لا تجد عاملًا.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: الانهيار ينتشر للأعلى</h4>
+          <div class="mem"><div class="box bad">Gateway: connections full</div><span class="arrow">→</span><div class="box bad">Payments</div><span class="arrow">→</span><div class="box bad">Risk</div></div>
+          <p>البوابة تنتظر خدمة الدفع، فتمتلئ اتصالاتها أيضًا. الآن حتى <code>/v1/reports</code> لا يعمل. والأسوأ: كل طبقة تعيد المحاولة، فيتضاعف الحمل على خدمة الاحتيال المريضة. خدمة واحدة بطيئة أسقطت كل شيء.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: مع المهلة وقاطع الدائرة والبديل</h4>
+          <div class="mem"><div class="box db">Gateway</div><span class="arrow">→</span><div class="box db">Payments: healthy</div><span class="arrow">⛔</span><div class="box warn">Breaker OPEN</div><div class="box bad">Risk</div></div>
+          <p>المهلة 300ms تحد الانتظار. بعد 5 أخطاء، يفتح القاطع، فترفض خدمة الدفع فورًا بدون انتظار. والبديل يقبل الدفعات الصغيرة ويضعها للمراجعة لاحقًا. خدمة الاحتيال تتعافى بهدوء، وباقي النظام لم يشعر بشيء تقريبًا.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: API Gateway مبسطة</h3>
+      <p>بوابة تتحقق من مفتاح الـ API، وتوجّه حسب أطول بادئة مطابقة، وتضيف معرّف التاجر ومعرّف التتبع.</p>
+<pre><code class="language-python">import itertools
+from dataclasses import dataclass, field
+from typing import Callable
+
+
+@dataclass
+class Request:
+    method: str
+    path: str
+    headers: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class Response:
+    status: int
+    body: str
+    headers: dict[str, str] = field(default_factory=dict)
+
+
+Handler = Callable[[Request], Response]
+
+
+def payments_service(req: Request) -> Response:
+    merchant = req.headers["X-Merchant-Id"]
+    return Response(201, f"payments: {req.method} {req.path} for {merchant}")
+
+
+def reports_service(req: Request) -> Response:
+    merchant = req.headers["X-Merchant-Id"]
+    return Response(200, f"reports: {req.path} for {merchant}")
+
+
+class ApiGateway:
+    def __init__(self, api_keys: dict[str, str]) -> None:
+        self.api_keys = api_keys                 # api key -> merchant id
+        self.routes: list[tuple[str, Handler]] = []
+        self._ids = itertools.count(1)
+
+    def route(self, prefix: str, handler: Handler) -> None:
+        self.routes.append((prefix, handler))
+        self.routes.sort(key=lambda r: len(r[0]), reverse=True)
+
+    def handle(self, req: Request) -> Response:
+        request_id = f"req_{next(self._ids)}"
+        resp = self._dispatch(req, request_id)
+        resp.headers["X-Request-Id"] = request_id
+        return resp
+
+    def _dispatch(self, req: Request, request_id: str) -> Response:
+        merchant = self.api_keys.get(req.headers.get("X-Api-Key", ""))
+        if merchant is None:
+            return Response(401, "invalid API key")   # never reaches services
+        for prefix, handler in self.routes:
+            if req.path.startswith(prefix):
+                req.headers["X-Merchant-Id"] = merchant   # overwrite, never trust client
+                req.headers["X-Request-Id"] = request_id
+                return handler(req)
+        return Response(404, "no route")
+
+
+gw = ApiGateway({"sk_test_123": "m1"})
+gw.route("/v1/payments", payments_service)
+gw.route("/v1/reports", reports_service)
+
+key = {"X-Api-Key": "sk_test_123"}
+tests = [Request("POST", "/v1/payments", dict(key)),
+         Request("GET", "/v1/reports/daily", dict(key)),
+         Request("GET", "/v1/payments", {"X-Api-Key": "stolen"}),
+         Request("GET", "/v1/admin", dict(key))]
+for req in tests:
+    resp = gw.handle(req)
+    print(resp.status, resp.headers["X-Request-Id"], "|", resp.body)</code></pre>
+      <div class="output">201 req_1 | payments: POST /v1/payments for m1
+200 req_2 | reports: /v1/reports/daily for m1
+401 req_3 | invalid API key
+404 req_4 | no route</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>Handler = Callable[...]</code>: كل خدمة هنا دالة تستقبل طلبًا وترجع ردًا. في الواقع هي طلب HTTP عبر الشبكة.</li>
+        <li><code>self.routes.sort(... reverse=True)</code>: نرتب البادئات من الأطول إلى الأقصر. هكذا يفوز <code>/v1/payments/refunds</code> على <code>/v1/payments</code> إذا أضفناه لاحقًا.</li>
+        <li><code>handle</code>: كل طلب يأخذ معرّف تتبع، حتى الطلب المرفوض. هكذا نستطيع البحث عنه في السجلات.</li>
+        <li><code>if merchant is None</code>: المفتاح الخاطئ يُرفض في البوابة. الخدمات لا ترى هذا الطلب أبدًا.</li>
+        <li><code>req.headers["X-Merchant-Id"] = merchant</code>: نكتب فوق أي قيمة أرسلها العميل. لو قبلنا قيمته، يستطيع مهاجم أن يرسل <code>X-Merchant-Id: m2</code> ويرى بيانات تاجر آخر!</li>
+        <li><strong>النتيجة:</strong> طلبان نجحا، ومفتاح مسروق رُفض بـ 401، ومسار غير معروف رجع 404.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> في الإنتاج لا تبنِ البوابة بنفسك. استخدم <span class="en">Kong</span> أو <span class="en">Envoy</span> أو <span class="en">AWS API Gateway</span>. واحفظ مفاتيح الـ API مجزّأة <span class="en">(Hashed)</span>، مثل كلمات المرور تمامًا.</div>
+
+      <h3>مثال 2: قاطع الدائرة</h3>
+      <p>نستخدم ساعة مزيفة مرة أخرى حتى نتحكم في الوقت. خدمة الاحتيال تتوقف، ثم تعود في <code>t=13</code>.</p>
+<pre><code class="language-python">class CircuitOpenError(Exception):
+    pass
+
+
+class CircuitBreaker:
+    def __init__(self, failure_threshold: int, reset_timeout: float,
+                 clock) -> None:
+        self.failure_threshold = failure_threshold
+        self.reset_timeout = reset_timeout
+        self.clock = clock
+        self.state = "closed"
+        self.failures = 0
+        self.opened_at = 0.0
+
+    def call(self, func):
+        if self.state == "open":
+            if self.clock() - self.opened_at >= self.reset_timeout:
+                self.state = "half_open"          # allow one trial request
+            else:
+                raise CircuitOpenError("fail fast")
+        try:
+            result = func()
+        except Exception:
+            self._on_failure()
+            raise
+        self._on_success()
+        return result
+
+    def _on_success(self) -> None:
+        self.state = "closed"
+        self.failures = 0
+
+    def _on_failure(self) -> None:
+        self.failures += 1
+        if self.state == "half_open" or self.failures >= self.failure_threshold:
+            self.state = "open"
+            self.opened_at = self.clock()
+
+
+now = [0]
+risk_up = [False]
+risk_calls = [0]
+
+
+def risk_check() -> str:
+    risk_calls[0] += 1
+    if not risk_up[0]:
+        raise TimeoutError("timeout")
+    return "approved"
+
+
+cb = CircuitBreaker(failure_threshold=3, reset_timeout=10, clock=lambda: now[0])
+events = [(0, False), (1, False), (2, False), (3, False), (4, False),
+          (12, False), (13, True), (22, True), (23, True)]
+
+for t, up in events:
+    now[0], risk_up[0] = t, up
+    try:
+        result = cb.call(risk_check)
+    except CircuitOpenError:
+        result = "fail fast"
+    except TimeoutError as err:
+        result = f"error: {err}"
+    print(f"t={t:>2} up={up!s:&lt;5} -> {result:&lt;15} state={cb.state}")
+print("calls that reached risk:", risk_calls[0])</code></pre>
+      <div class="output">t= 0 up=False -> error: timeout  state=closed
+t= 1 up=False -> error: timeout  state=closed
+t= 2 up=False -> error: timeout  state=open
+t= 3 up=False -> fail fast       state=open
+t= 4 up=False -> fail fast       state=open
+t=12 up=False -> error: timeout  state=open
+t=13 up=True  -> fail fast       state=open
+t=22 up=True  -> approved        state=closed
+t=23 up=True  -> approved        state=closed
+calls that reached risk: 6</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>if self.state == "open"</code>: إذا كان القاطع مفتوحًا ولم تنتهِ المدة، نرفض فورًا. الخدمة المعطلة لا تستقبل أي طلب.</li>
+        <li><code>self.state = "half_open"</code>: انتهت المدة، فنسمح بطلب تجريبي.</li>
+        <li><code>except Exception: ... raise</code>: نسجّل الخطأ ثم نعيد رميه. المستدعي يقرر ماذا يفعل به.</li>
+        <li><code>if self.state == "half_open" or ...</code>: فشل الطلب التجريبي يفتح القاطع فورًا، بدون انتظار 3 أخطاء.</li>
+        <li><strong>t=0 إلى 2:</strong> ثلاثة أخطاء، فيفتح القاطع في <code>t=2</code>.</li>
+        <li><strong>t=3 و 4:</strong> رفض سريع. لا ننتظر المهلة، ولا نزعج الخدمة المريضة.</li>
+        <li><strong>t=12:</strong> مرّت 10 ثوانٍ، فنجرّب طلبًا واحدًا. فشل، فيفتح القاطع من جديد ويبدأ العد من <code>t=12</code>.</li>
+        <li><strong>t=13:</strong> الخدمة عادت فعلًا، لكن القاطع ما زال مفتوحًا. هذا ثمن مقبول: ننتظر حتى <code>t=22</code> لنجرّب.</li>
+        <li><strong>النتيجة:</strong> 9 طلبات، و6 فقط وصلت إلى خدمة الاحتيال. والطلبات الثلاثة الأخرى أخذت ميكروثوانٍ بدلًا من انتظار المهلة.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> هذا القاطع يعد الأخطاء المتتالية. المكتبات الحقيقية مثل <span class="en">resilience4j</span> تحسب <strong>نسبة الأخطاء</strong> في نافذة زمنية، مثل: "افتح إذا فشل 50% من آخر 100 طلب". ومع عدة خيوط، يجب أن يسمح النصف مفتوح بطلب تجريبي <strong>واحد</strong> فقط، باستخدام قفل.</div>
+
+      <h3>مثال 3: تضاعف إعادة المحاولات</h3>
+      <p>قاعدة البيانات معطلة. البوابة تستدعي الدفع، والدفع يستدعي الاحتيال، والاحتيال يستدعي قاعدة البيانات. كم طلبًا يصل إلى قاعدة البيانات من طلب مستخدم واحد؟</p>
+<pre><code class="language-python">calls: dict[str, int] = {}
+
+
+def make_service(name: str, downstream, attempts: int):
+    def call():
+        calls[name] = calls.get(name, 0) + 1
+        if downstream is None:
+            raise ConnectionError(f"{name} is down")
+        for attempt in range(attempts):
+            try:
+                return downstream()
+            except ConnectionError:
+                if attempt == attempts - 1:
+                    raise
+    return call
+
+
+scenarios = [("retry at every layer", (3, 3, 3)),
+             ("retry at one layer", (3, 1, 1))]
+for label, (g, p, r) in scenarios:
+    calls.clear()
+    db = make_service("db", None, 1)
+    risk = make_service("risk", db, r)
+    payments = make_service("payments", risk, p)
+    gateway = make_service("gateway", payments, g)
+    try:
+        gateway()
+    except ConnectionError:
+        pass
+    print(f"{label:&lt;21}: {calls}")</code></pre>
+      <div class="output">retry at every layer : {'gateway': 1, 'payments': 3, 'risk': 9, 'db': 27}
+retry at one layer   : {'gateway': 1, 'payments': 3, 'risk': 3, 'db': 3}</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>make_service</code>: تصنع خدمة تستدعي الخدمة التالية، وتعيد المحاولة <code>attempts</code> مرة.</li>
+        <li><code>if downstream is None</code>: قاعدة البيانات هي آخر السلسلة، وهي معطلة دائمًا.</li>
+        <li><code>if attempt == attempts - 1: raise</code>: بعد آخر محاولة، نرمي الخطأ إلى الطبقة الأعلى.</li>
+        <li><strong>كل طبقة تعيد 3 مرات:</strong> \(3 \times 3 \times 3 = 27\) طلبًا على قاعدة بيانات معطلة، من مستخدم واحد! مع 1000 مستخدم: 27,000 طلب. قاعدة البيانات لن تتعافى أبدًا تحت هذا الحمل.</li>
+        <li><strong>طبقة واحدة فقط تعيد:</strong> 3 طلبات فقط. نفس فرصة النجاح تقريبًا، وحمل أقل بـ 9 مرات.</li>
+      </ol>
+      <div class="callout warning">⚠️ <strong>القاعدة:</strong> أعد المحاولة في طبقة واحدة فقط، غالبًا الأقرب إلى الخطأ أو الأعلى في السلسلة. واستخدم <strong>ميزانية للمحاولات</strong> <span class="en">(Retry Budget)</span>: لا تتجاوز المحاولات الإضافية 10% من الطلبات. ستبنيها في التمرين 3.</div>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>1. استدعاء بدون مهلة</h3>
+      <p>عندنا 200 عامل يخدمون مسارين. مسار التقارير يعتمد على قاعدة بيانات علقت، فصار كل طلب يأخذ 30 ثانية. هل يتأثر الدفع؟ نحسبها بقانون ليتل.</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة: بدون مهلة</h4>
+<pre><code class="language-python">WORKERS = 200
+traffic = {"/payments": 80, "/reports": 20}       # requests per second
+latency = {"/payments": 0.05, "/reports": 30.0}   # reports DB is stuck
+
+busy = sum(rps * latency[path]
+           for path, rps in traffic.items())
+print(f"workers needed: {busy:.0f} / {WORKERS}")
+print("payments OK?", busy &lt;= WORKERS)</code></pre>
+          <div class="output">workers needed: 604 / 200
+payments OK? False</div>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة: مهلة ثانية واحدة</h4>
+<pre><code class="language-python">WORKERS = 200
+TIMEOUT = 1.0                                     # seconds
+traffic = {"/payments": 80, "/reports": 20}
+latency = {"/payments": 0.05, "/reports": 30.0}
+
+busy = sum(rps * min(latency[path], TIMEOUT)
+           for path, rps in traffic.items())
+print(f"workers needed: {busy:.0f} / {WORKERS}")
+print("payments OK?", busy &lt;= WORKERS)</code></pre>
+          <div class="output">workers needed: 24 / 200
+payments OK? True</div>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الطريقة الأولى خاطئة؟</strong> التقارير تحتاج \(20 \times 30 = 600\) عامل، والمتاح 200 فقط. كل العمّال يعلقون في انتظار التقارير. فتفشل عمليات الدفع رغم أن كود الدفع وقاعدة بياناته سليمان تمامًا! المهلة تحد كل طلب بثانية، فتحتاج التقارير 20 عاملًا فقط. <strong>والحواجز</strong> تحمي أكثر: التقارير لا تأخذ أكثر من حصتها أبدًا (التمرين 2).</div>
+      <p>معظم مكتبات HTTP <strong>ليس لها مهلة افتراضية</strong>. مثلًا <code>requests.get(url)</code> في Python قد ينتظر للأبد. اكتب دائمًا <code>timeout=</code> بنفسك.</p>
+
+      <h3>2. أخطاء أخرى شائعة</h3>
+      <ul>
+        <li><strong>❌ التقسيم المبكر:</strong> 15 خدمة لفريق من 4 أشخاص. كل ميزة تحتاج تغيير 5 خدمات. <strong>✅</strong> تطبيق واحد منظم أولًا.</li>
+        <li><strong>❌ قاعدة بيانات مشتركة:</strong> خدمة التقارير تقرأ جداول الدفع مباشرة. تغيير عمود يُسقطها. <strong>✅</strong> التقارير تستمع لأحداث الدفع وتبني جداولها الخاصة.</li>
+        <li><strong>❌ الاستدعاءات الكثيرة</strong> <span class="en">(Chatty Services)</span>: صفحة واحدة تستدعي خدمة التجار 50 مرة، لكل عملية مرة. <strong>✅</strong> طلب واحد لعدة معرّفات <span class="en">(Batch API)</span>.</li>
+        <li><strong>❌ مهلات غير متناسقة:</strong> البوابة تنتظر 2 ثانية، والدفع ينتظر الاحتيال 5 ثوانٍ. الدفع يكمل العمل بعد أن تخلّت البوابة عنه! <strong>✅</strong> مهلة كل طبقة أقل من مهلة الطبقة الأعلى، أو مرّر "الوقت المتبقي" <span class="en">(Deadline)</span> مع الطلب.</li>
+        <li><strong>❌ بديل يكذب:</strong> خدمة الرصيد متوقفة، فيرجع البديل "الرصيد = 0". التاجر يظن أنه خسر كل أمواله! <strong>✅</strong> البديل يقول الحقيقة: "الرصيد غير متاح الآن".</li>
+        <li><strong>❌ منطق العمل في البوابة:</strong> البوابة تحسب العمولة وتتحقق من المخزون. <strong>✅</strong> البوابة للأعمال المشتركة فقط.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>قسّم حسب العمل، وليس حسب الطبقة التقنية.</strong> "خدمة التحويلات" جيدة. "خدمة قاعدة البيانات" سيئة.</li>
+        <li><strong>كل خدمة يملكها فريق واحد</strong>، وتملك بياناتها، وتُنشر وحدها.</li>
+        <li><strong>كل استدعاء شبكة له مهلة.</strong> اختر المهلة من <code>p99</code> للخدمة مع هامش، وليس رقمًا عشوائيًا.</li>
+        <li><strong>قاطع دائرة لكل خدمة تابعة</strong>، وليس قاطعًا واحدًا للكل. عطل الاحتيال لا يجب أن يفتح قاطع خدمة التجار.</li>
+        <li><strong>صمّم البديل مع فريق العمل.</strong> "ماذا نفعل إذا توقف الاحتيال؟" سؤال عمل، وليس سؤالًا تقنيًا فقط.</li>
+        <li><strong>فضّل الأحداث على الاستدعاءات المتزامنة</strong> لكل شيء لا يحتاج جوابًا فوريًا.</li>
+        <li><strong>اجعل الـ API متوافقًا مع الإصدارات القديمة.</strong> أضف حقولًا، ولا تحذف أو تغيّر حقولًا موجودة. المستهلكون لا يتحدثون في نفس اليوم.</li>
+        <li><strong>معرّف التتبع في كل سطر سجل</strong>، وفي كل رسالة في الطابور (الدرس 4).</li>
+        <li><strong>اختبر الأعطال عمدًا</strong> <span class="en">(Chaos Engineering)</span>: أبطئ خدمة في بيئة الاختبار، وشاهد هل يفتح القاطع فعلًا.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة لأنظمة الدفع:</strong> اعزل كل ما يلمس أرقام البطاقات في خدمة صغيرة واحدة <span class="en">(Vault / Tokenization)</span>. باقي الخدمات ترى التوكن فقط. هكذا يصبح نطاق تدقيق <span class="en">PCI DSS</span> خدمة واحدة بدلًا من النظام كله. هذا من أقوى أسباب التقسيم في شركات الدفع.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+
+      <h3>ثمن السلسلة المتزامنة</h3>
+      <p>كل خدمة إضافية في المسار المتزامن تُضرب توافريتها، ويُضاف زمنها:</p>
+      <div dir="ltr">$$A_{\text{chain}} = \prod_{i=1}^{n} A_i \qquad T_{\text{chain}} = \sum_{i=1}^{n} T_i$$</div>
+      <p>خمس خدمات، كل واحدة 99.9%: \(0.999^5 \approx 99.5\%\). أي حوالي 44 ساعة توقف في السنة، رغم أن كل خدمة وحدها "ممتازة".</p>
+      <p>وإذا استدعيت الخدمات <strong>بالتوازي</strong> بدلًا من التتالي، يصبح الزمن هو زمن الأبطأ:</p>
+      <div dir="ltr">$$T_{\text{parallel}} = \max_i(T_i)$$</div>
+
+      <h3>لعنة التوزيع الواسع (Fan-out)</h3>
+      <p>طلب واحد يستدعي \(n\) خدمة بالتوازي، وينتظرها كلها. إذا كان 1% من ردود كل خدمة بطيئًا، فاحتمال أن يكون الطلب كله بطيئًا:</p>
+      <div dir="ltr">$$P(\text{slow}) = 1 - (1 - 0.01)^n$$</div>
+      <p>مع 100 خدمة: 63% من الطلبات بطيئة! الـ <code>p99</code> لكل خدمة صار تقريبًا الـ <code>p50</code> للنظام. لهذا السبب تهتم الشركات الكبيرة بالذيل <span class="en">(Tail Latency)</span> بشدة، كما رأينا في الدرس 1.</p>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>مقارنة شاملة</h3>
+      <table>
+        <tr><th>المعيار</th><th>تطبيق واحد</th><th>تطبيق واحد منظم</th><th>خدمات مصغرة</th></tr>
+        <tr><td>سرعة البداية</td><td>✅ الأسرع</td><td>✅ سريع</td><td>❌ بطيء: بنية تحتية كثيرة</td></tr>
+        <tr><td>النشر المستقل</td><td>❌ لا</td><td>❌ لا</td><td>✅ نعم</td></tr>
+        <tr><td>عزل الأعطال</td><td>❌ ضعيف</td><td>⚠️ متوسط</td><td>✅ قوي، إذا استخدمت أدوات الحماية</td></tr>
+        <tr><td>المعاملات</td><td>✅ سهلة</td><td>✅ سهلة</td><td>❌ Saga وأحداث (الدرس 5)</td></tr>
+        <tr><td>زمن الاستدعاء</td><td>✅ نانو ثوانٍ</td><td>✅ نانو ثوانٍ</td><td>❌ ميلي ثوانٍ، وقد يفشل</td></tr>
+        <tr><td>التتبع والتشغيل</td><td>✅ بسيط</td><td>✅ بسيط</td><td>❌ تتبع موزّع، ومراقبة لكل خدمة</td></tr>
+        <tr><td>يناسب</td><td>فريق صغير، ومنتج جديد</td><td>أغلب الشركات</td><td>عشرات الفرق، واحتياجات توسع مختلفة</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: خدمة دفع محمية من عطل خدمة الاحتيال</h2>
+      <p>ستبني خدمة دفع تستدعي خدمة الاحتيال عبر قاطع دائرة. وعند الفشل تستخدم بديلًا اتفقنا عليه مع فريق المخاطر: <strong>الدفعات حتى 500 جنيه تُقبل وتُوضع للمراجعة لاحقًا، والأكبر تُرفض مؤقتًا.</strong> ثم نشغّل سيناريو تتوقف فيه خدمة الاحتيال وتعود.</p>
+<pre><code class="language-python">class CircuitOpenError(Exception):
+    pass
+
+
+class CircuitBreaker:
+    def __init__(self, failure_threshold: int, reset_timeout: float,
+                 clock) -> None:
+        self.failure_threshold = failure_threshold
+        self.reset_timeout = reset_timeout
+        self.clock = clock
+        self.state = "closed"
+        self.failures = 0
+        self.opened_at = 0.0
+
+    def call(self, func):
+        if self.state == "open":
+            if self.clock() - self.opened_at >= self.reset_timeout:
+                self.state = "half_open"
+            else:
+                raise CircuitOpenError("fail fast")
+        try:
+            result = func()
+        except Exception:
+            self.failures += 1
+            if (self.state == "half_open"
+                    or self.failures >= self.failure_threshold):
+                self.state = "open"
+                self.opened_at = self.clock()
+            raise
+        self.state, self.failures = "closed", 0
+        return result
+
+
+class RiskClient:
+    def __init__(self) -> None:
+        self.up = True
+        self.calls = 0
+
+    def score(self, amount: int) -> str:
+        self.calls += 1
+        if not self.up:
+            raise TimeoutError("risk timeout")
+        return "high" if amount > 5000 else "low"
+
+
+SMALL_LIMIT = 500   # agreed with the risk team
+
+
+class PaymentService:
+    def __init__(self, risk: RiskClient, breaker: CircuitBreaker) -> None:
+        self.risk = risk
+        self.breaker = breaker
+        self.review_queue: list[str] = []
+
+    def pay(self, payment_id: str, amount: int) -> str:
+        try:
+            level = self.breaker.call(lambda: self.risk.score(amount))
+        except (CircuitOpenError, TimeoutError):
+            return self._fallback(payment_id, amount)
+        if level == "high":
+            return "declined: high risk"
+        return "approved"
+
+    def _fallback(self, payment_id: str, amount: int) -> str:
+        if amount &lt;= SMALL_LIMIT:
+            self.review_queue.append(payment_id)
+            return "approved (fallback, review later)"
+        return "declined: risk unavailable, retry later"
+
+
+now = [0]
+risk = RiskClient()
+breaker = CircuitBreaker(failure_threshold=2, reset_timeout=10,
+                         clock=lambda: now[0])
+service = PaymentService(risk, breaker)
+
+timeline = [(0, True, "p1", 200), (1, True, "p2", 9000),
+            (2, False, "p3", 300), (3, False, "p4", 2000),
+            (4, False, "p5", 100), (5, True, "p6", 1500),
+            (13, True, "p7", 800), (14, True, "p8", 50)]
+
+for t, up, pid, amount in timeline:
+    now[0], risk.up = t, up
+    result = service.pay(pid, amount)
+    print(f"t={t:>2} {pid} {amount:>5} -> {result} [{breaker.state}]")
+
+print(f"risk calls: {risk.calls} of {len(timeline)} requests")
+print("review queue:", service.review_queue)</code></pre>
+      <div class="output">t= 0 p1   200 -> approved [closed]
+t= 1 p2  9000 -> declined: high risk [closed]
+t= 2 p3   300 -> approved (fallback, review later) [closed]
+t= 3 p4  2000 -> declined: risk unavailable, retry later [open]
+t= 4 p5   100 -> approved (fallback, review later) [open]
+t= 5 p6  1500 -> declined: risk unavailable, retry later [open]
+t=13 p7   800 -> approved [closed]
+t=14 p8    50 -> approved [closed]
+risk calls: 6 of 8 requests
+review queue: ['p3', 'p5']</div>
+      <h4>تتبّع السيناريو</h4>
+      <ol>
+        <li><strong>t=0 و 1:</strong> كل شيء طبيعي. <code>p2</code> مبلغ كبير جدًا، فقرر الاحتيال أنه عالي الخطورة.</li>
+        <li><strong>t=2:</strong> خدمة الاحتيال توقفت. خطأ أول، والقاطع ما زال مغلقًا. البديل قبل <code>p3</code> لأنه 300 جنيه فقط، ووضعه للمراجعة.</li>
+        <li><strong>t=3:</strong> خطأ ثانٍ، فيفتح القاطع. <code>p4</code> مبلغه 2000، فيرفضه البديل مؤقتًا.</li>
+        <li><strong>t=4:</strong> رفض سريع من القاطع، بدون أي اتصال بخدمة الاحتيال. البديل قبل <code>p5</code>.</li>
+        <li><strong>t=5:</strong> الاحتيال عاد، لكن القاطع ما زال مفتوحًا. رُفض <code>p6</code> مؤقتًا. التاجر يستطيع إعادة المحاولة.</li>
+        <li><strong>t=13:</strong> مرّت 10 ثوانٍ منذ <code>t=3</code>. طلب تجريبي نجح، فأُغلق القاطع.</li>
+        <li><strong>النتيجة:</strong> لم يتوقف الدفع لحظة واحدة. الدفعات الصغيرة استمرت، والمخاطر محدودة بـ 500 جنيه، ودفعتان فقط تحتاجان مراجعة.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> حد 500 جنيه قرار عمل، وليس قرارًا تقنيًا. فريق المخاطر يجب أن يوافق عليه، وأن يراقب طابور المراجعة. وبعض الشركات تضيف حدًا إجماليًا: "لا تقبل بالبديل أكثر من 50,000 جنيه في الساعة". هكذا تبقى الخسارة القصوى معروفة.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+
+      <div class="quiz" data-explain="بعد انتهاء مدة الانتظار، ينتقل القاطع إلى نصف مفتوح ويسمح بطلب تجريبي. نجاحه يغلق القاطع، وفشله يفتحه من جديد.">
+        <div class="q">1. في أي حالة يسمح قاطع الدائرة بطلب تجريبي واحد ليختبر هل تعافت الخدمة؟</div>
+        <button class="option">Closed</button>
+        <button class="option">Open</button>
+        <button class="option" data-correct="true">Half-Open</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الأجزاء المتتالية تُضرب: 0.999^5 ≈ 0.995، أي حوالي 99.5%.">
+        <div class="q">2. طلب يمر بـ 5 خدمات متتالية، توافرية كل منها 99.9%. ما توافرية الطلب تقريبًا؟</div>
+        <button class="option">99.9%</button>
+        <button class="option" data-correct="true">99.5%</button>
+        <button class="option">95%</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الطبقات الثلاث تعيد كل منها 3 مرات: 3 × 3 × 3 = 27 طلبًا على الخدمة الأخيرة.">
+        <div class="q">3. ثلاث طبقات متتالية، كل طبقة تحاول 3 مرات. الخدمة الأخيرة معطلة. كم طلبًا تستقبل من طلب مستخدم واحد؟</div>
+        <button class="option">3</button>
+        <button class="option">9</button>
+        <button class="option" data-correct="true">27</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="هذا هو التطبيق الواحد الموزّع: خدمات منفصلة شكلًا، لكنها مرتبطة بقوة عبر قاعدة البيانات والنشر المشترك.">
+        <div class="q">4. عندك 6 خدمات تتشارك قاعدة بيانات واحدة، ويجب نشرها معًا. ماذا يسمى هذا؟</div>
+        <button class="option">Modular Monolith</button>
+        <button class="option" data-correct="true">Distributed Monolith</button>
+        <button class="option">Service Mesh</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="التحقق من الهوية عمل مشترك لكل الخدمات، فمكانه البوابة. أما العمولة والمخزون فمنطق عمل مكانه الخدمات.">
+        <div class="q">5. أي من هذه الأعمال مكانه المناسب هو API Gateway؟</div>
+        <button class="option">حساب عمولة التاجر</button>
+        <button class="option" data-correct="true">التحقق من مفتاح الـ API</button>
+        <button class="option">التحقق من المخزون قبل الطلب</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): قيمة البديل بالأرقام</h3>
+      <p>مسار الدفع المتزامن فيه: البوابة (99.99%)، وخدمة الدفع (99.95%)، وخدمة الاحتيال (99.9%)، وخدمة التجار (99.9%). احسب التوافرية وساعات التوقف في السنة. ثم احسبها مرة ثانية إذا كان لخدمة الاحتيال بديل يعمل دائمًا، أي أنها خرجت من السلسلة.</p>
+      <details><summary>💡 تلميح</summary><p>استخدم <code>math.prod</code>. ساعات السنة = 365 × 24.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from math import prod
+
+chain = {"gateway": 0.9999, "payments": 0.9995,
+         "risk": 0.999, "merchants": 0.999}
+
+full = prod(chain.values())
+no_risk = prod(a for name, a in chain.items() if name != "risk")
+
+for label, a in [("all sync", full), ("risk with fallback", no_risk)]:
+    print(f"{label:&lt;18}: {a:.3%} | downtime {(1 - a) * 365 * 24:.1f} h/year")</code></pre>
+        <div class="output">all sync          : 99.740% | downtime 22.8 h/year
+risk with fallback: 99.840% | downtime 14.0 h/year</div>
+        <p>بديل واحد وفّر حوالي 9 ساعات توقف في السنة. والخطوة التالية: خدمة التجار. بياناتها نادرًا ما تتغير، فيمكن قراءتها من Cache محلي (الدرس 2)، فتخرج من السلسلة أيضًا.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): الحواجز</h3>
+      <p>اكتب كلاس <code>Bulkhead</code> يعطي كل خدمة تابعة عددًا محددًا من العمّال. التقارير لها 2 عامل، والدفع له 8. ثم حاكِ: 5 طلبات تقارير عالقة لا ترجع أبدًا، ثم 3 طلبات دفع.</p>
+      <details><summary>💡 تلميح</summary><p>احفظ عدّاد "قيد الاستخدام" لكل مجموعة. <code>try_acquire</code> ترجع <code>False</code> إذا امتلأت المجموعة، بدون انتظار.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">class Bulkhead:
+    def __init__(self, limits: dict[str, int]) -> None:
+        self.limits = limits
+        self.in_use = {pool: 0 for pool in limits}
+
+    def try_acquire(self, pool: str) -> bool:
+        if self.in_use[pool] >= self.limits[pool]:
+            return False                  # reject now, do not wait
+        self.in_use[pool] += 1
+        return True
+
+    def release(self, pool: str) -> None:
+        self.in_use[pool] -= 1
+
+
+bh = Bulkhead({"reports": 2, "payments": 8})
+reports = [bh.try_acquire("reports") for _ in range(5)]   # stuck, never released
+payments = [bh.try_acquire("payments") for _ in range(3)]
+print("reports :", reports)
+print("payments:", payments)
+print("in use  :", bh.in_use)</code></pre>
+        <div class="output">reports : [True, True, False, False, False]
+payments: [True, True, True]
+in use  : {'reports': 2, 'payments': 3}</div>
+        <p>التقارير العالقة أخذت حصتها فقط (2)، والطلبات الإضافية رُفضت فورًا. الدفع لم يتأثر. في الإنتاج، كل مجموعة هي <code>asyncio.Semaphore</code> أو مجموعة خيوط منفصلة، مع <code>release</code> في <code>finally</code>.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): ميزانية إعادة المحاولات</h3>
+      <p>اكتب <code>RetryBudget</code> يسمح بإعادة المحاولة فقط إذا كانت المحاولات الإضافية أقل من 10% من الطلبات، مع حد أدنى 3 محاولات حتى تعمل في البداية. ثم حاكِ 100 طلب لخدمة معطلة تمامًا. كم محاولة إضافية سُمح بها؟ وكم كانت ستكون مع 3 محاولات لكل طلب؟</p>
+      <details><summary>💡 تلميح</summary><p>استخدم أرقامًا صحيحة: <code>requests * percent // 100</code>، حتى لا تظهر أخطاء الكسور العشرية.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">class RetryBudget:
+    def __init__(self, percent: int = 10, min_retries: int = 3) -> None:
+        self.percent = percent
+        self.min_retries = min_retries
+        self.requests = 0
+        self.retries = 0
+
+    def record_request(self) -> None:
+        self.requests += 1
+
+    def can_retry(self) -> bool:
+        allowed = max(self.min_retries, self.requests * self.percent // 100)
+        if self.retries &lt; allowed:
+            self.retries += 1
+            return True
+        return False
+
+
+budget = RetryBudget(percent=10, min_retries=3)
+granted = 0
+for _ in range(100):              # downstream is down: every request fails
+    budget.record_request()
+    if budget.can_retry():
+        granted += 1
+print("requests:", budget.requests, "| retries granted:", granted)
+print("without a budget (3 retries each):", 100 * 3)</code></pre>
+        <div class="output">requests: 100 | retries granted: 10
+without a budget (3 retries each): 300</div>
+        <p>عندما تكون الخدمة سليمة، الأخطاء نادرة، والميزانية تكفي لكل إعادة محاولة. وعندما تتعطل تمامًا، الحمل الإضافي لا يتجاوز 10%، بدلًا من 300%. هكذا تبقى إعادة المحاولة مفيدة بدون أن تقتل الخدمة.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): إخراج خدمة التحويلات من التطبيق الواحد</h3>
+      <p>بوابة الدفع ما زالت تطبيقًا واحدًا. فريق التحويلات يريد خدمة مستقلة. صمّم خطة الانتقال بدون توقف، وبدون "إعادة كتابة كاملة" تستغرق سنة.</p>
+      <details><summary>💡 تلميح</summary><p>ابحث عن نمط "التينة الخانقة" <span class="en">(Strangler Fig)</span>. وتذكّر نقل تاجر بين الأجزاء في الدرس 3.</p></details>
+      <details><summary>✅ الحل</summary>
+        <ol>
+          <li><strong>حدود داخلية أولًا:</strong> داخل التطبيق الواحد، اجمع كود التحويلات في وحدة واحدة. لا يستدعيها أحد إلا عبر واجهة واضحة. ولا يقرأ أحد جداولها مباشرة.</li>
+          <li><strong>البوابة أمام كل شيء:</strong> كل الطلبات تمر عبر البوابة، وكلها تذهب الآن إلى التطبيق الواحد.</li>
+          <li><strong>الخدمة الجديدة:</strong> ابنِ خدمة التحويلات بقاعدة بيانات خاصة. انسخ البيانات القديمة في الخلفية، ثم اكتب في المكانين أثناء الانتقال (الدرس 3).</li>
+          <li><strong>التحويل التدريجي:</strong> البوابة ترسل 1% من طلبات <code>/v1/payouts</code> إلى الخدمة الجديدة، ثم 10%، ثم 50%، ثم 100%. راقب الأخطاء و <code>p99</code> في كل مرحلة.</li>
+          <li><strong>المقارنة:</strong> في البداية، شغّل الطريقين معًا للقراءة وقارن النتائج <span class="en">(Shadow Traffic)</span> قبل أن تعتمد على الجديد.</li>
+          <li><strong>الأحداث بدل الاستدعاءات:</strong> التطبيق الواحد ينشر "تم الدفع" عبر صندوق الصادر (الدرس 4)، والخدمة الجديدة تحدّث الأرصدة منه.</li>
+          <li><strong>الحذف:</strong> بعد أسابيع مستقرة على 100%، احذف كود التحويلات من التطبيق الواحد.</li>
+        </ol>
+        <p>الفكرة: الخدمة الجديدة "تخنق" القديم تدريجيًا، مثل شجرة التين التي تنمو حول شجرة أخرى. كل خطوة صغيرة وقابلة للتراجع من البوابة في ثوانٍ.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>التطبيق الواحد ليس عيبًا. قسّم عندما تكبر الفرق وتحتاج نشرًا مستقلًا، أو توسعًا أو عزلًا مختلفًا.</li>
+        <li>ابدأ بتطبيق واحد منظم بحدود واضحة. تجنب التطبيق الواحد الموزّع: خدمات تتشارك قاعدة بيانات وتُنشر معًا.</li>
+        <li>كل خدمة تملك بياناتها. والخدمات الأخرى تسألها عبر الـ API أو تستمع لأحداثها.</li>
+        <li>API Gateway تجمع الأعمال المشتركة: التوجيه، والهوية، وتحديد المعدل، ومعرّف التتبع. ولا تضع فيها منطق العمل.</li>
+        <li>الخدمة البطيئة أخطر من المتوقفة، لأنها تحجز موارد من ينتظرها وتسبب انهيارًا متتاليًا.</li>
+        <li>كل استدعاء شبكة يحتاج مهلة. ومهلة كل طبقة أقل من مهلة الطبقة الأعلى.</li>
+        <li>قاطع الدائرة: مغلق، ثم مفتوح يرفض فورًا، ثم نصف مفتوح يجرّب طلبًا واحدًا.</li>
+        <li>إعادة المحاولة في كل طبقة تتضاعف: \(3^3 = 27\). أعد المحاولة في طبقة واحدة، مع ميزانية.</li>
+        <li>الحواجز تمنع خدمة واحدة من أكل كل العمّال. والبديل يُبقي النظام يعمل بشكل أقل، ويجب أن يقول الحقيقة.</li>
+        <li>السلسلة المتزامنة تُضرب توافريتها، والتوزيع الواسع يضخّم الذيل: \(1 - 0.99^n\).</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <p>خطة سلسلة تصميم الأنظمة:</p>
+      <ol>
+        <li>✅ أساسيات التوسع والمكونات الأساسية</li>
+        <li>✅ موازنة الأحمال والـ Caching بعمق</li>
+        <li>✅ قواعد البيانات: النسخ المتماثل والتقسيم</li>
+        <li>✅ طوابير الرسائل والأنظمة غير المتزامنة</li>
+        <li>✅ نظرية CAP ونماذج الاتساق ونمط Saga</li>
+        <li>✅ الخدمات المصغرة و API Gateway وقاطع الدائرة (هذا الدرس)</li>
+        <li>الموثوقية: تحديد المعدل <span class="en">(Rate Limiting)</span> بخوارزميات Token Bucket و Sliding Window، ومفاتيح منع التكرار <span class="en">(Idempotency Keys)</span> حتى لا يُخصم العميل مرتين أبدًا.</li>
+        <li>مقابلة تصميم كاملة: صمّم بوابة دفع من الصفر</li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀 — سلسلة تصميم الأنظمة، الدرس 6</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    new Chart(perf, {
+      type: "line",
+      data: {
+        labels: ["1", "5", "10", "20", "50", "100"],
+        datasets: [
+          { label: "نسبة الطلبات البطيئة (%)", data: [1, 4.9, 9.6, 18.2, 39.5, 63.4], borderColor: "#7c3aed", backgroundColor: "rgba(124,58,237,.15)", fill: true, tension: 0.3 }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { rtl: true },
+          tooltip: { rtl: true },
+          title: { display: true, text: "التوزيع الواسع: كل خدمة بطيئة في 1% فقط من الردود" }
+        },
+        scales: {
+          x: { title: { display: true, text: "عدد الخدمات المستدعاة بالتوازي" } },
+          y: { title: { display: true, text: "% من الطلبات" }, beginAtZero: true, max: 100 }
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

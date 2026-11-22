@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درس إضافي: المراقبة والرصد - المقاييس والسجلات والتتبع وأهداف الخدمة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #059669);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 760px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; align-items: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.db { border-color: var(--good); }
+  .box.warn { border-color: var(--warn); background: rgba(245,158,11,.15); }
+  .box.bad { border-color: var(--bad); color: var(--bad); background: rgba(239,68,68,.08); }
+  .arrow { font-size: 1.4rem; color: var(--muted); }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>المراقبة والرصد <span class="en">(Observability: Metrics, Logs, Traces &amp; SLOs)</span></h1>
+  <p>ستتعلم كيف تعرف أن النظام مريض قبل أن يتصل بك التاجر، وكيف تجد السبب في دقائق بدلًا من ساعات.</p>
+  <div class="badges">
+    <span class="badge">درس إضافي (9)</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 40 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في كل درس قلنا "راقب هذا": <code>p99</code> في الدرس 1، ونسبة الإصابة في الدرس 2، وتأخر النسخ في الدرس 3، وحجم DLQ في الدرس 4، ونسبة 429 في الدرس 7، ومجموع الدفتر في الدرس 8. اليوم نتعلم <strong>كيف</strong> نراقب فعلًا.</div>
+      <p>الساعة الثانية فجرًا. البنك المستحوِذ الثاني بدأ يرد ببطء. 18% من الدفعات التي تمر عبره تفشل بمهلة. كل الخوادم "خضراء": المعالج 30%، والذاكرة طبيعية، وقاعدة البيانات سليمة.</p>
+      <p>في الصباح، أول من يخبرك بالمشكلة هو تاجر غاضب على الهاتف: "خسرت مبيعات الليل كلها!". هذا يعني أن نظامك كان <strong>أعمى</strong> لست ساعات.</p>
+      <p>المراقبة <span class="en">(Monitoring)</span> تجيب عن أسئلة تعرفها مسبقًا: "هل المعالج فوق 80%؟". أما الرصد <span class="en">(Observability)</span> فيجيب عن أسئلة <strong>لم تتوقعها</strong>: "لماذا تفشل دفعات بنك واحد فقط، لتجار المطاعم فقط، منذ الساعة 2:14؟". النظام القابل للرصد يعطيك بيانات كافية لتسأل أي سؤال، بدون أن تنشر كودًا جديدًا.</p>
+      <p>في هذا الدرس ستتعلم:</p>
+      <ul>
+        <li>الأعمدة الثلاثة: المقاييس، والسجلات، والتتبع. ومتى تستخدم كل واحد.</li>
+        <li>أنواع المقاييس، ولماذا لا يمكن حساب متوسط <code>p99</code> من عدة خوادم.</li>
+        <li>طريقتا <span class="en">RED</span> و <span class="en">USE</span>، ومقاييس العمل التي تهم أكثر من كل شيء.</li>
+        <li>مؤشرات الخدمة وأهدافها <span class="en">(SLI / SLO / SLA)</span>، وميزانية الأخطاء.</li>
+        <li>التنبيه الذكي بمعدل الاستهلاك <span class="en">(Burn Rate)</span>، بدون أن توقظ أحدًا بلا سبب.</li>
+        <li>التتبع الموزّع، وأخذ العينات، وخطر كثرة القيم في التسميات <span class="en">(Cardinality)</span>.</li>
+      </ul>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">
+        ✈️ <strong>تخيّل طائرة في رحلة طويلة.</strong>
+        <p>أمام الطيار <strong>لوحة عدادات</strong>: السرعة، والارتفاع، والوقود. أرقام تتغير مع الوقت، يقرؤها في ثانية. هذه هي <strong>المقاييس</strong> <span class="en">(Metrics)</span>.</p>
+        <p>والطائرة فيها <strong>الصندوق الأسود</strong>. يسجّل كل حدث بالتفصيل: "الساعة 14:02:11، الطيار رفع العجلات". لا أحد يقرؤه كل يوم، لكن عند المشكلة هو أهم شيء. هذه هي <strong>السجلات</strong> <span class="en">(Logs)</span>.</p>
+        <p>وبرج المراقبة يرى <strong>مسار الرحلة</strong> كاملًا: أقلعت من القاهرة، وعبرت هذه النقطة، وانتظرت 20 دقيقة فوق المطار. هذا هو <strong>التتبع</strong> <span class="en">(Tracing)</span>: رحلة طلب واحد عبر كل الخدمات.</p>
+        <p>والطيار لا يراقب 300 عداد طوال الرحلة. توجد <strong>أضواء تحذير</strong> تضيء فقط عندما يوجد خطر حقيقي. لو أضاءت كل خمس دقائق بلا سبب، سيتجاهلها، ويومًا ما سيتجاهل التحذير الحقيقي. هذا هو <strong>التنبيه</strong> <span class="en">(Alerting)</span>، ومشكلة <strong>إرهاق التنبيهات</strong> <span class="en">(Alert Fatigue)</span>.</p>
+        <p>وشركة الطيران تعد المسافرين: "95% من رحلاتنا تصل في موعدها". هذا هو <strong>هدف الخدمة</strong> <span class="en">(SLO)</span>.</p>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>الرصد</td><td class="en">Observability</td><td>قدرتك على فهم ما يحدث داخل النظام من البيانات التي يخرجها.</td></tr>
+        <tr><td>المقياس</td><td class="en">Metric</td><td>رقم يتغير مع الوقت، مع تسميات. مثل: عدد الطلبات لكل مسار.</td></tr>
+        <tr><td>العدّاد</td><td class="en">Counter</td><td>رقم يزيد فقط. مثل: إجمالي الطلبات منذ التشغيل.</td></tr>
+        <tr><td>المؤشر اللحظي</td><td class="en">Gauge</td><td>رقم يزيد وينقص. مثل: عدد الرسائل في الطابور الآن.</td></tr>
+        <tr><td>المدرّج التكراري</td><td class="en">Histogram</td><td>عدد القيم في كل نطاق (دلو). نحسب منه المئين مثل p99.</td></tr>
+        <tr><td>التسمية</td><td class="en">Label / Tag</td><td>صفة تقسّم المقياس، مثل <code>bank="B"</code> أو <code>status="500"</code>.</td></tr>
+        <tr><td>كثرة القيم</td><td class="en">Cardinality</td><td>عدد التركيبات المختلفة للتسميات. كل تركيبة سلسلة زمنية منفصلة.</td></tr>
+        <tr><td>سجل منظم</td><td class="en">Structured Log</td><td>سجل بصيغة JSON بحقول واضحة، وليس نصًا حرًا.</td></tr>
+        <tr><td>الأثر</td><td class="en">Trace</td><td>رحلة طلب واحد كاملة عبر كل الخدمات.</td></tr>
+        <tr><td>المقطع</td><td class="en">Span</td><td>خطوة واحدة داخل الأثر، لها بداية ونهاية، مثل "استدعاء البنك".</td></tr>
+        <tr><td>نقل السياق</td><td class="en">Context Propagation</td><td>تمرير معرّف الأثر من خدمة لأخرى، عادة في Header اسمه <code>traceparent</code>.</td></tr>
+        <tr><td>أخذ العينات</td><td class="en">Sampling</td><td>حفظ جزء فقط من الآثار لتقليل التكلفة.</td></tr>
+        <tr><td>مؤشر مستوى الخدمة</td><td class="en">SLI</td><td>رقم يقيس تجربة المستخدم، مثل: نسبة الطلبات الناجحة.</td></tr>
+        <tr><td>هدف مستوى الخدمة</td><td class="en">SLO</td><td>الهدف الداخلي للمؤشر، مثل: 99.9% خلال 30 يومًا.</td></tr>
+        <tr><td>اتفاقية مستوى الخدمة</td><td class="en">SLA</td><td>وعد مكتوب للعميل مع عقوبة إذا خالفناه. أقل صرامة من الـ SLO.</td></tr>
+        <tr><td>ميزانية الأخطاء</td><td class="en">Error Budget</td><td>كمية الفشل المسموح بها: \(1 - \text{SLO}\).</td></tr>
+        <tr><td>معدل الاستهلاك</td><td class="en">Burn Rate</td><td>كم مرة أسرع من الطبيعي نستهلك ميزانية الأخطاء.</td></tr>
+        <tr><td>الاستدعاء العاجل</td><td class="en">Page</td><td>تنبيه يوقظ المهندس المناوب الآن.</td></tr>
+        <tr><td>دليل التشغيل</td><td class="en">Runbook</td><td>خطوات مكتوبة: ماذا تفعل عندما يضيء هذا التنبيه.</td></tr>
+        <tr><td>مراجعة ما بعد الحادث</td><td class="en">Postmortem</td><td>وثيقة بعد كل حادث: ماذا حدث، ولماذا، وكيف نمنعه. بدون لوم أشخاص.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>1. الأعمدة الثلاثة</h3>
+      <table>
+        <tr><th>العمود</th><th>يجيب عن</th><th>التكلفة</th><th>مثال</th></tr>
+        <tr><td>المقاييس</td><td>"هل هناك مشكلة؟ ومتى بدأت؟"</td><td>✅ رخيصة جدًا: أرقام مجمّعة</td><td><code>payments_total{bank="B", status="error"}</code></td></tr>
+        <tr><td>التتبع</td><td>"أين البطء في هذا الطلب؟"</td><td>⚠️ متوسطة: نأخذ عينات</td><td>البوابة 5ms ← الدفع 10ms ← البنك 2900ms</td></tr>
+        <tr><td>السجلات</td><td>"ماذا حدث بالضبط؟ وما رسالة الخطأ؟"</td><td>❌ الأغلى: كل حدث بالتفصيل</td><td><code>{"msg": "acquirer timeout", "code": 91}</code></td></tr>
+      </table>
+      <p>الترتيب الطبيعي عند الحادث: <strong>المقياس</strong> يخبرك أن هناك مشكلة، ثم <strong>الأثر</strong> يخبرك أين، ثم <strong>السجل</strong> يخبرك لماذا. والرابط بينها هو <strong>معرّف الأثر</strong> <span class="en">(trace_id)</span>: موجود في كل سجل، ويمكن ربطه بالمقياس عبر "عينة نموذجية" <span class="en">(Exemplar)</span>.</p>
+
+      <h3>2. أنواع المقاييس</h3>
+      <ul>
+        <li><strong>العدّاد:</strong> لا ننظر لقيمته نفسها، بل لمعدل تغيّره. "زاد 6000 في آخر دقيقة" = 100 طلب في الثانية.</li>
+        <li><strong>المؤشر اللحظي:</strong> القيمة الحالية. حجم الطابور، والاتصالات المفتوحة، وتأخر النسخ.</li>
+        <li><strong>المدرّج التكراري:</strong> الأهم للزمن. بدلًا من حفظ كل زمن، نعد الطلبات في كل دلو: "أقل من 50ms"، "أقل من 100ms"... وميزته الكبرى: <strong>يمكن جمعه</strong> من عدة خوادم. أما المئين الجاهز فلا يمكن. سترى السبب في المثال 2.</li>
+      </ul>
+
+      <h3>3. ماذا نقيس؟ RED و USE</h3>
+      <p><strong>RED</strong> للخدمات التي تستقبل طلبات. لكل خدمة، ثلاثة أرقام:</p>
+      <ul>
+        <li><strong>R</strong>ate: عدد الطلبات في الثانية.</li>
+        <li><strong>E</strong>rrors: نسبة الطلبات الفاشلة.</li>
+        <li><strong>D</strong>uration: توزيع الزمن (p50 و p99)، وليس المتوسط.</li>
+      </ul>
+      <p><strong>USE</strong> للموارد: المعالج، والقرص، ومجموعة الاتصالات، والطابور:</p>
+      <ul>
+        <li><strong>U</strong>tilization: نسبة الاستخدام.</li>
+        <li><strong>S</strong>aturation: العمل المنتظر. طابور ينمو يعني مشكلة حتى لو كان الاستخدام 70% فقط.</li>
+        <li><strong>E</strong>rrors: أخطاء المورد نفسه.</li>
+      </ul>
+
+      <h3>4. مقاييس العمل: الأهم على الإطلاق</h3>
+      <p>في قصة المقدمة، كل مقاييس RED و USE كانت طبيعية تقريبًا. لكن مقياسًا واحدًا كان سيكشف المشكلة فورًا: <strong>نسبة نجاح التفويض لكل بنك</strong> <span class="en">(Authorization Rate)</span>. كانت 92% كل ليلة، ونزلت فجأة إلى 74%.</p>
+      <p>مقاييس العمل لبوابة الدفع:</p>
+      <ul>
+        <li>نسبة نجاح التفويض، لكل بنك ولكل نوع بطاقة.</li>
+        <li>عدد الدفعات في الدقيقة، مقارنة بنفس الساعة في الأسبوع الماضي.</li>
+        <li>عدد الدفعات في حالة <code>unknown</code> (الدرس 8).</li>
+        <li>زمن وصول الإشعارات للتجار (الدرس 4).</li>
+        <li>كسور المطابقة اليومية، ومجموع الدفتر الذي يجب أن يكون صفرًا.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> انخفاض عدد الدفعات فجأة أخطر من ارتفاع الأخطاء. إذا كان زر "ادفع" مكسورًا في صفحة الدفع، فلن تصل طلبات أصلًا، ولن ترى أي خطأ! راقب "الطلبات أقل من المتوقع" كتنبيه مستقل.</div>
+
+      <h3>5. SLI و SLO و SLA</h3>
+      <p><strong>SLI</strong> هو المقياس من وجهة نظر المستخدم: "نسبة طلبات <code>POST /payments</code> التي لم ترجع 5xx". <strong>SLO</strong> هو الهدف: "99.95% خلال 30 يومًا". <strong>SLA</strong> هو الوعد التعاقدي: "99.9%، وإلا نعيد 10% من الرسوم".</p>
+      <p>الـ SLO دائمًا أشد من الـ SLA. هكذا تتنبه أنت قبل أن تخالف الوعد.</p>
+      <table>
+        <tr><th>الخدمة</th><th>المؤشر (SLI)</th><th>الهدف (SLO)</th></tr>
+        <tr><td>إنشاء الدفع</td><td>نسبة الطلبات بدون 5xx</td><td>99.95% خلال 30 يومًا</td></tr>
+        <tr><td>زمن الدفع</td><td>نسبة الطلبات التي ينتهي جزؤنا منها في أقل من 300ms</td><td>99%</td></tr>
+        <tr><td>الإشعارات</td><td>نسبة الإشعارات التي تصل في أقل من 60 ثانية</td><td>99%</td></tr>
+        <tr><td>التحويلات</td><td>نسبة التحويلات التي تصل في نفس يوم العمل</td><td>99.9%</td></tr>
+      </table>
+      <div class="callout warning">⚠️ <strong>تحذير:</strong> 100% ليس هدفًا. المستخدم لا يفرّق بين 99.99% و 100%، لأن شبكة جواله نفسها أقل موثوقية من ذلك. وهدف 100% يعني ألا تنشر أي تغيير أبدًا.</div>
+
+      <h3>6. ميزانية الأخطاء</h3>
+      <p>مع SLO بنسبة 99.9%، مسموح لك أن تفشل في 0.1% من الطلبات. هذه "ميزانيتك". وهي ليست شيئًا سيئًا: يمكنك "إنفاقها" على النشر السريع والتجارب.</p>
+      <ul>
+        <li><strong>الميزانية متبقية:</strong> انشر بسرعة، وجرّب الميزات الجديدة.</li>
+        <li><strong>الميزانية انتهت:</strong> أوقف الميزات الجديدة، وركّز على الموثوقية حتى تتجدد.</li>
+      </ul>
+      <p>هكذا تنتهي الحرب الأبدية بين فريق المنتج ("انشر الآن!") وفريق التشغيل ("لا تلمس شيئًا!"). الرقم يقرر، وليس الرأي.</p>
+
+      <h3>7. التنبيه: الأعراض وليس الأسباب</h3>
+      <p>❌ "المعالج فوق 80%": ربما لا يتأثر أي مستخدم. هذا <strong>سبب</strong> محتمل. وستستيقظ بلا فائدة.</p>
+      <p>✅ "نستهلك ميزانية الأخطاء أسرع 14 مرة من الطبيعي": المستخدمون يتأثرون الآن. هذا <strong>عَرَض</strong>.</p>
+      <p>القاعدة: <strong>الاستدعاء العاجل</strong> فقط عندما يتأثر المستخدمون ويحتاج الأمر إنسانًا الآن. والباقي <strong>تذكرة</strong> <span class="en">(Ticket)</span> تُعالج في ساعات العمل. وكل تنبيه عاجل له دليل تشغيل.</p>
+
+      <h3>8. معدل الاستهلاك والنافذتان</h3>
+      <p>معدل الاستهلاك 1 يعني أن الميزانية ستنتهي بالضبط في نهاية الشهر. والمعدل 14.4 لمدة ساعة واحدة يستهلك 2% من ميزانية الشهر كله. هذا يستحق إيقاظ أحد.</p>
+      <p>لكن نافذة الساعة بطيئة: بعد أن تُصلح المشكلة، يبقى التنبيه مضاءً حتى تخرج الدقائق السيئة من الساعة. لذلك نشترط <strong>نافذتين</strong>: طويلة (ساعة) تؤكد أن المشكلة حقيقية، وقصيرة (5 دقائق) تؤكد أنها <strong>ما زالت مستمرة</strong>. ستبنيها في المثال 3.</p>
+
+      <h3>9. السجلات المنظمة</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ نص حر</h4>
+<pre><code class="language-text">ERROR payment failed for merchant m1 card 4111111111111111 after 2900ms</code></pre>
+          <p>صعب البحث فيه، ورقم البطاقة كاملًا مكشوف.</p>
+        </div>
+        <div class="good">
+          <h4>✅ JSON منظم</h4>
+<pre><code class="language-json">{"level": "error", "trace_id": "t3",
+ "span": "bank.authorize", "merchant": "m1",
+ "card": "411111******1111",
+ "duration_ms": 2900, "msg": "bank timeout"}</code></pre>
+          <p>تبحث بـ <code>merchant="m1" AND level="error"</code>، وتربطه بالأثر.</p>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لأنظمة الدفع:</strong> لا تكتب رقم البطاقة الكامل ولا رمز الأمان <span class="en">(CVV)</span> في أي سجل أبدًا. هذا مخالفة مباشرة لـ <span class="en">PCI DSS</span>، والسجلات تُنسخ إلى أماكن كثيرة. أخفِ الأرقام في مكتبة السجلات نفسها، وليس في كل سطر كود.</div>
+
+      <h3>10. التتبع الموزّع وأخذ العينات</h3>
+      <p>كل خدمة تنشئ مقطعًا <span class="en">(Span)</span> لعملها، وتمرر معرّف الأثر للخدمة التالية في Header معياري اسمه <code>traceparent</code>. وإذا مر الطلب عبر طابور (الدرس 4)، يوضع المعرّف في Headers الرسالة.</p>
+      <p>حفظ كل الآثار مكلف. فنأخذ عينات:</p>
+      <ul>
+        <li><strong>عند البداية</strong> <span class="en">(Head Sampling)</span>: نقرر عند أول خدمة: "احفظ 1%". بسيط، لكنه يرمي 99% من الأخطاء أيضًا!</li>
+        <li><strong>عند النهاية</strong> <span class="en">(Tail Sampling)</span>: ننتظر حتى ينتهي الأثر، ثم نقرر: احفظ كل الأخطاء، وكل البطيء، و 1% من الباقي. أذكى، لكنه يحتاج جامعًا مركزيًا يحفظ الآثار مؤقتًا. ستبنيه في التمرين 2.</li>
+      </ul>
+
+      <h3>11. كثرة القيم في التسميات</h3>
+      <p>كل تركيبة مختلفة من التسميات هي <strong>سلسلة زمنية</strong> منفصلة يحفظها نظام المقاييس. التسميات ذات القيم القليلة ممتازة: <code>bank</code> (5 قيم)، و <code>status</code> (4 قيم). أما <code>payment_id</code> أو <code>user_id</code> فتنشئ ملايين السلاسل، فيسقط نظام المقاييس نفسه. القيم الفريدة مكانها <strong>السجلات والآثار</strong>، وليس المقاييس.</p>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>مسار بيانات الرصد</h3>
+      <div class="diagram mermaid">
+flowchart LR
+  S1["Gateway"] --> OT["OpenTelemetry Collector"]
+  S2["Payments"] --> OT
+  S3["Bank Connector"] --> OT
+  OT -- "metrics" --> M[("Prometheus")]
+  OT -- "logs" --> L[("Loki / Elasticsearch")]
+  OT -- "traces" --> T[("Tempo / Jaeger")]
+  M --> GR["Grafana dashboards"]
+  L --> GR
+  T --> GR
+  M --> AM["Alertmanager"]
+  AM --> ON["On-call engineer"]
+      </div>
+      <p>الخدمات لا ترسل البيانات مباشرة إلى كل نظام. ترسلها إلى <strong>جامع</strong> <span class="en">(Collector)</span> واحد بمعيار <span class="en">OpenTelemetry</span>. الجامع يخفي البيانات الحساسة، ويأخذ العينات، ويوزّع كل نوع على مخزنه. وإذا غيّرت المخزن غدًا، لا تلمس كود الخدمات.</p>
+
+      <h3>نقل السياق عبر الخدمات والطابور</h3>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant G as Gateway
+  participant P as Payments
+  participant Q as Queue
+  participant W as Webhook Worker
+  G->>G: new trace 4bf9, span a1
+  G->>P: traceparent: 00-4bf9-a1-01
+  P->>P: span payments.create (parent a1)
+  P->>Q: message headers carry traceparent
+  Q->>W: deliver message
+  W->>W: span webhook.send (same trace 4bf9)
+      </div>
+      <p>بفضل هذا، ترى في أداة التتبع رحلة واحدة: من طلب التاجر، حتى وصول الإشعار إلى خادمه بعد ثوانٍ، رغم أن الطابور كان في المنتصف.</p>
+
+      <h3>التحقيق في حادث خطوة بخطوة</h3>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: التنبيه (02:14)</h4>
+          <div class="mem"><div class="box bad">PAGE: payments burn rate 20× (1h) and 30× (5m)</div></div>
+          <p>التنبيه لم يقل "المعالج مرتفع". قال: "المستخدمون يتأثرون، والميزانية تُستهلك أسرع 20 مرة". ومعه رابط لدليل التشغيل وللوحة الخدمة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: لوحة RED</h4>
+          <div class="mem"><div class="box">Rate: 300/s ✓</div><div class="box bad">Errors: 2.0%</div><div class="box warn">p99: 3.1s</div></div>
+          <p>الطلبات طبيعية، لكن الأخطاء و p99 ارتفعا معًا في الساعة 02:12. المقاييس أخبرتنا <strong>متى</strong> و<strong>كم</strong>، لكن ليس <strong>أين</strong>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: التقسيم بالتسميات</h4>
+          <div class="mem"><div class="box db">bank=A: 0.1%</div><div class="box bad">bank=B: 18%</div><div class="box db">bank=C: 0.1%</div></div>
+          <p>نقسّم مقياس الأخطاء حسب <code>bank</code>. المشكلة في بنك واحد فقط. لهذا تختار التسميات بعناية: <code>bank</code> بخمس قيم كشف المشكلة في ثوانٍ.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: أثر نموذجي</h4>
+          <div class="mem"><div class="box">gateway 2933ms</div><span class="arrow">→</span><div class="box">risk 18ms</div><span class="arrow">→</span><div class="box hl">bank.authorize 2900ms</div></div>
+          <p>نضغط على نقطة في الرسم، فيفتح أثر حقيقي من تلك اللحظة. 99% من الوقت داخل استدعاء البنك. خدماتنا بريئة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: السجلات والإجراء</h4>
+          <div class="mem"><div class="box warn">trace_id=t3: "acquirer timeout, code 91"</div><span class="arrow">→</span><div class="box db">route bank B → bank A</div></div>
+          <p>نبحث في السجلات بمعرّف الأثر: البنك يرد بكود 91 "النظام غير متاح". الإجراء من دليل التشغيل: نحوّل الدفعات من البنك B إلى البنك A، ونحدّث صفحة الحالة للتجار، ونتصل بالبنك. الوقت الكلي: 9 دقائق، بدلًا من 6 ساعات.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> بعد الحادث، نكتب مراجعة ما بعد الحادث بدون لوم: "لماذا لم يكتشفه تنبيه نسبة التفويض لكل بنك قبل 02:14؟". وغالبًا تنتهي بتنبيه جديد، أو بتحويل تلقائي بين البنوك بقاطع دائرة (الدرس 6).</div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: كم تساوي ميزانية الأخطاء؟</h3>
+<pre><code class="language-python">def error_budget(slo: float, days: int,
+                 requests_per_day: int) -> tuple[float, float]:
+    allowed = 1 - slo
+    minutes = allowed * days * 24 * 60
+    requests = allowed * days * requests_per_day
+    return minutes, requests
+
+
+for slo in (0.999, 0.9995, 0.9999):
+    minutes, requests = error_budget(slo, days=30, requests_per_day=6_000_000)
+    print(f"SLO {slo:.2%}: {minutes:5.1f} min/month | "
+          f"{requests:>9,.0f} failed requests")</code></pre>
+      <div class="output">SLO 99.90%:  43.2 min/month |   180,000 failed requests
+SLO 99.95%:  21.6 min/month |    90,000 failed requests
+SLO 99.99%:   4.3 min/month |    18,000 failed requests</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>allowed = 1 - slo</code>: نسبة الفشل المسموحة. مع 99.9%: 0.001.</li>
+        <li><code>minutes</code>: الميزانية كوقت توقف كامل. 43 دقيقة في الشهر مع 99.9%.</li>
+        <li><code>requests</code>: الميزانية كطلبات فاشلة. مع 6 ملايين دفعة يوميًا (الدرس 1): 180,000 طلب في الشهر.</li>
+        <li><strong>لاحظ:</strong> الميزانية بالطلبات أدق من الدقائق. توقف كامل لـ 10 دقائق ليلًا وتوقف 10 دقائق في الذروة يستهلكان نفس الدقائق، لكن الثاني يفشل فيه طلبات أكثر بكثير.</li>
+        <li><strong>99.99%</strong> تعني 4 دقائق فقط في الشهر. نشر واحد سيئ يستهلكها كلها. هل تحتاجها فعلًا؟ هذا سؤال عمل.</li>
+      </ol>
+
+      <h3>مثال 2: لماذا لا تحسب متوسط p99؟</h3>
+      <p>خادمان. الأول يخدم 1000 طلب، والثاني 100 فقط لكن نصفها بطيء. لوحة التحكم تعرض "متوسط p99 للخادمين". هل هذا صحيح؟</p>
+<pre><code class="language-python">import bisect
+
+BUCKETS = [50, 100, 250, 500, 1000, 2500]   # upper bounds in ms
+
+
+def percentile(values: list[int], p: int) -> int:
+    ordered = sorted(values)
+    rank = (p * len(ordered) + 99) // 100   # ceil, integer math only
+    return ordered[rank - 1]
+
+
+def to_histogram(values: list[int]) -> list[int]:
+    counts = [0] * len(BUCKETS)
+    for v in values:
+        counts[bisect.bisect_left(BUCKETS, v)] += 1
+    return counts
+
+
+def merge(*hists: list[int]) -> list[int]:
+    return [sum(column) for column in zip(*hists)]
+
+
+def hist_percentile(counts: list[int], p: int) -> int:
+    rank = (p * sum(counts) + 99) // 100
+    running = 0
+    for bound, c in zip(BUCKETS, counts):
+        running += c
+        if running >= rank:
+            return bound
+    raise ValueError("empty histogram")
+
+
+server_a = [20] * 990 + [1000] * 10
+server_b = [20] * 50 + [2000] * 50
+
+p_a, p_b = percentile(server_a, 99), percentile(server_b, 99)
+print(f"p99 A = {p_a} ms | p99 B = {p_b} ms")
+print(f"average of p99s = {(p_a + p_b) / 2:.0f} ms   (wrong)")
+print(f"true p99 of all = {percentile(server_a + server_b, 99)} ms")
+merged = merge(to_histogram(server_a), to_histogram(server_b))
+print("merged buckets  =", merged)
+print(f"p99 from buckets &lt;= {hist_percentile(merged, 99)} ms")</code></pre>
+      <div class="output">p99 A = 20 ms | p99 B = 2000 ms
+average of p99s = 1010 ms   (wrong)
+true p99 of all = 2000 ms
+merged buckets  = [1040, 0, 0, 0, 10, 50]
+p99 from buckets &lt;= 2500 ms</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>(p * len(ordered) + 99) // 100</code>: تقريب للأعلى بأرقام صحيحة فقط، حتى لا تخدعنا الكسور العشرية (الدرس 8).</li>
+        <li><code>bisect_left(BUCKETS, v)</code>: نجد أول دلو حده الأعلى أكبر من القيمة أو يساويها. 20ms في دلو "≤50"، و 2000ms في دلو "≤2500".</li>
+        <li><code>merge</code>: نجمع الدلاء عمودًا بعمود. هذا ما يفعله Prometheus عندما تجمع مدرّجات 50 خادمًا.</li>
+        <li><strong>متوسط المئين 1010ms:</strong> رقم لا معنى له. لا يوجد أي طلب قريب من 1010ms.</li>
+        <li><strong>المئين الحقيقي 2000ms:</strong> نحسبه من كل الطلبات معًا.</li>
+        <li><strong>من الدلاء المدمجة:</strong> "p99 ≤ 2500ms". ليس دقيقًا تمامًا، لأن الدقة بحجم الدلو. لكنه <strong>صحيح</strong>، ويُحسب من أرقام صغيرة يمكن جمعها من أي عدد من الخوادم.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> اختر حدود الدلاء حول الأرقام التي تهمك. إذا كان الـ SLO "أقل من 300ms"، فضع دلوًا عند 300 بالضبط. وإلا لا تستطيع أن تعرف بدقة كم طلبًا حقق الهدف.</div>
+
+      <h3>مثال 3: تنبيه معدل الاستهلاك بنافذتين</h3>
+      <p>الـ SLO هو 99.9%. لكل سيناريو، نعرف نسبة الأخطاء في أربع نوافذ زمنية. القاعدة السريعة: استدعاء عاجل إذا تجاوز الاستهلاك 14.4 في الساعة <strong>و</strong> في آخر 5 دقائق. والبطيئة: تذكرة إذا تجاوز 6 في 6 ساعات <strong>و</strong> في آخر 30 دقيقة.</p>
+<pre><code class="language-python">BUDGET_PCT = 0.1            # SLO 99.9% -> 0.1% of requests may fail
+FAST, SLOW = 14.4, 6
+
+
+def burn(error_pct: float) -> float:
+    return error_pct / BUDGET_PCT
+
+
+def decide(b: dict[str, float]) -> str:
+    if b["1h"] >= FAST and b["5m"] >= FAST:
+        return "page"
+    if b["6h"] >= SLOW and b["30m"] >= SLOW:
+        return "ticket"
+    return "ok"
+
+
+scenarios = {                                   # error % per window
+    "blip": {"5m": 5.0, "30m": 0.9, "1h": 0.5, "6h": 0.1},
+    "bank outage": {"5m": 3.0, "30m": 2.5, "1h": 2.0, "6h": 0.4},
+    "slow leak": {"5m": 0.8, "30m": 0.8, "1h": 0.7, "6h": 0.7},
+    "recovered": {"5m": 0.04, "30m": 0.3, "1h": 1.6, "6h": 0.5},
+}
+
+print(f"1h at burn {FAST} uses {FAST * 1 / (30 * 24):.0%} of a 30-day budget")
+for name, errors in scenarios.items():
+    b = {window: burn(pct) for window, pct in errors.items()}
+    print(f"{name:&lt;12} fast(1h/5m)={b['1h']:.0f}/{b['5m']:.0f} "
+          f"slow(6h/30m)={b['6h']:.0f}/{b['30m']:.0f} -> {decide(b)}")</code></pre>
+      <div class="output">1h at burn 14.4 uses 2% of a 30-day budget
+blip         fast(1h/5m)=5/50 slow(6h/30m)=1/9 -> ok
+bank outage  fast(1h/5m)=20/30 slow(6h/30m)=4/25 -> page
+slow leak    fast(1h/5m)=7/8 slow(6h/30m)=7/8 -> ticket
+recovered    fast(1h/5m)=16/0 slow(6h/30m)=5/3 -> ok</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>burn</code>: نسبة الأخطاء ÷ النسبة المسموحة. 2% أخطاء مع ميزانية 0.1% = استهلاك أسرع 20 مرة.</li>
+        <li><code>FAST * 1 / (30 * 24)</code>: ساعة واحدة باستهلاك 14.4 = 2% من ميزانية الشهر. هذا سبب اختيار الرقم 14.4.</li>
+        <li><strong>blip:</strong> إعادة تشغيل أثناء النشر. 5 دقائق سيئة جدًا، لكن الساعة كلها جيدة. لا أحد يستيقظ.</li>
+        <li><strong>bank outage:</strong> سيئ في الساعة وما زال سيئًا الآن. استدعاء عاجل.</li>
+        <li><strong>slow leak:</strong> استهلاك 7 أضعاف لساعات. لا يستحق إيقاظ أحد الآن، لكن بهذا المعدل تنتهي الميزانية خلال 4 أيام. تذكرة.</li>
+        <li><strong>recovered:</strong> الساعة ما زالت سيئة (16)، لكن آخر 5 دقائق نظيفة. المشكلة انتهت، والنافذة القصيرة أطفأت التنبيه.</li>
+      </ol>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>1. معرّفات فريدة كتسميات للمقاييس</h3>
+      <p>مهندس أراد أن يعرف زمن كل دفعة، فأضاف <code>payment_id</code> كتسمية لمقياس الزمن. كم سلسلة زمنية سيحفظ نظام المقاييس في يوم واحد؟</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">from math import prod
+
+labels = {"endpoint": 10, "status": 4,
+          "payment_id": 6_000_000}
+print(f"time series: {prod(labels.values()):,}")</code></pre>
+          <div class="output">time series: 240,000,000</div>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">from math import prod
+
+labels = {"endpoint": 10, "status": 4,
+          "bank": 5}
+print(f"time series: {prod(labels.values()):,}")</code></pre>
+          <div class="output">time series: 200</div>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الطريقة الأولى خاطئة؟</strong> نظام المقاييس يحفظ كل تركيبة تسميات كسلسلة منفصلة في الذاكرة. 240 مليون سلسلة تُسقط Prometheus خلال ساعات، فتفقد كل المقاييس في نفس الوقت، بما فيها المقاييس التي تحتاجها لتعرف أن هناك مشكلة. زمن دفعة محددة مكانه <strong>الأثر والسجل</strong>. والمقياس يحمل فقط تسميات قيمها قليلة ومحدودة.</div>
+
+      <h3>2. أخطاء أخرى شائعة</h3>
+      <ul>
+        <li><strong>❌ التنبيه على الأسباب:</strong> "المعالج 85%" يوقظك 10 مرات في الشهر بلا أثر على أحد. <strong>✅</strong> نبّه على الأعراض: معدل استهلاك الميزانية.</li>
+        <li><strong>❌ إرهاق التنبيهات:</strong> 50 تنبيهًا في الأسبوع، و 48 منها بلا إجراء. المهندس يتجاهلها كلها. <strong>✅</strong> كل تنبيه عاجل يحتاج إجراءً بشريًا الآن، وإلا احذفه أو حوّله إلى تذكرة.</li>
+        <li><strong>❌ لوحات البنية التحتية فقط:</strong> المعالج والذاكرة خضراء، ونسبة التفويض انهارت. <strong>✅</strong> مقاييس العمل في أعلى كل لوحة.</li>
+        <li><strong>❌ المتوسط بدل المئين:</strong> الدرس 1 مرة أخرى. وأيضًا لا تحسب متوسط المئين من عدة خوادم (المثال 2).</li>
+        <li><strong>❌ كشف البيانات الحساسة:</strong> رقم البطاقة أو كلمة المرور أو التوكن في السجلات. <strong>✅</strong> إخفاء تلقائي في مكتبة السجلات وفي الجامع.</li>
+        <li><strong>❌ معرّف الأثر لا يعبر الطابور:</strong> الأثر ينقطع عند Kafka، فلا تعرف أي دفعة سببت إشعارًا فاشلًا. <strong>✅</strong> <code>traceparent</code> في Headers كل رسالة.</li>
+        <li><strong>❌ تنبيه بلا دليل تشغيل:</strong> المهندس المناوب يستيقظ ولا يعرف ماذا يفعل. <strong>✅</strong> كل تنبيه فيه رابط: ماذا يعني، وكيف تتحقق، وما الإجراء الأول.</li>
+        <li><strong>❌ لا تنبيه على الصمت:</strong> الخدمة توقفت عن إرسال المقاييس، فلا توجد أخطاء! <strong>✅</strong> نبّه عندما تختفي البيانات، أو عندما تنزل الطلبات تحت المتوقع.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>كل خدمة لها لوحة RED موحدة</strong> بنفس الشكل. أي مهندس يفهم لوحة أي خدمة في ثوانٍ.</li>
+        <li><strong>SLO لكل رحلة مستخدم مهمة</strong>، وليس لكل خدمة داخلية. العميل يهتم بـ "الدفع نجح"، وليس بزمن خدمة التجار.</li>
+        <li><strong>سياسة مكتوبة لميزانية الأخطاء</strong>: ماذا يحدث عندما تنتهي؟ يوافق عليها فريق المنتج مسبقًا.</li>
+        <li><strong>مدرّجات تكرارية للزمن</strong>، مع دلاء حول أرقام الـ SLO.</li>
+        <li><strong>معرّف الأثر في كل سجل</strong>، وفي كل رد خطأ للتاجر. عندما يتصل التاجر بالدعم، يعطيك المعرّف وتجد كل شيء.</li>
+        <li><strong>أخذ العينات عند النهاية</strong>: احفظ كل الأخطاء وكل البطيء.</li>
+        <li><strong>المراقبة الاصطناعية</strong> <span class="en">(Synthetic Monitoring)</span>: دفعة اختبار حقيقية كل دقيقة، من خارج نظامك، على كل بنك. تكتشف المشكلة حتى عندما لا يوجد عملاء، مثل الساعة 3 فجرًا.</li>
+        <li><strong>علّم النشرات على الرسوم البيانية.</strong> نصف الحوادث تبدأ بعد نشر. خط عمودي "نشر v2.41 في 14:03" يوفر عليك ساعة تحقيق.</li>
+        <li><strong>مراجعة ما بعد الحادث بدون لوم</strong>، مع إجراءات محددة لها مالك وموعد.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة لأنظمة الدفع:</strong> صفحة حالة عامة للتجار <span class="en">(Status Page)</span>، تتحدث من نفس مقاييس الـ SLO. عندما يتعطل بنك، التاجر يرى "البنك B: تأخير، نحوّل الدفعات تلقائيًا" قبل أن يتصل بالدعم. هذا يقلل الاتصالات وقت الحادث بشكل كبير.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+
+      <h3>معادلات ميزانية الأخطاء</h3>
+      <p>الميزانية خلال فترة \(T\):</p>
+      <div dir="ltr">$$B = (1 - \text{SLO}) \times T$$</div>
+      <p>معدل الاستهلاك، حيث \(e\) نسبة الأخطاء الحالية:</p>
+      <div dir="ltr">$$b = \frac{e}{1 - \text{SLO}}$$</div>
+      <p>الجزء المستهلك من الميزانية خلال نافذة \(w\)، والوقت حتى نفادها:</p>
+      <div dir="ltr">$$\text{used} = \frac{b \times w}{T} \qquad T_{\text{exhaust}} = \frac{T}{b}$$</div>
+      <p>مثال: \(b = 14.4\) لمدة ساعة من 720 ساعة = 2%. ومع \(b = 2\) تنتهي الميزانية في 15 يومًا بدلًا من 30.</p>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>تكلفة المقاييس</h3>
+      <p>عدد السلاسل الزمنية هو حاصل ضرب عدد قيم كل تسمية:</p>
+      <div dir="ltr">$$N_{\text{series}} = \prod_{i} |\text{values}(label_i)|$$</div>
+      <p>إضافة تسمية واحدة فيها 50 قيمة تضاعف التكلفة 50 مرة. لذلك كل تسمية جديدة قرار، وليست مجانية.</p>
+
+      <h3>مقارنة الأعمدة الثلاثة</h3>
+      <table>
+        <tr><th>المعيار</th><th>المقاييس</th><th>السجلات</th><th>الآثار</th></tr>
+        <tr><td>التكلفة لكل طلب</td><td>✅ شبه صفر (عدّاد)</td><td>❌ عالية (نص كامل)</td><td>⚠️ متوسطة، مع العينات</td></tr>
+        <tr><td>القيم الفريدة</td><td>❌ ممنوعة</td><td>✅ مسموحة</td><td>✅ مسموحة</td></tr>
+        <tr><td>مدة الحفظ</td><td>✅ أشهر أو سنوات</td><td>⚠️ أيام أو أسابيع</td><td>⚠️ أيام</td></tr>
+        <tr><td>التنبيه</td><td>✅ الأساس</td><td>⚠️ ممكن لكنه مكلف</td><td>❌ غير مناسب</td></tr>
+        <tr><td>أفضل سؤال</td><td>هل؟ متى؟ كم؟</td><td>ماذا حدث بالضبط؟</td><td>أين البطء أو الخطأ؟</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: لوحة RED ومحلل آثار</h2>
+      <p>ستحاكي خمس دفعات تمر عبر البوابة وخدمة الدفع وخدمة المخاطر والبنك. كل خدمة تنشئ مقطعًا. ثم تحسب مقاييس RED ومؤشر الزمن، وتجد سبب البطء في الآثار البطيئة، وتكتب سجلًا منظمًا برقم بطاقة مخفي.</p>
+<pre><code class="language-python">import json
+from dataclasses import dataclass
+
+
+@dataclass
+class Span:
+    trace_id: str
+    name: str
+    start: int        # ms
+    end: int
+
+    @property
+    def ms(self) -> int:
+        return self.end - self.start
+
+
+def mask(card: str) -> str:
+    return card[:6] + "*" * (len(card) - 10) + card[-4:]
+
+
+def simulate(trace_id: str, risk_ms: int, bank_ms: int) -> list[Span]:
+    risk = Span(trace_id, "risk.score", 5, 5 + risk_ms)
+    bank = Span(trace_id, "bank.authorize", risk.end + 3,
+                risk.end + 3 + bank_ms)
+    payments = Span(trace_id, "payments.create", 2, bank.end + 5)
+    gateway = Span(trace_id, "gateway", 0, payments.end + 2)
+    return [gateway, payments, risk, bank]
+
+
+def pct(values: list[int], p: int) -> int:
+    return values[(p * len(values) + 99) // 100 - 1]
+
+
+requests = [("t1", 20, 150, 201), ("t2", 25, 140, 201),
+            ("t3", 18, 2900, 504), ("t4", 22, 160, 201),
+            ("t5", 450, 130, 201)]
+
+traces: dict[str, list[Span]] = {}
+status: dict[str, int] = {}
+for tid, risk_ms, bank_ms, code in requests:
+    traces[tid] = simulate(tid, risk_ms, bank_ms)
+    status[tid] = code
+
+durations = sorted(spans[0].ms for spans in traces.values())
+n = len(durations)
+errors = sum(1 for c in status.values() if c >= 500)
+good = sum(1 for d in durations if d &lt;= 300)
+
+print(f"RED  requests={n} errors={errors} ({errors / n:.0%}) "
+      f"p50={pct(durations, 50)}ms p99={pct(durations, 99)}ms")
+print(f"latency SLI (&lt;=300ms): {good}/{n} = {good / n:.0%}")
+
+for tid, spans in traces.items():
+    total = spans[0].ms
+    if total &lt; 500:
+        continue
+    worst = max(spans[2:], key=lambda s: s.ms)
+    print(f"{tid} {total}ms status={status[tid]} -> slowest: "
+          f"{worst.name} {worst.ms}ms ({worst.ms / total:.0%})")
+
+bank_span = traces["t3"][3]
+log = {"level": "error", "trace_id": "t3", "span": bank_span.name,
+       "merchant": "m1", "card": mask("4111111111111111"),
+       "duration_ms": bank_span.ms, "msg": "bank timeout"}
+print(json.dumps(log))</code></pre>
+      <div class="output">RED  requests=5 errors=1 (20%) p50=197ms p99=2933ms
+latency SLI (&lt;=300ms): 3/5 = 60%
+t3 2933ms status=504 -> slowest: bank.authorize 2900ms (99%)
+t5 595ms status=201 -> slowest: risk.score 450ms (76%)
+{"level": "error", "trace_id": "t3", "span": "bank.authorize", "merchant": "m1", "card": "411111******1111", "duration_ms": 2900, "msg": "bank timeout"}</div>
+      <h4>تتبّع النتائج</h4>
+      <ol>
+        <li><strong>المقاطع:</strong> زمن البوابة = المخاطر + البنك + 15ms من عملنا نحن. مثلًا <code>t1</code>: 20 + 150 + 15 = 185ms.</li>
+        <li><strong>RED:</strong> خمسة طلبات، وخطأ واحد (504 من البنك). الأزمنة مرتبة: 180، 185، 197، 595، 2933. الوسيط 197ms. ومع 5 طلبات فقط، p99 هو أبطأ طلب.</li>
+        <li><strong>مؤشر الزمن:</strong> 3 من 5 تحت 300ms. لاحظ أن <code>t5</code> نجحت (201) لكنها <strong>بطيئة</strong>. مؤشر النجاح وحده لا يكشفها.</li>
+        <li><strong>t3:</strong> 99% من الوقت في البنك. المشكلة خارج خدماتنا.</li>
+        <li><strong>t5:</strong> 76% في خدمة المخاطر. هذه مشكلتنا، ويجب أن يعرفها فريق المخاطر. ربما حان وقت مهلة أقصر وقاطع دائرة (الدرس 6).</li>
+        <li><strong>السجل:</strong> JSON منظم، فيه معرّف الأثر للربط، ورقم البطاقة مخفي: أول 6 أرقام وآخر 4، وهو المسموح غالبًا في PCI.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> في الإنتاج لا تبني هذا بنفسك. مكتبة <span class="en">OpenTelemetry</span> لـ Python تنشئ المقاطع تلقائيًا لطلبات HTTP واستعلامات قاعدة البيانات، وتنقل <code>traceparent</code> بدون أي كود منك تقريبًا. لكن الآن تعرف ماذا تفعل خلف الستار.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+
+      <div class="quiz" data-explain="0.001 × 30 × 24 × 60 = 43.2 دقيقة في الشهر.">
+        <div class="q">1. SLO بنسبة 99.9% خلال 30 يومًا. كم دقيقة توقف كامل تسمح بها الميزانية؟</div>
+        <button class="option">4.3 دقيقة</button>
+        <button class="option" data-correct="true">43.2 دقيقة</button>
+        <button class="option">8.7 ساعة</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="المدرّجات يمكن جمعها دلوًا بدلو من أي عدد من الخوادم، ثم نحسب المئين من المجموع. المئين الجاهز لا يمكن جمعه.">
+        <div class="q">2. تريد p99 لخدمة تعمل على 50 خادمًا. أي نوع مقياس تستخدم؟</div>
+        <button class="option">Gauge فيه p99 لكل خادم، ثم المتوسط</button>
+        <button class="option" data-correct="true">Histogram لكل خادم، ثم جمع الدلاء</button>
+        <button class="option">Counter لعدد الطلبات</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="التنبيه العاجل يكون على الأعراض التي تؤثر على المستخدم الآن، مثل معدل استهلاك ميزانية الأخطاء.">
+        <div class="q">3. أي هذه يستحق استدعاءً عاجلًا في الساعة 3 فجرًا؟</div>
+        <button class="option">المعالج وصل إلى 85%</button>
+        <button class="option" data-correct="true">ميزانية الأخطاء تُستهلك أسرع 20 مرة في الساعة وفي آخر 5 دقائق</button>
+        <button class="option">القرص وصل إلى 60%</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="payment_id له ملايين القيم، فينشئ ملايين السلاسل الزمنية. مكانه السجلات والآثار.">
+        <div class="q">4. أي تسمية لا يجب إضافتها لمقياس؟</div>
+        <button class="option">bank</button>
+        <button class="option">status</button>
+        <button class="option" data-correct="true">payment_id</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الميزانية تنتهي بعد T ÷ b = 30 ÷ 2 = 15 يومًا.">
+        <div class="q">5. معدل الاستهلاك ثابت عند 2 منذ بداية الشهر. متى تنتهي ميزانية الـ 30 يومًا؟</div>
+        <button class="option">بعد 60 يومًا</button>
+        <button class="option" data-correct="true">بعد 15 يومًا</button>
+        <button class="option">بعد يومين</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="العينات عند البداية تقرر قبل أن تعرف النتيجة، فترمي 99% من الأخطاء. العينات عند النهاية تحفظ كل الأخطاء.">
+        <div class="q">6. ما مشكلة حفظ 1% من الآثار عشوائيًا عند أول خدمة؟</div>
+        <button class="option">مكلف جدًا</button>
+        <button class="option" data-correct="true">يرمي 99% من آثار الأخطاء، وهي أهم ما نحتاجه</button>
+        <button class="option">يكسر نقل السياق بين الخدمات</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): كم بقي من الميزانية؟</h3>
+      <p>SLO بنسبة 99.9% خلال 30 يومًا، و 6 ملايين دفعة يوميًا. في اليوم العاشر، فشلت 120,000 دفعة. كم نسبة الميزانية المستهلكة؟ وما معدل الاستهلاك؟ وفي أي يوم تنتهي إذا استمر نفس المعدل؟</p>
+      <details><summary>💡 تلميح</summary><p>معدل الاستهلاك = الجزء المستهلك ÷ الجزء الذي مر من الفترة.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">slo = 0.999
+total_requests = 6_000_000 * 30
+budget = round((1 - slo) * total_requests)
+failed, day = 120_000, 10
+
+used = failed / budget
+burn = used / (day / 30)
+print("budget:", f"{budget:,}", "failed requests")
+print(f"used: {used:.0%} after {day} days")
+print(f"burn rate: {burn:.1f}")
+print(f"budget runs out on day {30 / burn:.0f}")</code></pre>
+        <div class="output">budget: 180,000 failed requests
+used: 67% after 10 days
+burn rate: 2.0
+budget runs out on day 15</div>
+        <p>مر ثلث الشهر واستُهلك ثلثا الميزانية. حسب السياسة: أوقف الميزات الخطرة الآن، وركّز على السبب، قبل أن تصل إلى اليوم 15.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): أخذ العينات عند النهاية</h3>
+      <p>اكتب دالة <code>keep(trace)</code> تحفظ: كل أثر فيه خطأ، وكل أثر أبطأ من ثانية، و 1% من الباقي بشكل ثابت حسب رقم الأثر (حتى تكون النتيجة قابلة للتكرار). جرّبها على 10,000 أثر.</p>
+      <details><summary>💡 تلميح</summary><p>الثبات: <code>trace["id"] % 100 == 0</code> بدلًا من <code>random</code>. في الإنتاج نستخدم تجزئة معرّف الأثر، حتى تتخذ كل الخدمات نفس القرار.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def keep(trace: dict) -> bool:
+    if trace["error"] or trace["ms"] > 1000:
+        return True
+    return trace["id"] % 100 == 0
+
+
+traces = [{"id": i, "error": i % 250 == 7,
+           "ms": 2500 if i % 500 == 3 else 120} for i in range(10_000)]
+kept = [t for t in traces if keep(t)]
+errors = sum(t["error"] for t in traces)
+kept_errors = sum(t["error"] for t in kept)
+
+print(f"kept {len(kept)} of {len(traces)} ({len(kept) / len(traces):.1%})")
+print(f"errors kept: {kept_errors}/{errors}")
+print(f"slow kept  : {sum(t['ms'] > 1000 for t in kept)}")</code></pre>
+        <div class="output">kept 160 of 10000 (1.6%)
+errors kept: 40/40
+slow kept  : 20</div>
+        <p>حفظنا 1.6% فقط من الآثار، لكن <strong>100% من الأخطاء والبطيء</strong>. مع العينات عند البداية بنسبة 1%، كنا سنحتفظ بأقل من نصف أثر خطأ في المتوسط، أي غالبًا لا شيء.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): صمّم SLIs لبوابة الدفع</h3>
+      <p>لكل رحلة، اكتب مؤشرًا (SLI) يقيس تجربة المستخدم فعلًا، وهدفًا (SLO) مناسبًا: (1) العميل يدفع، (2) التاجر يستلم الإشعار، (3) التاجر يستلم أمواله، (4) التاجر يفتح لوحة التحكم.</p>
+      <details><summary>💡 تلميح</summary><p>اسأل: ماذا يلاحظ المستخدم إذا ساء الأمر؟ وقِسه من أقرب نقطة للمستخدم، مثل البوابة وليس الخدمة الداخلية.</p></details>
+      <details><summary>✅ الحل</summary>
+        <table>
+          <tr><th>الرحلة</th><th>المؤشر (SLI)</th><th>الهدف (SLO)</th><th>ملاحظة</th></tr>
+          <tr><td>الدفع</td><td>نسبة <code>POST /payments</code> بدون 5xx، مقاسة في البوابة</td><td>99.95%</td><td>رفض البنك للبطاقة ليس فشلًا لنا. لا تحسبه خطأ.</td></tr>
+          <tr><td>الإشعار</td><td>نسبة الأحداث التي وصلت لخادم التاجر بنجاح خلال 60 ثانية</td><td>99%</td><td>استبعد التجار الذين خوادمهم معطلة، وإلا تعاقب نفسك على أخطائهم.</td></tr>
+          <tr><td>التحويلات</td><td>نسبة التحويلات التي وصلت البنك قبل موعد القطع اليومي</td><td>99.9%</td><td>يُقاس يوميًا، وليس بالثانية.</td></tr>
+          <tr><td>لوحة التحكم</td><td>نسبة تحميل الصفحة في أقل من ثانيتين</td><td>95%</td><td>أقل صرامة: تأخير اللوحة لا يضيّع مالًا.</td></tr>
+        </table>
+        <p>لاحظ تدرج الأهداف: كلما اقتربت من المال، صار الهدف أشد. نفس منطق CAP في الدرس 5.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): الحادث الصامت</h3>
+      <p>الساعة 9 مساءً. نشر جديد لصفحة الدفع الجاهزة كسر زر "ادفع" على متصفح Safari فقط. لا توجد أي أخطاء 5xx، لأن الطلبات لا تصل أصلًا. المقاييس كلها خضراء. كيف تكتشف هذا خلال دقائق؟ وكيف تمنعه مستقبلًا؟</p>
+      <details><summary>💡 تلميح</summary><p>فكّر في "ما لم يحدث": طلبات أقل من المتوقع. وفي قياس تجربة المتصفح نفسه، وليس الخادم فقط.</p></details>
+      <details><summary>✅ الحل</summary>
+        <ul>
+          <li><strong>تنبيه على الانخفاض:</strong> عدد الدفعات في الدقيقة مقارنة بنفس الساعة واليوم في الأسبوع الماضي. انخفاض أكثر من 30% لمدة 10 دقائق = استدعاء عاجل.</li>
+          <li><strong>تقسيم حسب المتصفح:</strong> نسبة التحويل <span class="en">(Conversion)</span>: من فتح صفحة الدفع إلى دفع ناجح، مع تسمية <code>browser</code> (قيم قليلة). نسبة Safari ستنهار وحدها.</li>
+          <li><strong>رصد المتصفح</strong> <span class="en">(Real User Monitoring)</span>: الصفحة ترسل أخطاء JavaScript إلى نظام الرصد. ستظهر آلاف الأخطاء من Safari فورًا.</li>
+          <li><strong>مراقبة اصطناعية:</strong> متصفح آلي يفتح صفحة الدفع ويدفع ببطاقة اختبار كل 5 دقائق، على Chrome و Safari والجوال.</li>
+          <li><strong>المنع:</strong> النشر التدريجي (الدرس 6): 5% من الزوار أولًا، مع مقارنة نسبة التحويل بين النسخة الجديدة والقديمة، وتراجع تلقائي إذا انخفضت.</li>
+          <li><strong>علامة النشر</strong> على الرسوم: الانخفاض بدأ في 21:02، والنشر كان في 21:01. السبب واضح في ثانية.</li>
+        </ul>
+        <p>الدرس: <strong>أخطر الحوادث هي التي لا تُنتج أخطاء.</strong> راقب ما يجب أن يحدث، وليس فقط ما يفشل.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>المراقبة تجيب عن أسئلة تعرفها، والرصد يسمح لك بسؤال أي سؤال جديد بدون نشر كود.</li>
+        <li>المقاييس تخبرك متى وكم، والآثار أين، والسجلات لماذا. ومعرّف الأثر يربطها كلها.</li>
+        <li>العدّاد للمعدلات، والمؤشر اللحظي للحالة، والمدرّج التكراري للزمن. ولا تحسب متوسط المئين أبدًا.</li>
+        <li>RED لكل خدمة، و USE لكل مورد. ومقاييس العمل، مثل نسبة التفويض لكل بنك، فوق كل شيء.</li>
+        <li>SLI يقيس تجربة المستخدم، و SLO هدفك الداخلي، و SLA وعدك التعاقدي الأقل صرامة.</li>
+        <li>ميزانية الأخطاء = \(1 - \text{SLO}\). عندما تنتهي، تتوقف الميزات وتبدأ الموثوقية.</li>
+        <li>نبّه على الأعراض بمعدل الاستهلاك ونافذتين: طويلة تؤكد، وقصيرة تثبت أن المشكلة مستمرة.</li>
+        <li>سجلات JSON منظمة، مع معرّف الأثر، وبدون أي بيانات بطاقات كاملة.</li>
+        <li>انقل <code>traceparent</code> عبر الخدمات والطوابير. وخذ العينات عند النهاية لتحفظ كل الأخطاء.</li>
+        <li>لا قيم فريدة في تسميات المقاييس. وراقب الصمت: الطلبات التي لم تصل.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <ol>
+        <li>✅ أساسيات التوسع والمكونات الأساسية</li>
+        <li>✅ موازنة الأحمال والـ Caching بعمق</li>
+        <li>✅ قواعد البيانات: النسخ المتماثل والتقسيم</li>
+        <li>✅ طوابير الرسائل والأنظمة غير المتزامنة</li>
+        <li>✅ نظرية CAP ونماذج الاتساق ونمط Saga</li>
+        <li>✅ الخدمات المصغرة و API Gateway وقاطع الدائرة</li>
+        <li>✅ الموثوقية: تحديد المعدل ومنع التكرار وإعادة المحاولة</li>
+        <li>✅ مقابلة تصميم كاملة: بوابة دفع من الصفر</li>
+        <li>✅ درس إضافي: المراقبة والرصد (هذا الدرس)</li>
+        <li>درس إضافي مقترح: التوزيع الجغرافي على عدة مناطق <span class="en">(Multi-Region)</span>: نشط-احتياطي أم نشط-نشط؟ وكيف تنقل المرور بين المناطق عند الكارثة، وأين يعيش دفتر الحسابات؟</li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀 — سلسلة تصميم الأنظمة، درس إضافي</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    new Chart(perf, {
+      type: "line",
+      data: {
+        labels: ["0", "5", "10", "15", "20", "25", "30"],
+        datasets: [
+          { label: "الاستهلاك المثالي (معدل 1)", data: [100, 83, 67, 50, 33, 17, 0], borderColor: "#94a3b8", borderDash: [6, 6], fill: false, tension: 0 },
+          { label: "الميزانية المتبقية فعلًا", data: [100, 92, 88, 45, 40, 33, 27], borderColor: "#059669", backgroundColor: "rgba(5,150,105,.15)", fill: true, tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { rtl: true },
+          tooltip: { rtl: true },
+          title: { display: true, text: "ميزانية الأخطاء خلال الشهر: حادث البنك في اليوم 12 (أرقام توضيحية)" }
+        },
+        scales: {
+          x: { title: { display: true, text: "اليوم" } },
+          y: { title: { display: true, text: "% متبقٍ من الميزانية" }, beginAtZero: true, max: 100 }
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

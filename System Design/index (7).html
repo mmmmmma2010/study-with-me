@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درس 8: مقابلة تصميم كاملة - صمّم بوابة دفع من الصفر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #ca8a04);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 520px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; align-items: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.db { border-color: var(--good); }
+  .box.warn { border-color: var(--warn); background: rgba(245,158,11,.15); }
+  .box.bad { border-color: var(--bad); color: var(--bad); background: rgba(239,68,68,.08); }
+  .arrow { font-size: 1.4rem; color: var(--muted); }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>مقابلة تصميم كاملة: صمّم بوابة دفع من الصفر <span class="en">(Design a Payment Gateway)</span></h1>
+  <p>ستتعلم كيف تدير مقابلة تصميم في 45 دقيقة، وكيف تبني نظامًا لا يضيع فيه قرش واحد، مستخدمًا كل ما تعلمته في السلسلة.</p>
+  <div class="badges">
+    <span class="badge">الدرس 8 من 8</span>
+    <span class="badge">المستوى: متوسط إلى متقدم</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 50 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المقابلة خطوة بخطوة</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">ماذا بعد؟</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>هذا الدرس مختلف:</strong> لن نتعلم أداة جديدة واحدة. سنجمع أدوات الدروس السبعة في تصميم واحد، بنفس الترتيب الذي تسير عليه مقابلة حقيقية.</div>
+      <p>المحاور يقول لك: <strong>"صمّم بوابة دفع إلكتروني مثل التي تستخدمها المتاجر لقبول البطاقات والمحافظ."</strong> عندك 45 دقيقة، وسبورة بيضاء.</p>
+      <p>أكبر خطأ هنا أن تبدأ برسم المربعات فورًا. المحاور لا يبحث عن "التصميم الصحيح"، لأنه لا يوجد تصميم واحد صحيح. هو يبحث عن <strong>طريقة تفكيرك</strong>: هل تسأل الأسئلة الصحيحة؟ هل تحسب قبل أن تقرر؟ هل تعرف الموازنات؟ هل تتعمق في الأجزاء الصعبة فعلًا؟</p>
+      <p>وفي أنظمة الدفع بالذات، الجزء الصعب ليس السرعة. 350 عملية في الثانية رقم متواضع. الجزء الصعب هو <strong>الدقة</strong>: لا خصم مرتين، ولا مال يختفي، ولا تاجر يأخذ أكثر من حقه. ولهذا سيكون نجم هذا الدرس هو <strong>دفتر الحسابات ثنائي القيد</strong> <span class="en">(Double-Entry Ledger)</span>.</p>
+      <p>في هذا الدرس ستتعلم:</p>
+      <ul>
+        <li>إطار من 6 خطوات لأي مقابلة تصميم، مع توزيع الوقت.</li>
+        <li>كيف يتحرك المال فعلًا: التفويض، والتحصيل، والتسوية <span class="en">(Authorize, Capture, Settle)</span>.</li>
+        <li>تصميم الـ API ونموذج البيانات.</li>
+        <li>لماذا يُحفظ المال كأرقام صحيحة، وليس كسور عشرية.</li>
+        <li>آلة حالات الدفع، والدفتر ثنائي القيد، والمطابقة مع البنك.</li>
+        <li>كيف تختم المقابلة: نقاط الضعف، والمراقبة، والتطوير المستقبلي.</li>
+      </ul>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">
+        🏗️ <strong>تخيّل مهندسًا معماريًا يزور عميلًا.</strong>
+        <p>المهندس الجيد لا يبدأ بالرسم. يسأل أولًا: كم شخصًا سيعيش هنا؟ ما الميزانية؟ هل تحتاجون مصعدًا؟ ما الذي لا يمكن التنازل عنه؟ ثم يحسب المساحات. ثم يرسم مخططًا عامًا. ثم يتعمق في الأجزاء الحرجة: الأساسات والكهرباء. هذا بالضبط ترتيب مقابلة التصميم.</p>
+        <p>📒 <strong>وتخيّل محاسبًا قديمًا يكتب في دفتر بعمودين.</strong></p>
+        <p>كل جنيه يتحرك يُكتب <strong>مرتين</strong>: مرة في الحساب الذي خرج منه، ومرة في الحساب الذي دخل إليه. "الصندوق أخذ 100 من العميل" و"التاجر يستحق 97.5" و"العمولة 2.5". المجموع دائمًا صفر.</p>
+        <p>إذا جمع المحاسب الدفتر كله ولم يجد صفرًا، فهو يعرف فورًا أن هناك خطأ، حتى قبل أن يعرف أين. المال لا يظهر من العدم، ولا يختفي إلى العدم. هذا هو <strong>القيد المزدوج</strong>، وعمره أكثر من 500 سنة.</p>
+        <p>وفي آخر كل شهر يقارن المحاسب دفتره بكشف حساب البنك، سطرًا بسطر. هذه هي <strong>المطابقة</strong> <span class="en">(Reconciliation)</span>.</p>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>مزوّد خدمة الدفع</td><td class="en">PSP (Payment Service Provider)</td><td>نحن: نربط التجار بالبنوك وشبكات البطاقات.</td></tr>
+        <tr><td>البنك المُصدِر</td><td class="en">Issuer</td><td>بنك العميل الذي أصدر البطاقة. هو من يوافق أو يرفض.</td></tr>
+        <tr><td>البنك المستحوِذ</td><td class="en">Acquirer</td><td>البنك الذي يستلم المال نيابة عن التجار.</td></tr>
+        <tr><td>شبكة البطاقات</td><td class="en">Card Network</td><td>مثل Visa و Mastercard. توصل الطلب بين البنكين.</td></tr>
+        <tr><td>التفويض</td><td class="en">Authorization</td><td>حجز المبلغ على بطاقة العميل. المال لم يتحرك بعد.</td></tr>
+        <tr><td>التحصيل</td><td class="en">Capture</td><td>تأكيد أخذ المبلغ المحجوز.</td></tr>
+        <tr><td>الإلغاء قبل التحصيل</td><td class="en">Void</td><td>فك الحجز بدون أن يتحرك أي مال.</td></tr>
+        <tr><td>التسوية</td><td class="en">Settlement</td><td>المال يصل فعلًا إلى حسابنا، غالبًا بعد يوم أو أكثر (T+1).</td></tr>
+        <tr><td>الاسترداد</td><td class="en">Refund</td><td>إرجاع مبلغ محصّل للعميل، كاملًا أو جزئيًا.</td></tr>
+        <tr><td>الاعتراض</td><td class="en">Chargeback / Dispute</td><td>العميل يعترض عند بنكه، فيُسحب المال من التاجر.</td></tr>
+        <tr><td>التحويل للتاجر</td><td class="en">Payout</td><td>إرسال مستحقات التاجر إلى حسابه البنكي.</td></tr>
+        <tr><td>التحقق ثلاثي الأبعاد</td><td class="en">3-D Secure</td><td>خطوة تحقق إضافية، مثل رمز يصل إلى جوال العميل.</td></tr>
+        <tr><td>الترميز</td><td class="en">Tokenization</td><td>استبدال رقم البطاقة برمز لا قيمة له خارج نظامنا.</td></tr>
+        <tr><td>الدفتر ثنائي القيد</td><td class="en">Double-Entry Ledger</td><td>كل حركة مال تُسجل في حسابين أو أكثر، والمجموع صفر.</td></tr>
+        <tr><td>القيد</td><td class="en">Journal Entry</td><td>حركة واحدة متوازنة، فيها سطران أو أكثر.</td></tr>
+        <tr><td>مدين / دائن</td><td class="en">Debit / Credit</td><td>طرفا القيد. هنا: المدين موجب، والدائن سالب.</td></tr>
+        <tr><td>الوحدة الصغرى</td><td class="en">Minor Units</td><td>أصغر وحدة للعملة: القرش. 100.00 جنيه = 10000 قرش.</td></tr>
+        <tr><td>المطابقة</td><td class="en">Reconciliation</td><td>مقارنة سجلاتنا بسجلات البنك لكشف أي اختلاف.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المقابلة خطوة بخطوة</h2>
+
+      <h3>إطار المقابلة وتوزيع الوقت</h3>
+      <table>
+        <tr><th>الخطوة</th><th>الوقت</th><th>الهدف</th></tr>
+        <tr><td>1. المتطلبات</td><td>5 دقائق</td><td>اتفق مع المحاور على ماذا تبني، وما خارج النطاق.</td></tr>
+        <tr><td>2. الحسابات السريعة</td><td>5 دقائق</td><td>أرقام تقود القرارات: الطلبات، والتخزين، وحجم المال.</td></tr>
+        <tr><td>3. الـ API ونموذج البيانات</td><td>5 دقائق</td><td>العقد مع التجار والجداول الأساسية.</td></tr>
+        <tr><td>4. التصميم العام</td><td>10 دقائق</td><td>المكونات وتدفق الطلب من البداية للنهاية.</td></tr>
+        <tr><td>5. التعمق</td><td>15 دقيقة</td><td>2–3 أجزاء صعبة بتفصيل حقيقي.</td></tr>
+        <tr><td>6. الختام</td><td>5 دقائق</td><td>نقاط الضعف، والمراقبة، وماذا تفعل لو كان عندك وقت أكثر.</td></tr>
+      </table>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>الخطوة 1: المتطلبات</h3>
+      <p>اسأل قبل أن تفترض. هذه أسئلة جيدة، مع إجابات محاور نموذجية:</p>
+      <ul>
+        <li><strong>من العملاء؟</strong> تجار يتكاملون عبر API، ومتاجر صغيرة تستخدم صفحة دفع جاهزة.</li>
+        <li><strong>ما طرق الدفع؟</strong> البطاقات والمحافظ الإلكترونية. سنركز على البطاقات.</li>
+        <li><strong>هل نحن البنك؟</strong> لا. نحن PSP نتصل بالبنوك المستحوِذة.</li>
+        <li><strong>كم عملية؟</strong> 6 ملايين يوميًا، والذروة 5 أضعاف المتوسط.</li>
+        <li><strong>عملة واحدة؟</strong> نعم، الجنيه المصري. العملات المتعددة خارج النطاق.</li>
+      </ul>
+      <table>
+        <tr><th>متطلبات وظيفية</th><th>متطلبات غير وظيفية</th></tr>
+        <tr><td>
+          <ul>
+            <li>إنشاء دفع، وتفويض، وتحصيل، وإلغاء، واسترداد.</li>
+            <li>صفحة دفع جاهزة للتجار.</li>
+            <li>إشعارات للتاجر بكل تغيير في الحالة.</li>
+            <li>تحويل مستحقات التاجر يوميًا.</li>
+            <li>لوحة تحكم وتقارير للتاجر.</li>
+          </ul>
+        </td><td>
+          <ul>
+            <li><strong>الدقة أولًا:</strong> لا خصم مزدوج، ولا مال ضائع.</li>
+            <li>توافرية 99.99% لـ API الدفع.</li>
+            <li>زمننا نحن أقل من 200ms في p99، بدون زمن البنك.</li>
+            <li>كل حركة مال قابلة للتدقيق للأبد.</li>
+            <li>الالتزام بمعيار <span class="en">PCI DSS</span>.</li>
+          </ul>
+        </td></tr>
+      </table>
+      <p><strong>خارج النطاق</strong> (قله بصوت عالٍ): نماذج كشف الاحتيال بالتفصيل، والعملات المتعددة، وبناء شبكة بطاقات.</p>
+      <div class="callout tip">💡 <strong>نصيحة للمقابلة:</strong> اكتب المتطلبات على جانب السبورة واتركها هناك. في الختام، ارجع إليها وقل: "هذا الجزء من التصميم يحقق هذا المتطلب". المحاورون يحبون ذلك جدًا.</div>
+
+      <h3>الخطوة 2: الحسابات السريعة</h3>
+      <p>نفس أرقام الدرس 1: حوالي 69 عملية في الثانية في المتوسط، و 347 في الذروة. سنحسبها بالكود في المثال 1، مع رقم جديد مهم: <strong>حجم المال</strong>. مع متوسط 350 جنيهًا للعملية، يمر <strong>2.1 مليار جنيه يوميًا</strong>. خطأ بنسبة 0.01% فقط يعني 210,000 جنيه كل يوم.</p>
+      <div class="callout note">📝 <strong>الاستنتاج الذي يجب أن تقوله:</strong> "347 عملية في الثانية حمل متوسط. قاعدة بيانات رئيسية واحدة قوية مع نسخ تكفي في البداية، ولا نحتاج التقسيم من اليوم الأول. التحدي الحقيقي هو الدقة، وسأقضي وقت التعمق عليها."</div>
+
+      <h3>الخطوة 3: الـ API ونموذج البيانات</h3>
+<pre><code class="language-http">POST /v1/payments                 Idempotency-Key required
+     {"amount": 10000, "currency": "EGP", "capture": true,
+      "payment_token": "tok_9f2a", "reference": "order-1001"}
+POST /v1/payments/{id}/capture    Idempotency-Key required
+POST /v1/payments/{id}/void       Idempotency-Key required
+POST /v1/payments/{id}/refunds    Idempotency-Key required
+     {"amount": 5000}
+GET  /v1/payments/{id}
+
+Webhook -> merchant: payment.captured, payment.failed, refund.succeeded</code></pre>
+      <p>لاحظ ثلاثة قرارات: المبلغ <strong>رقم صحيح بالقروش</strong>. وكل <code>POST</code> يحرّك المال يحتاج <strong>مفتاح منع تكرار</strong> (الدرس 7). والتاجر يرسل <strong>رمز البطاقة</strong>، وليس رقمها أبدًا.</p>
+      <table>
+        <tr><th>الجدول</th><th>أهم الأعمدة</th><th>ملاحظة</th></tr>
+        <tr><td><code>payments</code></td><td>id، merchant_id، amount، refunded، state، bank_ref</td><td>مقسّم لاحقًا حسب <code>merchant_id</code> (الدرس 3).</td></tr>
+        <tr><td><code>idempotency_keys</code></td><td>(merchant_id، key)، request_hash، status، response</td><td>قيد فريد على المفتاح المركّب.</td></tr>
+        <tr><td><code>ledger_entries</code></td><td>id، type، payment_id، created_at</td><td>إضافة فقط، لا تعديل ولا حذف.</td></tr>
+        <tr><td><code>ledger_lines</code></td><td>entry_id، account، amount</td><td>مجموع أسطر كل قيد = صفر.</td></tr>
+        <tr><td><code>outbox</code></td><td>event_id، payload، published</td><td>الإشعارات والأحداث (الدرس 4).</td></tr>
+        <tr><td><code>payouts</code></td><td>id، merchant_id، amount، state</td><td>Saga مع البنك (الدرس 5).</td></tr>
+      </table>
+
+      <h3>الخطوة 4: التصميم العام</h3>
+      <p>ارسم المكونات، ثم امشِ بطلب دفع واحد عبرها. المخطط الكامل في القسم التالي. المكونات الأساسية:</p>
+      <ul>
+        <li><strong>صفحة الدفع والحقول المستضافة</strong> <span class="en">(Hosted Fields)</span>: العميل يكتب رقم البطاقة في حقل يأتي من خوادمنا، فلا يمر الرقم أبدًا على خادم التاجر.</li>
+        <li><strong>خزنة البطاقات</strong> <span class="en">(Vault)</span>: خدمة صغيرة معزولة، هي الوحيدة التي ترى أرقام البطاقات. ترجع رمزًا. هذا يجعل نطاق PCI خدمة واحدة (الدرس 6).</li>
+        <li><strong>البوابة</strong>: الهوية وتحديد المعدل ومعرّف التتبع (الدرسان 6 و 7).</li>
+        <li><strong>خدمة الدفع</strong>: آلة الحالات، ومفاتيح منع التكرار، والتنسيق.</li>
+        <li><strong>خدمة المخاطر</strong>: خلف قاطع دائرة مع بديل (الدرس 6).</li>
+        <li><strong>موصّل البنوك</strong> <span class="en">(Bank Connector)</span>: يترجم طلباتنا لصيغة كل بنك، ويحترم حد كل بنك بدلو مسرّب (الدرس 7).</li>
+        <li><strong>الدفتر</strong>: مصدر الحقيقة لكل حركة مال.</li>
+        <li><strong>صندوق الصادر والطابور</strong>: الإشعارات والتقارير والتحليلات (الدرس 4).</li>
+        <li><strong>المطابقة والتحويلات</strong>: مهام يومية تقارن بملفات البنوك وترسل مستحقات التجار.</li>
+      </ul>
+
+      <h3>الخطوة 5: التعمق</h3>
+      <p>اختر 2–3 أجزاء. في بوابة الدفع، أفضل اختيار: <strong>(أ)</strong> آلة الحالات والتعامل مع مهلة البنك، <strong>(ب)</strong> الدفتر ثنائي القيد، <strong>(ج)</strong> المطابقة. وإذا بقي وقت: <strong>(د)</strong> التوسع ونقاط الضغط.</p>
+
+      <h4>(أ) آلة الحالات ومهلة البنك</h4>
+      <p>كل دفعة لها حالة واحدة، والانتقالات المسموحة محددة. الكود يرفض أي انتقال آخر، مثل "مسترد ← محصّل". وفي قاعدة البيانات، الانتقال يكون شرطيًا وذريًا:</p>
+<pre><code class="language-sql">UPDATE payments SET state = 'captured'
+WHERE id = 'pay_1' AND state = 'authorized';
+-- 0 rows updated = someone else moved it first</code></pre>
+      <p>والحالة الأهم في المقابلة: <strong>البنك لم يرد</strong>. هنا لا نكتب <code>failed</code>! نكتب <code>unknown</code>، ثم نسأل البنك عن الحالة بنفس المفتاح (الدرسان 5 و 7). ونخبر التاجر بصدق: "الدفع قيد التأكيد".</p>
+
+      <h4>(ب) الدفتر ثنائي القيد</h4>
+      <p>الطريقة الساذجة: عمود <code>balance</code> في جدول التاجر، نزيده وننقصه. المشكلة: إذا كان الرقم خاطئًا، لا تعرف <strong>لماذا</strong>، ولا <strong>متى</strong> صار خاطئًا.</p>
+      <p>الدفتر ثنائي القيد يحفظ <strong>كل حركة</strong> كقيد متوازن. والرصيد ليس رقمًا محفوظًا، بل <strong>مجموع</strong> أسطر الحساب. عند تحصيل 100 جنيه بعمولة 2.5%:</p>
+      <table>
+        <tr><th>الحساب</th><th>المبلغ (قرش)</th><th>المعنى</th></tr>
+        <tr><td><code>bank_clearing</code></td><td class="en">+10,000</td><td>البنك المستحوِذ مدين لنا بـ 100 جنيه.</td></tr>
+        <tr><td><code>merchant:m1</code></td><td class="en">−9,750</td><td>نحن مدينون للتاجر بـ 97.50.</td></tr>
+        <tr><td><code>fee_revenue</code></td><td class="en">−250</td><td>عمولتنا: 2.50.</td></tr>
+        <tr><td><strong>المجموع</strong></td><td class="en"><strong>0</strong></td><td>القيد متوازن.</td></tr>
+      </table>
+      <p>ثلاث قواعد لا تُكسر:</p>
+      <ul>
+        <li><strong>كل قيد مجموعه صفر.</strong> القيد غير المتوازن يُرفض قبل أن يُكتب.</li>
+        <li><strong>إضافة فقط.</strong> لا <code>UPDATE</code> ولا <code>DELETE</code> أبدًا. الخطأ يُصحح بقيد عكسي جديد (الدرس 5).</li>
+        <li><strong>القيد يُكتب في نفس المعاملة مع تغيير الحالة.</strong> لا توجد دفعة "محصّلة" بدون قيد، ولا قيد بدون دفعة.</li>
+      </ul>
+
+      <h4>(ج) المطابقة</h4>
+      <p>كل يوم يرسل البنك المستحوِذ <strong>ملف تسوية</strong> فيه كل عملية دفعها لنا. نقارنه بسجلاتنا. أي اختلاف يسمى <strong>كسرًا</strong> <span class="en">(Break)</span>، وله أربعة أنواع:</p>
+      <ul>
+        <li><strong>متطابق:</strong> موجود عندنا وعند البنك بنفس المبلغ.</li>
+        <li><strong>اختلاف المبلغ:</strong> رسوم لم نتوقعها، أو خطأ في التقريب.</li>
+        <li><strong>ناقص عند البنك:</strong> غالبًا تأخر توقيت، وسيظهر غدًا. إذا لم يظهر بعد أيام، فهناك مشكلة حقيقية.</li>
+        <li><strong>غير معروف لدينا:</strong> الأخطر! البنك حصّل مالًا لا نعرفه. غالبًا مهلة سجلناها <code>unknown</code> ونجحت فعلًا.</li>
+      </ul>
+      <p>المطابقة هي شبكة الأمان الأخيرة. كل الأدوات السابقة تقلل الأخطاء، والمطابقة <strong>تكشف</strong> ما تبقى منها.</p>
+
+      <h4>(د) التوسع ونقاط الضغط</h4>
+      <p>الحمل العام متواضع، لكن توجد نقطة ضغط مخفية: حساب <code>fee_revenue</code> يستقبل سطرًا مع <strong>كل</strong> دفعة. إذا حفظنا له عمود رصيد نحدّثه، فكل الـ 347 عملية في الثانية تتنافس على قفل صف واحد. هذا <strong>حساب ساخن</strong> <span class="en">(Hot Account)</span>.</p>
+      <p>الحلول: لا تحفظ رصيدًا قابلًا للتعديل، بل أضف الأسطر فقط واحسب الأرصدة دوريًا. أو قسّم الحساب إلى حسابات فرعية <code>fee_revenue#0</code> إلى <code>#15</code>، نفس فكرة اللاحقة في الدرس 3. والتاجر الضخم نفسه قد يكون حسابًا ساخنًا، ويُعالج بنفس الطريقة.</p>
+
+      <h3>الخطوة 6: الختام</h3>
+      <ul>
+        <li><strong>نقاط الضعف:</strong> موصّل البنك (حد البنك)، والحسابات الساخنة، والمفاتيح العالقة في <code>in_progress</code>.</li>
+        <li><strong>المراقبة:</strong> نسبة نجاح التفويض لكل بنك (أهم مقياس عمل)، و <code>p99</code>، وعدد الدفعات في حالة <code>unknown</code>، وكسور المطابقة، وحجم DLQ، ومجموع الدفتر الذي يجب أن يكون صفرًا دائمًا.</li>
+        <li><strong>بوقت أكثر:</strong> عدة بنوك مستحوِذة مع توجيه ذكي، والعملات المتعددة، والنشاط في عدة مناطق.</li>
+      </ul>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>التصميم العام</h3>
+      <div class="diagram mermaid">
+flowchart LR
+  CU["Customer browser"] -- "card number" --> HF["Hosted Fields"]
+  HF --> V[("Card Vault - PCI")]
+  V -- "token" --> MS["Merchant server"]
+  MS -- "token + Idempotency-Key" --> GW["API Gateway"]
+  GW --> PAY["Payments Service"]
+  PAY -- "breaker" --> RISK["Risk"]
+  PAY --> BC["Bank Connector"]
+  BC --> ACQ["Acquirer / Network / Issuer"]
+  V -. "detokenize" .-> BC
+  PAY --> DB[("Payments DB + Ledger + Outbox")]
+  DB --> Q[["payment-events"]]
+  Q --> WH["Webhooks"]
+  Q --> REP["Reports"]
+  ACQ -. "daily settlement file" .-> REC["Reconciliation"]
+  REC --> DB
+  DB --> PO["Payouts"]
+  PO --> ACQ
+      </div>
+      <p>لاحظ: رقم البطاقة يمر فقط بين متصفح العميل والخزنة وموصّل البنك. خادم التاجر وخدمة الدفع والقاعدة الرئيسية لا ترى إلا الرمز.</p>
+
+      <h3>رحلة دفعة واحدة</h3>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant M as Merchant
+  participant P as Payments
+  participant DB as Database
+  participant B as Bank Connector
+  participant A as Acquirer
+  M->>P: POST /payments (key k1, tok_9f2a, 10000)
+  P->>DB: claim key k1 + payment state=created
+  P->>B: authorize (key m1:k1)
+  B->>A: authorize via network
+  A-->>B: approved
+  B-->>P: approved, bank_ref=A77
+  P->>DB: BEGIN: state=captured + ledger entry + outbox + key completed: COMMIT
+  P-->>M: 201 pay_1 captured
+  Note over DB: relay publishes payment.captured to webhooks
+      </div>
+
+      <h3>آلة حالات الدفع</h3>
+      <div class="diagram mermaid">
+stateDiagram-v2
+  [*] --> created
+  created --> authorized : bank approved
+  created --> failed : bank declined
+  created --> unknown : bank timeout
+  unknown --> authorized : status query
+  unknown --> failed : status query
+  authorized --> captured : capture
+  authorized --> voided : void
+  captured --> partially_refunded : partial refund
+  captured --> refunded : full refund
+  partially_refunded --> refunded : rest refunded
+      </div>
+
+      <h3>رحلة 100 جنيه في الدفتر</h3>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: الترميز</h4>
+          <div class="mem"><div class="box">4111 1111 1111 1111</div><span class="arrow">→</span><div class="box hl">Vault</div><span class="arrow">→</span><div class="box db">tok_9f2a</div></div>
+          <p>العميل يكتب رقم البطاقة في الحقل المستضاف. الخزنة تحفظه مشفرًا وترجع رمزًا. لا قيد في الدفتر، فلم يتحرك أي مال.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: التفويض</h4>
+          <div class="mem"><div class="box warn">Issuer: hold 100 EGP</div><div class="box">Ledger: no entry</div></div>
+          <p>بنك العميل يحجز 100 جنيه. المال ما زال في حساب العميل، لكنه لا يستطيع صرفه. بعض الأنظمة تسجل الحجز في حسابات "خارج الميزانية"، لكن أبسط تصميم: لا قيد حتى التحصيل.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: التحصيل</h4>
+          <div class="mem"><div class="box db">bank_clearing +10000</div><div class="box hl">merchant:m1 −9750</div><div class="box">fee_revenue −250</div></div>
+          <p>أول قيد. البنك مدين لنا، ونحن مدينون للتاجر، والفرق عمولتنا. المجموع صفر. وفي نفس المعاملة: الحالة <code>captured</code>، ورسالة في صندوق الصادر.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: التسوية (T+1)</h4>
+          <div class="mem"><div class="box db">bank_cash +10000</div><div class="box">bank_clearing −10000</div><span class="arrow">=</span><div class="box">clearing: 0</div></div>
+          <p>وصل ملف التسوية، وتطابق مع سجلاتنا. المال وصل حسابنا فعلًا. رصيد <code>bank_clearing</code> عاد صفرًا: لا أحد مدين لنا بشيء من هذه العملية.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: التحويل للتاجر</h4>
+          <div class="mem"><div class="box db">merchant:m1 +9750</div><div class="box">bank_cash −9750</div><span class="arrow">=</span><div class="box hl">bank_cash: 250 = our fee</div></div>
+          <p>أرسلنا 97.50 للتاجر عبر Saga التحويلات (الدرس 5). حساب التاجر صفر: لا ندين له بشيء. والباقي في <code>bank_cash</code> هو 2.50 بالضبط، أي عمولتنا. كل قرش له تفسير.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+
+      <h3>أين استخدمنا كل درس؟</h3>
+      <table>
+        <tr><th>الدرس</th><th>الأداة</th><th>مكانها في التصميم</th></tr>
+        <tr><td>1</td><td>الحسابات السريعة، N+1، رياضيات التوافرية</td><td>الخطوة 2، وعدد الخوادم</td></tr>
+        <tr><td>2</td><td>Cache-Aside، والتجزئة المتسقة</td><td>إعدادات التاجر، وتقسيم Redis لتحديد المعدل</td></tr>
+        <tr><td>3</td><td>نسخة متزامنة، والتقسيم حسب التاجر، ومعرّفات Snowflake</td><td>قاعدة الدفع والدفتر بـ RPO = 0</td></tr>
+        <tr><td>4</td><td>صندوق الصادر، ومستهلك آمن عند التكرار، و DLQ</td><td>الإشعارات والتقارير</td></tr>
+        <tr><td>5</td><td>CP للأرصدة، و Saga، و"المهلة ليست فشلًا"</td><td>التحويلات، وحالة <code>unknown</code></td></tr>
+        <tr><td>6</td><td>البوابة، وقاطع الدائرة، والبديل، والعزل</td><td>المخاطر، والخزنة المعزولة</td></tr>
+        <tr><td>7</td><td>دلو الرموز، ومفاتيح منع التكرار</td><td>كل POST، وحماية البنك</td></tr>
+      </table>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: الحسابات السريعة للمقابلة</h3>
+<pre><code class="language-python">DAY = 86_400
+payments_per_day = 6_000_000
+peak_factor = 5
+calls_per_payment = 4            # create, confirm, status, webhook
+ledger_lines_per_payment = 3
+bytes_per_payment = 1_000
+bytes_per_ledger_line = 200
+avg_ticket_egp = 350
+
+avg_tps = payments_per_day / DAY
+peak_tps = avg_tps * peak_factor
+ledger_rows = payments_per_day * ledger_lines_per_payment
+yearly_bytes = (payments_per_day * bytes_per_payment
+                + ledger_rows * bytes_per_ledger_line) * 365
+volume = payments_per_day * avg_ticket_egp
+
+print(f"avg payments/s  : {avg_tps:,.0f}")
+print(f"peak payments/s : {peak_tps:,.0f}")
+print(f"peak API calls/s: {peak_tps * calls_per_payment:,.0f}")
+print(f"ledger rows/day : {ledger_rows:,}")
+print(f"storage/year    : {yearly_bytes / 1e12:.1f} TB")
+print(f"daily volume    : {volume / 1e9:.1f} B EGP")
+print(f"0.01% error     : {volume * 0.0001:,.0f} EGP/day")</code></pre>
+      <div class="output">avg payments/s  : 69
+peak payments/s : 347
+peak API calls/s: 1,389
+ledger rows/day : 18,000,000
+storage/year    : 3.5 TB
+daily volume    : 2.1 B EGP
+0.01% error     : 210,000 EGP/day</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>calls_per_payment = 4</code>: الدفعة الواحدة تولّد عدة طلبات: الإنشاء، والتأكيد، واستعلام الحالة، والإشعار. الحمل على البوابة أكبر من عدد الدفعات.</li>
+        <li><code>ledger_lines_per_payment = 3</code>: قيد التحصيل فيه ثلاثة أسطر: البنك، والتاجر، والعمولة.</li>
+        <li><code>ledger_rows</code>: 18 مليون سطر يوميًا. الدفتر أكبر جدول عندنا من حيث عدد الصفوف.</li>
+        <li><code>yearly_bytes</code>: حوالي 3.5TB سنويًا. يكبر، لكنه ليس ضخمًا. ويمكن نقل البيانات القديمة إلى تخزين أرخص.</li>
+        <li><code>volume * 0.0001</code>: هذا السطر يقنع المحاور أنك تفهم لماذا الدقة أهم من السرعة هنا.</li>
+      </ol>
+
+      <h3>مثال 2: آلة حالات الدفع</h3>
+<pre><code class="language-python">class InvalidTransition(Exception):
+    pass
+
+
+TRANSITIONS = {
+    "created": {"authorized", "failed"},
+    "authorized": {"captured", "voided"},
+    "captured": {"refunded"},
+}
+
+
+class Payment:
+    def __init__(self, payment_id: str) -> None:
+        self.id = payment_id
+        self.state = "created"
+        self.history = ["created"]
+
+    def move(self, new_state: str) -> None:
+        allowed = TRANSITIONS.get(self.state, set())
+        if new_state not in allowed:
+            raise InvalidTransition(f"{self.state} -> {new_state}")
+        self.state = new_state
+        self.history.append(new_state)
+
+
+p = Payment("pay_1")
+for target in ["authorized", "captured", "authorized", "refunded", "captured"]:
+    try:
+        p.move(target)
+        print(f"ok   -> {target}")
+    except InvalidTransition as err:
+        print(f"deny -> {err}")
+print("history:", " > ".join(p.history))</code></pre>
+      <div class="output">ok   -> authorized
+ok   -> captured
+deny -> captured -> authorized
+ok   -> refunded
+deny -> refunded -> captured
+history: created > authorized > captured > refunded</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>TRANSITIONS</code>: قاموس واحد يصف كل القواعد. الحالات النهائية مثل <code>refunded</code> ليست مفاتيح فيه، فلا يخرج منها شيء.</li>
+        <li><code>TRANSITIONS.get(self.state, set())</code>: إذا لم تكن الحالة موجودة، فلا انتقال مسموح.</li>
+        <li><code>self.history</code>: نحفظ التاريخ. في الإنتاج، كل انتقال صف في جدول أحداث مع الوقت والسبب.</li>
+        <li><strong>الرفض الأول:</strong> الدفعة محصّلة، ولا يمكن أن ترجع "مفوّضة". ربما رسالة قديمة وصلت متأخرة (الدرس 4).</li>
+        <li><strong>الرفض الثاني:</strong> بعد الاسترداد، لا يمكن التحصيل مرة أخرى. هذا يمنع خطأ قد يكلف مالًا حقيقيًا.</li>
+      </ol>
+
+      <h3>مثال 3: الدفتر ثنائي القيد</h3>
+      <p>المبالغ بالقروش. الموجب مدين، والسالب دائن.</p>
+<pre><code class="language-python">class UnbalancedEntry(Exception):
+    pass
+
+
+class Ledger:
+    def __init__(self) -> None:
+        self.lines: list[tuple[str, str, int]] = []   # (entry, account, amount)
+
+    def post(self, entry_id: str, lines: list[tuple[str, int]]) -> None:
+        if sum(amount for _, amount in lines) != 0:
+            raise UnbalancedEntry(entry_id)            # nothing is written
+        for account, amount in lines:
+            self.lines.append((entry_id, account, amount))
+
+    def balance(self, account: str) -> int:
+        return sum(a for _, acc, a in self.lines if acc == account)
+
+    def total(self) -> int:
+        return sum(a for _, _, a in self.lines)
+
+
+ledger = Ledger()
+ledger.post("capture_pay_1", [("bank_clearing", 10_000),
+                              ("merchant:m1", -9_750),
+                              ("fee_revenue", -250)])
+ledger.post("settle_day_1", [("bank_cash", 10_000),
+                             ("bank_clearing", -10_000)])
+ledger.post("payout_1", [("merchant:m1", 9_750),
+                         ("bank_cash", -9_750)])
+try:
+    ledger.post("bug_1", [("bank_cash", 500), ("merchant:m1", -400)])
+except UnbalancedEntry as err:
+    print("rejected unbalanced entry:", err)
+
+for account in ["bank_clearing", "bank_cash", "merchant:m1", "fee_revenue"]:
+    print(f"{account:&lt;14} {ledger.balance(account):>7}")
+print("sum of all accounts:", ledger.total())</code></pre>
+      <div class="output">rejected unbalanced entry: bug_1
+bank_clearing        0
+bank_cash          250
+merchant:m1          0
+fee_revenue       -250
+sum of all accounts: 0</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>if sum(...) != 0</code>: الفحص يحدث <strong>قبل</strong> الكتابة. القيد غير المتوازن لا يدخل الدفتر أبدًا.</li>
+        <li><code>self.lines.append</code>: إضافة فقط. لا توجد دالة <code>update</code> ولا <code>delete</code> في الكلاس كله، وهذا مقصود.</li>
+        <li><code>balance</code>: الرصيد يُحسب من الأسطر. لا يوجد رقم محفوظ يمكن أن يختلف عن التاريخ.</li>
+        <li><strong>bug_1:</strong> كود خاطئ حاول إضافة 500 للصندوق و 400 فقط للتاجر. 100 قرش كانت ستظهر من العدم. رُفض القيد.</li>
+        <li><strong>الأرصدة:</strong> الوسيط <code>bank_clearing</code> والتاجر صفر: كل الالتزامات انتهت. والصندوق فيه 250 تقابلها العمولة −250.</li>
+        <li><strong>المجموع الكلي صفر.</strong> هذا الفحص يعمل كل ساعة في الإنتاج. أي رقم غير الصفر يعني تنبيهًا فوريًا.</li>
+      </ol>
+
+      <h3>مثال 4: المطابقة مع ملف البنك</h3>
+<pre><code class="language-python">ours = {"pay_1": 10_000, "pay_2": 25_000, "pay_3": 5_000, "pay_4": 7_500}
+bank = {"pay_1": 10_000, "pay_2": 24_000, "pay_4": 7_500, "pay_9": 3_000}
+
+
+def reconcile(ours: dict[str, int], theirs: dict[str, int]) -> dict[str, list]:
+    report: dict[str, list] = {"matched": [], "amount_mismatch": [],
+                               "missing_at_bank": [], "unknown_to_us": []}
+    for pid in sorted(ours.keys() | theirs.keys()):
+        if pid not in theirs:
+            report["missing_at_bank"].append(pid)
+        elif pid not in ours:
+            report["unknown_to_us"].append(pid)
+        elif ours[pid] != theirs[pid]:
+            report["amount_mismatch"].append(
+                f"{pid} ({ours[pid]} vs {theirs[pid]})")
+        else:
+            report["matched"].append(pid)
+    return report
+
+
+for kind, items in reconcile(ours, bank).items():
+    print(f"{kind:&lt;16}: {items}")</code></pre>
+      <div class="output">matched         : ['pay_1', 'pay_4']
+amount_mismatch : ['pay_2 (25000 vs 24000)']
+missing_at_bank : ['pay_3']
+unknown_to_us   : ['pay_9']</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>ours.keys() | theirs.keys()</code>: اتحاد المعرّفات من الطرفين. هكذا لا تفوتنا عملية موجودة في طرف واحد فقط.</li>
+        <li><code>sorted(...)</code>: ترتيب ثابت يجعل التقرير قابلًا للمقارنة يومًا بعد يوم.</li>
+        <li><strong>pay_2:</strong> البنك دفع 240 بدلًا من 250. ربما رسوم إضافية لم نسجلها. تحتاج تحقيقًا.</li>
+        <li><strong>pay_3:</strong> ربما تُسوى غدًا. نعطيها مهلة يومين أو ثلاثة قبل أن نعتبرها كسرًا.</li>
+        <li><strong>pay_9:</strong> الأخطر. البنك أخذ مالًا من عميل لا نعرف عنه شيئًا. غالبًا مهلة نجحت عند البنك. يجب حلها فورًا: إما نسجلها ونعلم التاجر، أو نسترد للعميل.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> في الإنتاج، ملف البنك لا يحمل معرّفاتنا دائمًا. نطابق بمرجع البنك <code>bank_ref</code> الذي حفظناه عند التفويض، أو بمزيج من المبلغ والوقت وآخر 4 أرقام. لهذا يجب أن تحفظ كل ما يرجعه البنك.</div>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>1. المال كأرقام عشرية</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة: float</h4>
+<pre><code class="language-python">total = sum([0.10] * 10)       # ten items, 0.10 EGP each
+print(total, total == 1.00)
+print(1.1 + 2.2)</code></pre>
+          <div class="output">0.9999999999999999 False
+3.3000000000000003</div>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة: قروش صحيحة أو Decimal</h4>
+<pre><code class="language-python">from decimal import Decimal
+
+total = sum([10] * 10)         # 0.10 EGP = 10 piasters
+print(total, total == 100)
+print(Decimal("1.1") + Decimal("2.2"))</code></pre>
+          <div class="output">100 True
+3.3</div>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الطريقة الأولى خاطئة؟</strong> الحاسوب يحفظ <code>float</code> بالنظام الثنائي، والعدد 0.1 لا يمكن كتابته بدقة فيه، مثل 1/3 بالنظام العشري. الفرق صغير جدًا، لكن مع 18 مليون سطر يوميًا يتراكم. والأسوأ: <code>total == 1.00</code> يرجع <code>False</code>، فالمطابقة تفشل بلا سبب واضح. احفظ المال <strong>كرقم صحيح بالوحدة الصغرى</strong>، واستخدم <code>Decimal</code> فقط للحسابات الوسيطة مثل النسب. وفي قاعدة البيانات: <code>BIGINT</code> بالقروش، أو <code>NUMERIC</code>، وليس <code>FLOAT</code> أبدًا.</div>
+
+      <h3>2. أخطاء أخرى شائعة في المقابلة</h3>
+      <ul>
+        <li><strong>❌ الرسم قبل الأسئلة:</strong> تصمم نظامًا عالميًا متعدد العملات، والمحاور أراد عملة واحدة. <strong>✅</strong> 5 دقائق متطلبات أولًا.</li>
+        <li><strong>❌ مربعات بلا أرقام:</strong> "نضع Kafka هنا". لماذا؟ بأي حجم؟ <strong>✅</strong> كل قرار مربوط برقم من الحسابات.</li>
+        <li><strong>❌ التعقيد بلا سبب:</strong> 30 خدمة وتقسيم إلى 256 جزءًا لـ 347 عملية في الثانية. <strong>✅</strong> قل: "هذا يكفي اليوم، وهذه خطة التوسع عندما نصل إلى X".</li>
+        <li><strong>❌ عمود رصيد بدل الدفتر:</strong> <code>UPDATE merchants SET balance = balance + 97.5</code>. لا تاريخ، ولا تدقيق، ولا طريقة لمعرفة الخطأ. <strong>✅</strong> دفتر بإضافة فقط.</li>
+        <li><strong>❌ تخزين أرقام البطاقات في قاعدة الدفع:</strong> النظام كله يصبح ضمن نطاق PCI. <strong>✅</strong> خزنة معزولة ورموز.</li>
+        <li><strong>❌ المهلة = فشل:</strong> تعلّم الدفعة <code>failed</code> والبنك وافق فعلًا. العميل خُصم ولم يحصل على الطلب. <strong>✅</strong> حالة <code>unknown</code> واستعلام.</li>
+        <li><strong>❌ نسيان المطابقة:</strong> تفترض أن الكود صحيح دائمًا. <strong>✅</strong> المطابقة اليومية جزء أساسي من التصميم، وليست إضافة.</li>
+        <li><strong>❌ التعمق في كل شيء بسطحية:</strong> دقيقة لكل مكون. <strong>✅</strong> 2–3 أجزاء بعمق حقيقي، واسأل المحاور: "أي جزء تفضل أن نتعمق فيه؟".</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <h3>في المقابلة</h3>
+      <ul>
+        <li><strong>فكّر بصوت عالٍ.</strong> المحاور لا يرى ما في رأسك. "أفكر في خيارين، وأميل إلى الأول لأن...".</li>
+        <li><strong>اذكر الموازنة مع كل قرار.</strong> "CP للرصيد، والثمن أن بعض الطلبات تُرفض عند الانقسام".</li>
+        <li><strong>ابدأ بسيطًا ثم طوّر.</strong> نسخة تعمل أولًا، ثم "ماذا لو تضاعف الحمل 10 مرات؟".</li>
+        <li><strong>اسأل عن اتجاه المحاور.</strong> إذا قاطعك بسؤال، فهو يوجهك. اتبعه.</li>
+        <li><strong>اختم بالمتطلبات.</strong> ارجع للقائمة وأظهر كيف حققت كل واحد.</li>
+      </ul>
+      <h3>في أنظمة الدفع الحقيقية</h3>
+      <ul>
+        <li><strong>المال رقم صحيح بالوحدة الصغرى</strong>، مع رمز العملة دائمًا بجانبه.</li>
+        <li><strong>الدفتر هو مصدر الحقيقة.</strong> الأرصدة في لوحة التحكم مشتقة منه، وقد تتأخر ثوانٍ.</li>
+        <li><strong>التغيير + القيد + صندوق الصادر + المفتاح في معاملة واحدة.</strong></li>
+        <li><strong>احفظ كل رد من البنك</strong> كما هو، مع المرجع. ستحتاجه في المطابقة والاعتراضات.</li>
+        <li><strong>التقريب قاعدة مكتوبة.</strong> نصف للأعلى أم تقريب البنوك؟ اختر مرة واحدة، وطبّقها في كل مكان.</li>
+        <li><strong>المطابقة يومية، وكل كسر له مالك</strong> ومدة قصوى للحل.</li>
+        <li><strong>جرّب الأعطال:</strong> بنك بطيء، ومهلة بعد الموافقة، وتكرار رسالة. هذه السيناريوهات تحدث كل أسبوع.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>جملة ذهبية للمقابلة:</strong> "في بوابة الدفع، أفضّل أن أرفض دفعة صحيحة على أن أقبل دفعة مرتين. الرفض يمكن إعادة محاولته، أما الخصم المزدوج فيكسر ثقة العميل." هذه الجملة تلخص فهمك لـ CAP وللعمل نفسه.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+
+      <h3>كم طلبًا متزامنًا؟ قانون ليتل مرة أخيرة</h3>
+      <p>زمن الدفع الكلي يشمل البنك، وهو أبطأ جزء. مع \(\lambda\) طلبات في الثانية و \(W\) زمن الاستجابة:</p>
+      <div dir="ltr">$$L = \lambda \times W$$</div>
+      <p>347 دفعة في الثانية × 1.5 ثانية (البنك + 3-D Secure) ≈ 520 دفعة متزامنة. لذلك موصّل البنك يجب أن يكون غير متزامن <span class="en">(async I/O)</span>، وليس خيطًا لكل طلب.</p>
+
+      <h3>ثابت الدفتر</h3>
+      <p>لكل قيد \(e\)، ولكل لحظة في تاريخ النظام:</p>
+      <div dir="ltr">$$\sum_{l \in e} a_l = 0 \quad\Longrightarrow\quad \sum_{\text{all accounts}} \text{balance} = 0$$</div>
+      <p>الثابت الأول يُفحص عند كتابة كل قيد. والثاني يُفحص دوريًا، فهو يكشف أي كتابة تجاوزت الكود الصحيح، مثل سكربت إصلاح يدوي.</p>
+
+      <h3>ثمن الحساب الساخن</h3>
+      <p>إذا كان تحديث صف واحد يأخذ \(t\) ثانية مع القفل، فأقصى معدل له:</p>
+      <div dir="ltr">$$\lambda_{\max} = \frac{1}{t}$$</div>
+      <p>مع \(t = 5\text{ms}\) (نسخة متزامنة): 200 تحديث في الثانية فقط، أقل من الذروة 347! مع 16 حسابًا فرعيًا: 3,200 في الثانية. أو بدون صف رصيد أصلًا: الحد يختفي.</p>
+
+      <h3>قرارات المقابلة الكبرى</h3>
+      <table>
+        <tr><th>القرار</th><th>اخترنا</th><th>البديل</th><th>لماذا</th></tr>
+        <tr><td>قاعدة البيانات</td><td>علائقية مع معاملات</td><td>NoSQL موزّعة</td><td>المعاملات والقيود الفريدة أساس الدقة. والحمل يناسبها.</td></tr>
+        <tr><td>الاتساق</td><td>CP للدفع والدفتر</td><td>AP</td><td>الخصم المزدوج أسوأ من الرفض المؤقت.</td></tr>
+        <tr><td>التفويض</td><td>متزامن</td><td>عبر طابور</td><td>العميل ينتظر الجواب على الشاشة.</td></tr>
+        <tr><td>الإشعارات والتقارير</td><td>غير متزامنة</td><td>متزامنة</td><td>عزل الأعطال، وسرعة الدفع.</td></tr>
+        <tr><td>الأرصدة</td><td>مشتقة من الدفتر</td><td>عمود رصيد</td><td>قابلة للتدقيق، ولا حسابات ساخنة.</td></tr>
+        <tr><td>بيانات البطاقات</td><td>خزنة معزولة</td><td>داخل خدمة الدفع</td><td>نطاق PCI أصغر بكثير.</td></tr>
+        <tr><td>التقسيم</td><td>ليس الآن، ثم حسب التاجر</td><td>من اليوم الأول</td><td>347 في الثانية لا تحتاجه، والتعقيد مكلف.</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي: بوابة دفع مصغّرة كاملة</h2>
+      <p>المشروع الختامي يجمع أربع أدوات: مفاتيح منع التكرار، وآلة الحالات، والدفتر ثنائي القيد، والمطابقة مع التسوية. ثم نشغّل يومًا كاملًا: دفعات، وإعادة محاولة، واسترداد جزئي، وإلغاء، ومحاولتان خاطئتان، ثم ملف البنك.</p>
+<pre><code class="language-python">TRANSITIONS = {
+    "authorized": {"captured", "voided"},
+    "captured": {"partially_refunded", "refunded"},
+    "partially_refunded": {"partially_refunded", "refunded"},
+}
+FEE_BPS = 250                                    # 2.5% in basis points
+
+
+def fee_for(amount: int) -> int:
+    return (amount * FEE_BPS + 5_000) // 10_000  # integer, round half up
+
+
+class GatewayError(Exception):
+    pass
+
+
+class PaymentGateway:
+    def __init__(self) -> None:
+        self.payments: dict[str, dict] = {}
+        self.idempotency: dict[tuple[str, str], tuple[str, int]] = {}
+        self.ledger: list[tuple[str, str, int]] = []
+        self._seq = 0
+
+    # ---------- building blocks ----------
+    def _post(self, entry_id: str, lines: list[tuple[str, int]]) -> None:
+        if sum(amount for _, amount in lines) != 0:
+            raise GatewayError(f"unbalanced entry {entry_id}")
+        self.ledger += [(entry_id, account, amount) for account, amount in lines]
+
+    def _move(self, p: dict, new_state: str) -> None:
+        if new_state not in TRANSITIONS.get(p["state"], set()):
+            raise GatewayError(f"{p['id']}: {p['state']} -> {new_state}")
+        p["state"] = new_state
+
+    def balance(self, account: str) -> int:
+        return sum(a for _, acc, a in self.ledger if acc == account)
+
+    # ---------- API ----------
+    def create(self, merchant: str, key: str, amount: int,
+               capture: bool = True) -> tuple[str, str]:
+        scoped = (merchant, key)
+        if scoped in self.idempotency:
+            pid, stored_amount = self.idempotency[scoped]
+            if stored_amount != amount:
+                raise GatewayError("key reused with a different amount")
+            return pid, "replayed"
+        self._seq += 1
+        pid = f"pay_{self._seq}"
+        self.payments[pid] = {"id": pid, "merchant": merchant, "amount": amount,
+                              "refunded": 0, "state": "authorized"}
+        self.idempotency[scoped] = (pid, amount)
+        if capture:
+            self.capture(pid)
+        return pid, self.payments[pid]["state"]
+
+    def capture(self, pid: str) -> None:
+        p = self.payments[pid]
+        self._move(p, "captured")
+        fee = fee_for(p["amount"])
+        self._post(f"cap_{pid}", [("bank_clearing", p["amount"]),
+                                  (f"merchant:{p['merchant']}", -(p["amount"] - fee)),
+                                  ("fee_revenue", -fee)])
+
+    def void(self, pid: str) -> str:
+        self._move(self.payments[pid], "voided")   # no money moved: no entry
+        return "voided"
+
+    def refund(self, pid: str, amount: int) -> str:
+        p = self.payments[pid]
+        new_total = p["refunded"] + amount
+        if amount &lt;= 0 or new_total > p["amount"]:
+            left = p["amount"] - p["refunded"]
+            raise GatewayError(f"{pid}: refund {amount} exceeds {left} left")
+        self._move(p, "refunded" if new_total == p["amount"]
+                   else "partially_refunded")
+        p["refunded"] = new_total
+        self._post(f"ref_{pid}_{new_total}",
+                   [(f"merchant:{p['merchant']}", amount),
+                    ("bank_clearing", -amount)])
+        return p["state"]
+
+    # ---------- end of day ----------
+    def expected_settlement(self) -> dict[str, int]:
+        settled = ("captured", "partially_refunded", "refunded")
+        return {pid: p["amount"] - p["refunded"]
+                for pid, p in self.payments.items() if p["state"] in settled}
+
+    def settle(self, bank_file: dict[str, int]) -> list[str]:
+        expected = self.expected_settlement()
+        breaks = sorted(pid for pid in expected.keys() | bank_file.keys()
+                        if expected.get(pid) != bank_file.get(pid))
+        if breaks:
+            return breaks                          # investigate, do not post
+        total = sum(bank_file.values())
+        self._post("settle_day_1", [("bank_cash", total),
+                                    ("bank_clearing", -total)])
+        return []
+
+
+gw = PaymentGateway()
+day = [
+    ("pay 100.00, key k1", lambda: gw.create("m1", "k1", 10_000)),
+    ("retry key k1", lambda: gw.create("m1", "k1", 10_000)),
+    ("pay 250.00, key k2", lambda: gw.create("m1", "k2", 25_000)),
+    ("refund 50.00 of pay_2", lambda: gw.refund("pay_2", 5_000)),
+    ("authorize 80.00, key k3", lambda: gw.create("m1", "k3", 8_000, capture=False)),
+    ("void pay_3", lambda: gw.void("pay_3")),
+    ("refund pay_3", lambda: gw.refund("pay_3", 1_000)),
+    ("refund 300.00 of pay_2", lambda: gw.refund("pay_2", 30_000)),
+]
+for label, action in day:
+    try:
+        print(f"{label:&lt;24} -> {action()}")
+    except GatewayError as err:
+        print(f"{label:&lt;24} -> error: {err}")
+
+print("expected:", gw.expected_settlement())
+print("breaks  :", gw.settle({"pay_1": 10_000, "pay_2": 20_000}))
+for account in ("bank_cash", "bank_clearing", "merchant:m1", "fee_revenue"):
+    print(f"{account:&lt;14}{gw.balance(account):>8}")
+print("ledger sum:", sum(a for _, _, a in gw.ledger))</code></pre>
+      <div class="output">pay 100.00, key k1       -> ('pay_1', 'captured')
+retry key k1             -> ('pay_1', 'replayed')
+pay 250.00, key k2       -> ('pay_2', 'captured')
+refund 50.00 of pay_2    -> partially_refunded
+authorize 80.00, key k3  -> ('pay_3', 'authorized')
+void pay_3               -> voided
+refund pay_3             -> error: pay_3: voided -> partially_refunded
+refund 300.00 of pay_2   -> error: pay_2: refund 30000 exceeds 20000 left
+expected: {'pay_1': 10000, 'pay_2': 20000}
+breaks  : []
+bank_cash        30000
+bank_clearing        0
+merchant:m1     -29125
+fee_revenue       -875
+ledger sum: 0</div>
+      <h4>تتبّع اليوم</h4>
+      <ol>
+        <li><strong>pay_1:</strong> 100 جنيه، والعمولة <code>fee_for(10000) = 250</code>. قيد: +10000 / −9750 / −250.</li>
+        <li><strong>إعادة k1:</strong> نفس المفتاح ونفس المبلغ، فنرجع <code>pay_1</code> بدون أي قيد جديد. لا خصم مزدوج.</li>
+        <li><strong>pay_2:</strong> 250 جنيه، والعمولة 625. قيد: +25000 / −24375 / −625.</li>
+        <li><strong>استرداد 50:</strong> الحالة <code>partially_refunded</code>. التاجر يتحمل الاسترداد: +5000 لحسابه (ندين له أقل) و −5000 من المقاصة. العمولة لا تُرجع، وهذه سياسة عمل يجب أن تقولها.</li>
+        <li><strong>pay_3:</strong> فُوّض ثم أُلغي قبل التحصيل. لا مال تحرك، فلا قيد أبدًا.</li>
+        <li><strong>المحاولتان الخاطئتان:</strong> استرداد دفعة ملغاة رفضته آلة الحالات. واسترداد 300 من دفعة بقي منها 200 رفضه فحص المبلغ. ولاحظ الترتيب في الكود: نفحص وننقل الحالة <strong>قبل</strong> أن نغيّر <code>refunded</code>، حتى لا يبقى أثر لعملية مرفوضة.</li>
+        <li><strong>المطابقة:</strong> نتوقع 100 من pay_1 و 200 صافي من pay_2. ملف البنك مطابق، فلا كسور، فنسجل التسوية.</li>
+        <li><strong>الأرصدة النهائية:</strong> في الصندوق 300 جنيه. ندين للتاجر بـ 291.25. وعمولتنا 8.75. والتحقق: 300 − 291.25 − 8.75 = 0. المجموع الكلي صفر.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ماذا ينقص للإنتاج؟</strong> كل ما بنيناه في الدروس السابقة: المعاملات الحقيقية والقيد الفريد بدل القواميس (الدرس 7)، واستدعاء البنك مع حالة <code>unknown</code> (الدرس 5)، وصندوق الصادر للإشعارات (الدرس 4)، وتحويل مستحقات التاجر كـ Saga (الدرس 5). لا يوجد مفهوم جديد هنا، فقط تجميع.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+
+      <div class="quiz" data-explain="بدون المتطلبات قد تبني نظامًا مختلفًا عن المطلوب. الأسئلة أولًا، ثم الأرقام، ثم الرسم.">
+        <div class="q">1. ما أول شيء تفعله عندما يقول المحاور "صمّم بوابة دفع"؟</div>
+        <button class="option">أرسم المكونات الرئيسية</button>
+        <button class="option" data-correct="true">أسأل عن المتطلبات وأحدد النطاق</button>
+        <button class="option">أختار قاعدة البيانات</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الأرقام الصحيحة بالوحدة الصغرى دقيقة تمامًا. float لا يمثل 0.1 بدقة.">
+        <div class="q">2. كيف تحفظ مبلغ 99.99 جنيهًا في قاعدة البيانات؟</div>
+        <button class="option">FLOAT بقيمة 99.99</button>
+        <button class="option" data-correct="true">BIGINT بقيمة 9999 قرشًا</button>
+        <button class="option">نص "99.99"</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="كل قيد متوازن: مجموع أسطره صفر. لذلك مجموع كل الحسابات صفر دائمًا.">
+        <div class="q">3. ما الخاصية الأساسية لكل قيد في الدفتر ثنائي القيد؟</div>
+        <button class="option">فيه سطران بالضبط</button>
+        <button class="option" data-correct="true">مجموع مبالغ أسطره يساوي صفرًا</button>
+        <button class="option">يمكن تعديله إذا كان خاطئًا</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="المهلة تعني لا أعرف. ربما وافق البنك. نسجل unknown ونسأل البنك بنفس المفتاح.">
+        <div class="q">4. البنك لم يرد على طلب التفويض خلال المهلة. ماذا نسجل؟</div>
+        <button class="option">failed، ونخبر العميل بإعادة المحاولة</button>
+        <button class="option">captured، لأن أغلب الطلبات تنجح</button>
+        <button class="option" data-correct="true">unknown، ونستعلم من البنك بنفس المفتاح</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="صف واحد يُحدَّث مع كل دفعة يصبح عنق زجاجة. الحل: أسطر إضافة فقط، أو حسابات فرعية.">
+        <div class="q">5. حساب العمولات يُحدَّث مع كل دفعة، والأقفال عليه تبطئ النظام. ما الحل؟</div>
+        <button class="option">خادم قاعدة بيانات أكبر</button>
+        <button class="option" data-correct="true">لا عمود رصيد: أسطر إضافة فقط، أو تقسيمه إلى حسابات فرعية</button>
+        <button class="option">حفظ العمولة في Cache</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="البنك أخذ مالًا لعملية لا نعرفها. غالبًا مهلة نجحت. يجب التحقيق فورًا لأن العميل خُصم.">
+        <div class="q">6. في المطابقة، أي كسر هو الأخطر؟</div>
+        <button class="option">عملية عندنا لم تظهر في ملف البنك بعد</button>
+        <button class="option" data-correct="true">عملية في ملف البنك لا نعرف عنها شيئًا</button>
+        <button class="option">عمليات متطابقة تمامًا</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): كم خادمًا للـ API؟</h3>
+      <p>الذروة 1,389 طلب API في الثانية. زمن p99 عندنا 400ms. كل خادم يتحمل 100 طلب متزامن، ولا نريد أكثر من 60% منها. كم خادمًا تحتاج مع قاعدة N+1؟</p>
+      <details><summary>💡 تلميح</summary><p>قانون ليتل يعطيك عدد الطلبات المتزامنة. ثم اقسم على السعة المفيدة لكل خادم.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">import math
+
+peak_rps = 1_389
+p99_seconds = 0.4
+per_server = 100
+target = 0.6
+
+concurrent = peak_rps * p99_seconds
+servers = math.ceil(concurrent / (per_server * target)) + 1
+print(f"concurrent: {concurrent:.0f}")
+print("servers (N+1):", servers)</code></pre>
+        <div class="output">concurrent: 556
+servers (N+1): 11</div>
+        <p>استخدمنا p99 بدل المتوسط حتى نكون في الجانب الآمن (الدرس 1). وفي المقابلة قل: "حوالي 11 خادمًا، موزّعة على 3 مناطق توفر".</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): العمولة وتقسيم المبالغ بدون قروش ضائعة</h3>
+      <p>اكتب <code>fee(amount, bps)</code> بأرقام صحيحة فقط، مع تقريب النصف للأعلى. ثم اكتب <code>allocate(total, n)</code> تقسّم مبلغًا على <code>n</code> تجار في سوق إلكتروني، بحيث يكون المجموع مساويًا للأصل <strong>بالضبط</strong>.</p>
+      <details><summary>💡 تلميح</summary><p>التقريب: أضف نصف المقام قبل القسمة الصحيحة. والتقسيم: <code>divmod</code>، ثم وزّع الباقي قرشًا قرشًا.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def fee(amount: int, bps: int) -> int:
+    return (amount * bps + 5_000) // 10_000
+
+
+def allocate(total: int, n: int) -> list[int]:
+    base, remainder = divmod(total, n)
+    return [base + 1 if i &lt; remainder else base for i in range(n)]
+
+
+parts = allocate(10_000, 3)
+print(parts, sum(parts))
+for amount in (10_000, 1_999, 1):
+    print(amount, "->", fee(amount, 250))</code></pre>
+        <div class="output">[3334, 3333, 3333] 10000
+10000 -> 250
+1999 -> 50
+1 -> 0</div>
+        <p>القسمة العادية 10000 ÷ 3 = 3333.33، والتقريب يعطي 3333 × 3 = 9999. قرش واحد ضاع! مع ملايين العمليات تصبح هذه آلاف الجنيهات بلا تفسير في الدفتر. و <code>fee(1, 250) = 0</code>: لهذا تضع كثير من الشركات حدًا أدنى للعمولة.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): الاستردادات الجزئية المتزامنة</h3>
+      <p>فريق الدعم ضغط "استرداد 60 جنيهًا" لدفعة 100، وفي نفس الثانية أرسل التاجر "استرداد 60" عبر الـ API. كلاهما قرأ <code>refunded = 0</code>. كيف تمنع استرداد 120 من دفعة 100؟ اكتب الحل في الكود وفي SQL.</p>
+      <details><summary>💡 تلميح</summary><p>تذكّر "التحديث الضائع" في الدرس 7. الفحص والزيادة يجب أن يكونا عملية ذرية واحدة.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">class RefundError(Exception):
+    pass
+
+
+class Payment:
+    def __init__(self, captured: int) -> None:
+        self.captured = captured
+        self.refunded = 0
+
+    def refund(self, amount: int) -> str:
+        # In SQL this check + update is ONE atomic statement
+        if amount &lt;= 0:
+            raise RefundError("amount must be positive")
+        if self.refunded + amount > self.captured:
+            raise RefundError(f"only {self.captured - self.refunded} left")
+        self.refunded += amount
+        return "refunded" if self.refunded == self.captured else "partially_refunded"
+
+
+p = Payment(10_000)
+for amount in (3_000, 5_000, 4_000, 2_000):
+    try:
+        print(amount, "->", p.refund(amount))
+    except RefundError as err:
+        print(amount, "-> error:", err)</code></pre>
+        <div class="output">3000 -> partially_refunded
+5000 -> partially_refunded
+4000 -> error: only 2000 left
+2000 -> refunded</div>
+<pre><code class="language-sql">UPDATE payments
+SET refunded = refunded + 6000
+WHERE id = 'pay_1' AND refunded + 6000 &lt;= amount;
+-- first request: 1 row updated. second request: 0 rows -> reject.</code></pre>
+        <p>الشرط داخل <code>WHERE</code> يجعل قاعدة البيانات تفحص وتحدّث تحت نفس القفل. الطلب الثاني يرى <code>refunded = 6000</code>، فيفشل الشرط. ولا تنسَ: كل استرداد له مفتاح منع تكرار خاص (الدرس 7).</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): المحاور يسأل "وماذا عن الاعتراضات؟"</h3>
+      <p>عميل اعترض عند بنكه على دفعة 500 جنيه بعد شهر، والبنك سحب المبلغ منا. صمّم: الحالات، وقيود الدفتر، وماذا يحدث إذا كان رصيد التاجر صفرًا لأننا حوّلنا له كل شيء.</p>
+      <details><summary>💡 تلميح</summary><p>الاعتراض حركة مال جديدة، وليس تعديلًا للدفعة القديمة. والتاجر قد يكسب الاعتراض لاحقًا.</p></details>
+      <details><summary>✅ الحل</summary>
+        <ul>
+          <li><strong>كيان جديد</strong> <code>disputes</code> مرتبط بالدفعة، بحالات: <code>opened</code> ← <code>evidence_submitted</code> ← <code>won</code> أو <code>lost</code>. الدفعة الأصلية لا تتغير.</li>
+          <li><strong>عند الفتح:</strong> البنك يخصم 500 من تسويتنا. قيد: <code>merchant:m1</code> +50000 (التاجر مدين لنا الآن)، و <code>bank_clearing</code> −50000. وغالبًا رسوم اعتراض على التاجر بقيد منفصل.</li>
+          <li><strong>إذا كسب التاجر:</strong> البنك يعيد المبلغ، فنكتب قيدًا عكسيًا. لا نحذف قيد الفتح أبدًا.</li>
+          <li><strong>رصيد التاجر سالب:</strong> نخصم من دفعاته القادمة قبل أي تحويل. ولهذا تحتفظ شركات الدفع بـ <strong>احتياطي</strong> <span class="en">(Reserve)</span>، مثل 10% من مستحقات التجار الجدد أو عالي المخاطر لمدة معينة، كحساب منفصل في الدفتر.</li>
+          <li><strong>الإشعارات:</strong> حدث <code>dispute.opened</code> عبر صندوق الصادر، مع موعد نهائي لتقديم الأدلة. الموعد الضائع يعني خسارة الاعتراض تلقائيًا.</li>
+          <li><strong>المطابقة:</strong> ملفات الاعتراض من البنك تُطابق مثل ملفات التسوية.</li>
+        </ul>
+        <p>لاحظ أن التصميم لم يحتج أي مكون جديد: كيان بآلة حالات، وقيود متوازنة، وأحداث، ومطابقة. هذه علامة أن التصميم الأساسي صحيح.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>المقابلة 6 خطوات: المتطلبات، والحسابات، والـ API والبيانات، والتصميم العام، والتعمق، والختام. أطول وقت للتعمق.</li>
+        <li>في الدفع، الحمل متواضع والتحدي هو الدقة. قلها بالأرقام: 2.1 مليار جنيه يوميًا.</li>
+        <li>المال يتحرك: تفويض (حجز)، ثم تحصيل، ثم تسوية (T+1)، ثم تحويل للتاجر.</li>
+        <li>المال رقم صحيح بالوحدة الصغرى. لا <code>float</code> أبدًا. والتقسيم يوزّع الباقي حتى لا يضيع قرش.</li>
+        <li>كل POST يحرّك المال له مفتاح منع تكرار. والتاجر يرسل رمز البطاقة، والرقم في خزنة معزولة فقط.</li>
+        <li>آلة الحالات تمنع الانتقالات الخاطئة، والانتقال في SQL شرطي وذري. والمهلة تعني <code>unknown</code>.</li>
+        <li>الدفتر ثنائي القيد: كل قيد مجموعه صفر، وإضافة فقط، والأرصدة مشتقة. ويُكتب في نفس معاملة تغيير الحالة.</li>
+        <li>احذر الحسابات الساخنة: لا عمود رصيد، أو قسّمها إلى حسابات فرعية.</li>
+        <li>المطابقة اليومية شبكة الأمان الأخيرة. والكسر الأخطر: مال عند البنك لا نعرفه.</li>
+        <li>اختم بنقاط الضعف والمراقبة، وارجع للمتطلبات لتُظهر أنك حققتها.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>🎓 أكملت السلسلة! ماذا بعد؟</h2>
+      <ol>
+        <li>✅ أساسيات التوسع والمكونات الأساسية</li>
+        <li>✅ موازنة الأحمال والـ Caching بعمق</li>
+        <li>✅ قواعد البيانات: النسخ المتماثل والتقسيم</li>
+        <li>✅ طوابير الرسائل والأنظمة غير المتزامنة</li>
+        <li>✅ نظرية CAP ونماذج الاتساق ونمط Saga</li>
+        <li>✅ الخدمات المصغرة و API Gateway وقاطع الدائرة</li>
+        <li>✅ الموثوقية: تحديد المعدل ومنع التكرار وإعادة المحاولة</li>
+        <li>✅ مقابلة تصميم كاملة: بوابة دفع من الصفر (هذا الدرس)</li>
+      </ol>
+      <h3>كيف تكمل التعلم؟</h3>
+      <ul>
+        <li><strong>تدرّب على أنظمة أخرى</strong> بنفس الإطار: خدمة اختصار روابط، ونظام محادثة فورية، وموجز أخبار، ونظام حجز تذاكر. كل واحد يركز على أداة مختلفة.</li>
+        <li><strong>تدرّب بصوت عالٍ</strong> مع صديق أو أمام سبورة، بمؤقت 45 دقيقة. الفهم شيء، والشرح تحت الضغط شيء آخر.</li>
+        <li><strong>اقرأ بعمق:</strong> كتاب <span class="en">Designing Data-Intensive Applications</span> لـ Martin Kleppmann هو المرجع الأشهر لأغلب مواضيع هذه السلسلة.</li>
+        <li><strong>اقرأ المدونات الهندسية للشركات</strong> عن الأعطال الحقيقية <span class="en">(Postmortems)</span>. كل عطل منشور درس مجاني.</li>
+        <li><strong>ابنِ:</strong> حوّل المشروع الختامي إلى خدمة حقيقية بـ PostgreSQL و FastAPI، وأضف المعاملات والقيود الفريدة وصندوق الصادر.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀 — سلسلة تصميم الأنظمة، الدرس 8 والأخير</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    new Chart(perf, {
+      type: "doughnut",
+      data: {
+        labels: ["المتطلبات (5)", "الحسابات (5)", "الـ API والبيانات (5)", "التصميم العام (10)", "التعمق (15)", "الختام (5)"],
+        datasets: [
+          { data: [5, 5, 5, 10, 15, 5], backgroundColor: ["#2563eb", "#06b6d4", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444"] }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { rtl: true, position: "bottom" },
+          tooltip: { rtl: true },
+          title: { display: true, text: "توزيع 45 دقيقة في مقابلة التصميم" }
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

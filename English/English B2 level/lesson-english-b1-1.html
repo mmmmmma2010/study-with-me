@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 1: هل سبق لك أن...؟ — English B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Cairo',Tahoma,'Segoe UI',sans-serif; font-size:18px; line-height:1.9; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ar-pron { display:inline-block; background:#fef3c7; color:#78350f; border-radius:8px; padding:0 10px; font-weight:700; }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:210px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); }
+  .emoji { font-size:2.6rem; line-height:1.2; }
+  .word { font-size:1.4rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.15rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  /* Timeline */
+  .timeline-viz { position:relative; height:130px; margin:20px 10px; direction:ltr; }
+  .tl-line { position:absolute; top:60px; left:0; right:0; height:4px; background:linear-gradient(90deg,#94a3b8,#4f46e5,#06b6d4); border-radius:4px; }
+  .tl-now { position:absolute; top:30px; height:64px; border-left:3px solid var(--v); }
+  .tl-now span, .tl-event span { position:absolute; top:-28px; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; background:var(--card); padding:0 6px; }
+  .tl-now span { color:var(--v); }
+  .tl-event { position:absolute; top:52px; width:20px; height:20px; margin-left:-10px; border-radius:50%; background:var(--o); border:3px solid #fff; box-shadow:0 0 0 2px var(--o); }
+  .tl-event span { top:28px; color:var(--o); }
+  .tl-range { position:absolute; top:56px; height:12px; background:rgba(79,70,229,.35); border-radius:6px; }
+  .tl-labels { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; color:var(--muted); font-size:.85rem; font-weight:700; }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; }
+  .bubble { max-width:80%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  .bubble .tr { font-size:.9rem; color:var(--muted); }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:110px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:200px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>الدرس 1: هل سبق لك أن...؟ <span class="tl">— Have you ever...?</span></h1>
+  <p>تحدّث عن تجاربك في الحياة والسفر. <span class="tl">Talk about your life and travel experiences.</span></p>
+  <div class="badges">
+    <span class="badge">اللغة: الإنجليزية</span>
+    <span class="badge">المستوى: B1</span>
+    <span class="badge">وقت الدراسة: 30 دقيقة</span>
+    <span class="badge tl">Present Perfect vs Past Simple</span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 السرعة: عادية</button>
+  <span>النتيجة: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ حفظ PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section id="map">
+    <h2>🗺️ خريطة المستوى B1 <span class="tl">— Level Map</span></h2>
+    <p>في B1 ستنتقل من الجمل البسيطة إلى <b>التعبير عن الرأي، والتجارب، والقصص</b>. <span class="tl">15 lessons, one step at a time.</span></p>
+    <table>
+      <tr><th>#</th><th>Title</th><th>Grammar</th><th>Vocabulary</th><th>Can-do</th></tr>
+      <tr><td>1</td><td class="tl">Have you ever...?</td><td class="tl">Present perfect (ever / never) vs past simple</td><td>السفر</td><td class="tl">I can talk about my experiences.</td></tr>
+      <tr><td>2</td><td class="tl">I've lived here for years</td><td class="tl">Present perfect + for / since / already / yet / just</td><td>السكن وتغيّرات الحياة</td><td class="tl">I can describe changes in my life.</td></tr>
+      <tr><td>3</td><td class="tl">When I was a child...</td><td class="tl">used to / would</td><td>الطفولة والذكريات</td><td class="tl">I can describe past habits.</td></tr>
+      <tr><td>4</td><td class="tl">While I was waiting...</td><td class="tl">Past continuous vs past simple</td><td>القصص والحوادث</td><td class="tl">I can tell a short story.</td></tr>
+      <tr><td>5</td><td class="tl">If it rains, we'll stay home</td><td class="tl">First conditional, when / unless</td><td>الطقس والخطط</td><td class="tl">I can talk about real possibilities.</td></tr>
+      <tr><td>6</td><td class="tl">If I were rich...</td><td class="tl">Second conditional</td><td>الأحلام والمال</td><td class="tl">I can talk about imaginary situations.</td></tr>
+      <tr><td>7</td><td class="tl">It's made in Egypt</td><td class="tl">Passive (present &amp; past)</td><td>المنتجات والتسوق</td><td class="tl">I can describe how things are made.</td></tr>
+      <tr><td>8</td><td class="tl">The man who helped me</td><td class="tl">Defining relative clauses (who / which / that / where)</td><td>الناس والمهن</td><td class="tl">I can describe people and things clearly.</td></tr>
+      <tr><td>9</td><td class="tl">You should see a doctor</td><td class="tl">should / ought to / had better</td><td>الصحة</td><td class="tl">I can give advice.</td></tr>
+      <tr><td>10</td><td class="tl">I'm meeting him tomorrow</td><td class="tl">Future: will / going to / present continuous</td><td>العمل والمواعيد</td><td class="tl">I can talk about plans and arrangements.</td></tr>
+      <tr><td>11</td><td class="tl">She said that...</td><td class="tl">Reported speech (basics)</td><td>الأخبار والرسائل</td><td class="tl">I can report what someone said.</td></tr>
+      <tr><td>12</td><td class="tl">I enjoy cooking</td><td class="tl">Gerunds vs infinitives</td><td>الهوايات</td><td class="tl">I can talk about likes and free time.</td></tr>
+      <tr><td>13</td><td class="tl">I've been waiting for hours!</td><td class="tl">Present perfect continuous</td><td>الروتين والعمل</td><td class="tl">I can talk about actions that continue until now.</td></tr>
+      <tr><td>14</td><td class="tl">Cairo is bigger than...</td><td class="tl">Comparatives, superlatives, as...as, too / enough</td><td>المدن والأماكن</td><td class="tl">I can compare places in detail.</td></tr>
+      <tr><td>15</td><td class="tl">In my opinion...</td><td class="tl">Linkers: although, however, because, so</td><td>التقنية ووسائل التواصل</td><td class="tl">I can give my opinion and explain why.</td></tr>
+    </table>
+  </section>
+
+  <section id="goals">
+    <h2>🎯 أهداف الدرس <span class="tl">— Can-do goals</span></h2>
+    <div class="cando">
+      <label><input type="checkbox"><span class="tl">I can ask and answer "Have you ever...?" questions.</span> — أستطيع أن أسأل وأجيب عن التجارب.</label>
+      <label><input type="checkbox"><span class="tl">I can choose between the present perfect and the past simple.</span> — أستطيع أن أختار الزمن الصحيح.</label>
+      <label><input type="checkbox"><span class="tl">I can pronounce /v/ in "I've" and "never" correctly.</span> — أستطيع أن أنطق صوت /v/ جيدًا.</label>
+    </div>
+  </section>
+
+  <section id="warmup">
+    <h2>🌱 تمهيد <span class="tl">— Warm-up</span></h2>
+    <p>في العربية نقول بسهولة: «<b>هل سبق لك أن</b> زرتَ اليابان؟». نحن لا نسأل <b>متى</b>. نحن نسأل عن <b>التجربة</b> في حياتك كلها.</p>
+    <p>الإنجليزية عندها زمن خاص لهذا المعنى: <span class="tl"><b>Have you ever visited Japan?</b></span> <button class="say" data-text="Have you ever visited Japan?">🔊</button></p>
+    <div class="callout note">📝 <b>Think:</b> <span class="tl">How many countries have you visited in your life?</span><br>فكّر: كم بلدًا زرت في حياتك؟ ستجيب بالإنجليزية في نهاية الدرس.</div>
+  </section>
+
+  <section id="words">
+    <h2>📚 الكلمات الجديدة <span class="tl">— New words: Travel</span></h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. — اضغط على البطاقة لتقلبها. المقطع المنبور باللون الأحمر.</p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌍</div><div class="word tl">abroad</div><button class="say" data-text="abroad">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">في الخارج</div><span class="ipa">/ə<b>ˈbrɔːd</b>/</span><span class="tl">I have never lived abroad.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📍</div><div class="word tl">destination</div><button class="say" data-text="destination">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">وِجهة</div><span class="ipa">/ˌdes.tɪ<b>ˈneɪ</b>.ʃən/</span><span class="tl">Istanbul is a popular destination.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🛂</div><div class="word tl">passport</div><button class="say" data-text="passport">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">جواز سفر</div><span class="ipa">/<b>ˈpæs</b>.pɔːrt/</span><span class="tl">Have you ever lost your passport?</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧳</div><div class="word tl">luggage</div><button class="say" data-text="luggage">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">أمتعة</div><span class="ipa">/<b>ˈlʌɡ</b>.ɪdʒ/</span><span class="tl">My luggage was very heavy.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">✈️</div><div class="word tl">flight</div><button class="say" data-text="flight">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">رحلة طيران</div><span class="ipa">/<b>flaɪt</b>/</span><span class="tl">The flight to Dubai took three hours.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">⏳</div><div class="word tl">delay</div><button class="say" data-text="delay">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">تأخير</div><span class="ipa">/dɪ<b>ˈleɪ</b>/</span><span class="tl">There was a two-hour delay at the airport.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🏛️</div><div class="word tl">sightseeing</div><button class="say" data-text="sightseeing">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">زيارة المعالم السياحية</div><span class="ipa">/<b>ˈsaɪt</b>ˌsiː.ɪŋ/</span><span class="tl">We went sightseeing in Rome last summer.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🎁</div><div class="word tl">souvenir</div><button class="say" data-text="souvenir">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">تذكار / هدية من السفر</div><span class="ipa">/ˌsuː.və<b>ˈnɪr</b>/</span><span class="tl">I bought a small souvenir for my mother.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌟</div><div class="word tl">experience</div><button class="say" data-text="experience">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">تجربة</div><span class="ipa">/ɪk<b>ˈspɪr</b>.i.əns/</span><span class="tl">Living abroad was a great experience.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🏘️</div><div class="word tl">local</div><button class="say" data-text="local">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">محلّي</div><span class="ipa">/<b>ˈloʊ</b>.kəl/</span><span class="tl">Have you tried the local food?</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🎭</div><div class="word tl">culture</div><button class="say" data-text="culture">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">ثقافة</div><span class="ipa">/<b>ˈkʌl</b>.tʃər/</span><span class="tl">I love learning about new cultures.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧗</div><div class="word tl">adventure</div><button class="say" data-text="adventure">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">مغامرة</div><span class="ipa">/əd<b>ˈven</b>.tʃər/</span><span class="tl">Climbing Mount Sinai was a real adventure.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🏨</div><div class="word tl">check in</div><button class="say" data-text="check in">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يسجّل الوصول (فندق / مطار)</div><span class="ipa">/tʃek <b>ˈɪn</b>/</span><span class="tl">We checked in at the hotel at 3 p.m.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚗</div><div class="word tl">set off</div><button class="say" data-text="set off">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">ينطلق / يبدأ الرحلة</div><span class="ipa">/set <b>ˈɔːf</b>/</span><span class="tl">We set off early in the morning.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👀</div><div class="word tl">look around</div><button class="say" data-text="look around">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يتجوّل ويستكشف المكان</div><span class="ipa">/lʊk ə<b>ˈraʊnd</b>/</span><span class="tl">Let's look around the old market.</span></div>
+      </div></div>
+    </div>
+    <div class="callout warning">⚠️ <b>انتبه:</b> كلمة <span class="tl">luggage</span> غير معدودة. لا تقل <span class="tl">luggages ❌</span>. قل <span class="tl">two pieces of luggage ✅</span>.</div>
+  </section>
+
+  <section id="grammar">
+    <h2>🎨 القاعدة بالألوان <span class="tl">— Grammar: Present Perfect for experiences</span></h2>
+    <p class="instr">Look at these sentences. What do they have in common?<span class="instr-ar">انظر إلى الجمل. ما الشيء المشترك بينها؟</span></p>
+    <div class="sent tl"><span class="w s">I<small>أنا</small></span><span class="w v">have<small>مساعد</small></span><span class="w v">visited<small>التصريف الثالث</small></span><span class="w o">Japan<small>اليابان</small></span><button class="say" data-text="I have visited Japan.">🔊</button></div>
+    <div class="sent tl"><span class="w s">She<small>هي</small></span><span class="w v">has<small>مساعد</small></span><span class="w x">never<small>أبدًا</small></span><span class="w v">eaten<small>التصريف الثالث</small></span><span class="w o">sushi<small>سوشي</small></span><button class="say" data-text="She has never eaten sushi.">🔊</button></div>
+    <div class="sent tl"><span class="w v">Have<small>مساعد</small></span><span class="w s">you<small>أنت</small></span><span class="w x">ever<small>سبق لك</small></span><span class="w v">flown<small>التصريف الثالث</small></span><span class="w o">first class?<small>الدرجة الأولى</small></span><button class="say" data-text="Have you ever flown first class?">🔊</button></div>
+    <p>هل لاحظت؟ في كل جملة: <b>have / has</b> + <b>الفعل في التصريف الثالث</b> <span class="tl">(past participle)</span>. ولا توجد كلمة تقول <b>متى</b>.</p>
+
+    <table class="tl">
+      <tr><th>Form</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Positive ✅</td><td>subject + <mark>have / has</mark> + past participle</td><td>I've been to Jordan. <button class="say" data-text="I've been to Jordan.">🔊</button></td></tr>
+      <tr><td>Negative ❌</td><td>subject + <mark>have / has never</mark> (or <mark>haven't</mark>) + past participle</td><td>He has never seen snow. <button class="say" data-text="He has never seen snow.">🔊</button></td></tr>
+      <tr><td>Question ❓</td><td><mark>Have / Has</mark> + subject + <mark>ever</mark> + past participle?</td><td>Has she ever travelled alone? <button class="say" data-text="Has she ever travelled alone?">🔊</button></td></tr>
+      <tr><td>Short answers</td><td>Yes, I <mark>have</mark>. / No, I <mark>haven't</mark>.</td><td>Yes, I have. <button class="say" data-text="Yes, I have.">🔊</button></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>Rule:</b> <span class="tl">Use the present perfect for life experiences when the time is <b>not important</b> or <b>not known</b>.</span><br>نستخدمه للتجارب في الحياة حتى الآن، عندما لا يهمّ وقت حدوثها.</div>
+
+    <h3>⏱️ <span class="tl">Two tenses, two pictures</span> — زمنان وصورتان</h3>
+    <p><b>1) Past simple:</b> حدث في وقت محدد ومنتهٍ. <span class="tl">I visited Malaysia <b>in 2019</b>.</span> <button class="say" data-text="I visited Malaysia in 2019.">🔊</button></p>
+    <div class="timeline-viz">
+      <div class="tl-line"></div>
+      <div class="tl-event" style="left:30%"><span>2019 — visited ✔</span></div>
+      <div class="tl-now" style="left:70%"><span>NOW — الآن</span></div>
+      <div class="tl-labels"><span>⬅ Past الماضي</span><span>Future المستقبل ➡</span></div>
+    </div>
+    <p><b>2) Present perfect:</b> تجربة في أي وقت من حياتك <b>حتى الآن</b>. <span class="tl">I <b>have visited</b> three countries.</span> <button class="say" data-text="I have visited three countries.">🔊</button></p>
+    <div class="timeline-viz">
+      <div class="tl-line"></div>
+      <div class="tl-range" style="left:5%;width:65%"></div>
+      <div class="tl-event" style="left:18%"><span>?</span></div>
+      <div class="tl-event" style="left:40%"><span>?</span></div>
+      <div class="tl-event" style="left:58%"><span>?</span></div>
+      <div class="tl-now" style="left:70%"><span>NOW — الآن</span></div>
+      <div class="tl-labels"><span>⬅ My life so far حياتي حتى الآن</span><span>Future ➡</span></div>
+    </div>
+    <p>الشريط البنفسجي هو حياتك كلها حتى الآن. علامة <b>?</b> تعني: الوقت غير مهم.</p>
+
+    <h3>🌳 <span class="tl">Which tense?</span> — كيف تختار؟</h3>
+    <div class="diagram mermaid">
+flowchart TD
+  A["Do you say WHEN it happened? / هل تذكر متى حدث؟"] -->|"Yes: yesterday, in 2019, last year, 3 years ago"| B["Past simple / الماضي البسيط: I visited Rome in 2019."]
+  A -->|"No / الوقت غير مهم"| C["Is it an experience in your life until now? / تجربة حتى الآن؟"]
+  C -->|"Yes / نعم"| D["Present perfect: I have visited Rome."]
+  D --> E["Want to add details? Switch to past simple: It was beautiful."]
+    </div>
+    <div class="callout note">📝 <b>Very common pattern:</b> نبدأ بالـ <span class="tl">present perfect</span>، ثم نعطي التفاصيل بالـ <span class="tl">past simple</span>.<br><span class="tl">"I've been to Thailand. I went there in 2022 and it was amazing."</span> <button class="say" data-text="I've been to Thailand. I went there in 2022 and it was amazing.">🔊</button></div>
+
+    <h3>📗 <span class="tl">been to vs gone to</span></h3>
+    <table>
+      <tr><th class="tl">He has <mark>been to</mark> London.</th><th class="tl">He has <mark>gone to</mark> London.</th></tr>
+      <tr><td>ذهب ثم <b>رجع</b>. هي تجربة. 🔁</td><td>ذهب وهو <b>هناك الآن</b>. لم يرجع بعد. ➡️</td></tr>
+    </table>
+  </section>
+
+  <section id="compare">
+    <h2>🔁 العربية مقابل الإنجليزية <span class="tl">— Arabic vs English</span></h2>
+    <div class="vs">
+      <div>
+        <h4>العربية</h4>
+        <div class="sent"><span class="w x">هل سبق<small>ever</small></span><span class="w s">لك<small>you</small></span><span class="w v">أن زرتَ<small>visited</small></span><span class="w o">اليابان؟<small>Japan</small></span></div>
+        <div class="sent"><span class="w x">لم يسبق<small>never</small></span><span class="w s">لي<small>I</small></span><span class="w v">أن أكلتُ<small>eaten</small></span><span class="w o">السوشي<small>sushi</small></span></div>
+        <p>نستخدم فعل الماضي «زرتُ» للتجربة <b>وأيضًا</b> للوقت المحدد: «زرتُ اليابان عام 2019».</p>
+      </div>
+      <div>
+        <h4 class="tl">English</h4>
+        <div class="sent tl"><span class="w v">Have</span><span class="w s">you</span><span class="w x">ever</span><span class="w v">visited</span><span class="w o">Japan?</span></div>
+        <div class="sent tl"><span class="w s">I</span><span class="w gap">have<small>إجباري!</small></span><span class="w x">never</span><span class="w v">eaten</span><span class="w o">sushi.</span></div>
+        <p>الإنجليزية تفرّق بين الحالتين: <span class="tl">have visited</span> (تجربة) و <span class="tl">visited in 2019</span> (وقت محدد).</p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>سهل عليك:</b> تعبير «هل سبق لك أن...؟» يطابق <span class="tl">Have you ever...?</span> تمامًا. و«لم يسبق لي...» يطابق <span class="tl">I have never...</span>. استخدم هذه الحيلة في رأسك!</div>
+    <div class="callout warning">⚠️ <b>صعب عليك:</b> العربية تستخدم الماضي نفسه لكل شيء. لذلك يقول العرب <span class="tl">I have visited Paris last year ❌</span>. مع كلمات الوقت المحدد استخدم الماضي البسيط فقط: <span class="tl">I visited Paris last year ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب أيضًا:</b> التصريف الثالث للأفعال الشاذة: <span class="tl">go → went → <b>gone/been</b></span>. لا تقل <span class="tl">I have went ❌</span>.</div>
+  </section>
+
+  <section id="pron">
+    <h2>👄 النطق: صوت <span class="tl">/v/</span> في <span class="tl">I've, never, have</span></h2>
+    <p>صوت <span class="tl">/v/</span> غير موجود في العربية. لذلك يقول كثيرون <span class="tl">"I'f"</span> أو <span class="tl">"nefer"</span>. وهذا الصوت موجود في كل جملة من هذا الدرس!</p>
+    <p><b>How to make it:</b> ضع أسنانك العليا على شفتك السفلى، كما في صوت <b>ف</b>. ثم أضف <b>صوتًا من الحلق</b>. ضع يدك على رقبتك: مع <span class="tl">/v/</span> تشعر باهتزاز. مع <span class="tl">/f/</span> لا يوجد اهتزاز.</p>
+    <p class="instr">Listen and repeat the minimal pairs.<span class="instr-ar">استمع وكرّر الأزواج المتقاربة.</span></p>
+    <table>
+      <tr><th><span class="tl">/f/</span> (ف) — بلا اهتزاز</th><th><span class="tl">/v/</span> (ڤ) — مع اهتزاز</th></tr>
+      <tr><td><span class="tl">fan</span> <button class="say" data-text="fan">🔊</button> مروحة</td><td><span class="tl">van</span> <button class="say" data-text="van">🔊</button> شاحنة صغيرة</td></tr>
+      <tr><td><span class="tl">ferry</span> <button class="say" data-text="ferry">🔊</button> عبّارة</td><td><span class="tl">very</span> <button class="say" data-text="very">🔊</button> جدًا</td></tr>
+      <tr><td><span class="tl">few</span> <button class="say" data-text="few">🔊</button> قليل</td><td><span class="tl">view</span> <button class="say" data-text="view">🔊</button> منظر</td></tr>
+      <tr><td><span class="tl">safe</span> <button class="say" data-text="safe">🔊</button> آمن</td><td><span class="tl">save</span> <button class="say" data-text="save">🔊</button> يوفّر</td></tr>
+    </table>
+    <h3><span class="tl">Weak forms</span> — النطق الضعيف</h3>
+    <p>في الكلام السريع، <span class="tl">have</span> تصبح قصيرة جدًا: <span class="ipa">/həv/</span> أو <span class="ipa">/v/</span>.</p>
+    <ul>
+      <li><span class="tl">I have → <b>I've</b></span> <span class="ipa">/aɪv/</span> <button class="say" data-text="I've">🔊</button></li>
+      <li><span class="tl">We have → <b>We've</b></span> <span class="ipa">/wiːv/</span> <button class="say" data-text="We've">🔊</button></li>
+      <li><span class="tl">Have you ever been...?</span> <span class="ipa">/həv juː <b>ˈev</b>.ər bɪn/</span> <button class="say" data-text="Have you ever been to Egypt?">🔊</button></li>
+    </ul>
+    <div class="callout tip">💡 <b>نصيحة:</b> استخدم زر 🐢 في الأعلى لتسمع ببطء. ثم كرّر بالسرعة العادية.</div>
+  </section>
+
+  <section id="dialogue">
+    <h2>💬 حوار من الحياة <span class="tl">— At the office café</span></h2>
+    <p class="instr">Listen to Layla and Daniel. Find 5 sentences in the present perfect.<span class="instr-ar">استمع إلى ليلى ودانيال. ابحث عن 5 جمل بالمضارع التام.</span></p>
+    <button class="btn" id="playDialogue">▶️ استمع للحوار كاملًا</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Layla</div><div class="tl line">Hi Daniel! I heard you're going on holiday next week. Where are you going?</div></div>
+      <div class="bubble b"><div class="who">Daniel</div><div class="tl line">I'm going to Japan. I've never been there before, so I'm really excited.</div></div>
+      <div class="bubble a"><div class="who">Layla</div><div class="tl line">Wow! Have you ever travelled to Asia?</div></div>
+      <div class="bubble b"><div class="who">Daniel</div><div class="tl line">Yes, I have. I went to Thailand three years ago. It was amazing, but the flight was really long.</div></div>
+      <div class="bubble a"><div class="who">Layla</div><div class="tl line">I've been to Asia only once. I visited Malaysia in 2019, and I loved the local food.</div></div>
+      <div class="bubble b"><div class="who">Daniel</div><div class="tl line">What about Japan? Have you ever thought about going there?</div></div>
+      <div class="bubble a"><div class="who">Layla</div><div class="tl line">Many times! But it's expensive, and I've never had enough time. How long is your trip?</div></div>
+      <div class="bubble b"><div class="who">Daniel</div><div class="tl line">Ten days. We set off on Monday morning. I want to look around Tokyo first, and then go sightseeing in Kyoto.</div></div>
+      <div class="bubble a"><div class="who">Layla</div><div class="tl line">Sounds like a real adventure. Don't forget your passport! Last year my brother left his passport at home and missed his flight.</div></div>
+      <div class="bubble b"><div class="who">Daniel</div><div class="tl line">Oh no! Don't worry, it's in my bag. Have you ever tried Japanese sweets?</div></div>
+      <div class="bubble a"><div class="who">Layla</div><div class="tl line">No, I've never tried them.</div></div>
+      <div class="bubble b"><div class="who">Daniel</div><div class="tl line">Then I'll bring you some as a souvenir!</div></div>
+    </div>
+    <details><summary>👀 Answers: present perfect sentences</summary>
+      <ul class="tl">
+        <li>I've never been there before.</li>
+        <li>Have you ever travelled to Asia? — Yes, I have.</li>
+        <li>I've been to Asia only once.</li>
+        <li>Have you ever thought about going there?</li>
+        <li>I've never had enough time.</li>
+        <li>Have you ever tried Japanese sweets? — I've never tried them.</li>
+      </ul>
+      <p>لاحظ: <span class="tl">I went to Thailand <b>three years ago</b></span> و <span class="tl">I visited Malaysia <b>in 2019</b></span> بالماضي البسيط، لأن الوقت محدد.</p>
+    </details>
+  </section>
+
+  <section id="practice">
+    <h2>🏋️ تدريب <span class="tl">— Practice</span></h2>
+
+    <h3 class="instr">A. Choose the correct answer.<span class="instr-ar">اختر الإجابة الصحيحة.</span></h3>
+
+    <div class="ex quiz" data-explain="In 2018 وقت محدد ومنتهٍ → past simple.">
+      <div class="q">1. <span class="tl">I ___ to Paris in 2018.</span></div>
+      <button class="option tl" data-correct="true">went</button>
+      <button class="option tl">have been</button>
+      <button class="option tl">have gone</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="Have + subject + ever + past participle. ride → rode → ridden.">
+      <div class="q">2. <span class="tl">___ a camel?</span></div>
+      <button class="option tl">Did you ever ridden</button>
+      <button class="option tl" data-correct="true">Have you ever ridden</button>
+      <button class="option tl">Have you ever rode</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="بعد has نستخدم التصريف الثالث: travelled.">
+      <div class="q">3. <span class="tl">My sister has never ___ abroad.</span></div>
+      <button class="option tl">travel</button>
+      <button class="option tl">travels</button>
+      <button class="option tl" data-correct="true">travelled</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="Last month وقت محدد → لا نستخدم present perfect معه.">
+      <div class="q">4. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">I have been to Dubai last month.</button>
+      <button class="option tl" data-correct="true">I went to Dubai last month.</button>
+      <button class="option tl">I have went to Dubai last month.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="علي ليس هنا الآن، هو في المطار → gone to.">
+      <div class="q">5. <span class="tl">"Where's Ali?" — "He isn't here. He has ___ the airport."</span></div>
+      <button class="option tl">been to</button>
+      <button class="option tl" data-correct="true">gone to</button>
+      <button class="option tl">went to</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">B. Complete with the correct form of the verb.<span class="instr-ar">أكمل بالشكل الصحيح للفعل بين القوسين.</span></h3>
+    <div class="ex fill">
+      <p class="tl">6. I <input class="blank" data-answer="visited"> (visit) Aswan last winter.</p>
+      <p class="tl">7. We <input class="blank" data-answer="have|'ve"> never <input class="blank" data-answer="seen"> (see) snow.</p>
+      <p class="tl">8. <input class="blank" data-answer="have"> you ever <input class="blank" data-answer="tried"> (try) Korean food?</p>
+      <p class="tl">9. He <input class="blank" data-answer="lost"> (lose) his passport two years ago.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">C. Transform the sentences. Use the word in brackets.<span class="instr-ar">حوّل الجمل إلى المضارع التام باستخدام الكلمة بين القوسين.</span></h3>
+    <div class="ex fill">
+      <p class="tl">10. I didn't go to London in my life. (never)<br>→ I <input class="blank wide" data-answer="have never been|'ve never been|have never gone"> to London.</p>
+      <p class="tl">11. Did she fly in a helicopter at any time? (ever)<br>→ <input class="blank wide" data-answer="has she ever flown"> in a helicopter?</p>
+      <p class="tl">12. This is my first time in Morocco. (never / be)<br>→ I <input class="blank wide" data-answer="have never been|'ve never been"> to Morocco before.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">D. Put the words in order.<span class="instr-ar">رتّب الكلمات لتكوّن جملة.</span></h3>
+    <div class="ex builder" data-answer="Have you ever eaten Egyptian koshari">
+      <div class="q">13. ❓</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex builder" data-answer="She has never checked in online for a flight">
+      <div class="q">14. ✈️</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">E. Say it! 🎤<span class="instr-ar">قل الجملة بصوتك. انتبه لصوت /v/.</span></h3>
+    <div class="ex speak-check" data-text="I have never been to Japan|I've never been to Japan">
+      <div class="q">15. <span class="tl">I've never been to Japan.</span> <button class="say" data-text="I've never been to Japan.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+    <div class="ex speak-check" data-text="Have you ever travelled abroad|Have you ever traveled abroad">
+      <div class="q">16. <span class="tl">Have you ever travelled abroad?</span> <button class="say" data-text="Have you ever travelled abroad?">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+  </section>
+
+  <section id="task">
+    <h2>✍️ مهمة الكتابة <span class="tl">— Writing task (50–80 words)</span></h2>
+    <p class="instr">Write a short paragraph about your travel experiences.<span class="instr-ar">اكتب فقرة قصيرة عن تجاربك في السفر. أرسلها لي في المحادثة وسأصححها.</span></p>
+    <ul class="tl">
+      <li>Two places you <b>have been</b> to.</li>
+      <li>One thing you <b>have never</b> done (but want to do).</li>
+      <li>Details about one trip: <b>when</b> did you go? What <b>did</b> you do? (past simple)</li>
+    </ul>
+    <details><summary>👀 Model answer (72 words)</summary>
+      <p class="tl">I've been to many places in Egypt, but I've only travelled abroad twice. I've been to Jordan and Turkey. I went to Istanbul in 2023 with my family. We went sightseeing every day, and I bought a lot of souvenirs. The local food was delicious! However, I have never flown alone, and I've never seen snow. One day, I want to visit Switzerland in winter. It will be a real adventure.</p>
+    </details>
+  </section>
+
+  <section id="mistakes">
+    <h2>🚫 الأخطاء الشائعة عند العرب <span class="tl">— Common mistakes</span></h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>لماذا؟</th></tr>
+      <tr><td class="tl">I have visited Paris last year.</td><td class="tl">I visited Paris last year.</td><td>مع وقت محدد نستخدم الماضي البسيط.</td></tr>
+      <tr><td class="tl">I have went to Rome.</td><td class="tl">I have been to Rome.</td><td>بعد <span class="tl">have</span> التصريف الثالث، لا الثاني.</td></tr>
+      <tr><td class="tl">Did you ever been to Cairo?</td><td class="tl">Have you ever been to Cairo?</td><td>السؤال عن التجربة يبدأ بـ <span class="tl">Have</span>.</td></tr>
+      <tr><td class="tl">I visited never Spain.</td><td class="tl">I have never visited Spain.</td><td><span class="tl">never</span> تأتي بين <span class="tl">have</span> والفعل.</td></tr>
+      <tr><td class="tl">I have never not seen snow.</td><td class="tl">I have never seen snow.</td><td><span class="tl">never</span> منفية وحدها. لا نجمع نفيين.</td></tr>
+      <tr><td class="tl">I have been in Turkey. (تجربة)</td><td class="tl">I have been to Turkey.</td><td>للتجربة نقول <span class="tl">been to</span>.</td></tr>
+      <tr><td class="tl">I'f never… / nefer</td><td class="tl">I've never… /v/</td><td>صوت <span class="tl">/v/</span> مع اهتزاز، ليس <b>ف</b>.</td></tr>
+    </table>
+  </section>
+
+  <section id="summary">
+    <h2>📌 الخلاصة <span class="tl">— Summary</span></h2>
+    <ul>
+      <li><span class="tl"><b>have / has + past participle</b></span> = تجربة في حياتك حتى الآن.</li>
+      <li><span class="tl">Have you <b>ever</b>...?</span> = هل سبق لك أن...؟ · <span class="tl">I have <b>never</b>...</span> = لم يسبق لي أن...</li>
+      <li>وقت محدد <span class="tl">(yesterday, in 2019, ago, last...)</span> → <span class="tl"><b>past simple</b></span>.</li>
+      <li>ابدأ بالـ <span class="tl">present perfect</span>، ثم أعطِ التفاصيل بالـ <span class="tl">past simple</span>.</li>
+      <li><span class="tl">been to</span> = ذهب ورجع · <span class="tl">gone to</span> = ما زال هناك.</li>
+      <li>انطق <span class="tl">I've / never / have</span> بصوت <span class="tl">/v/</span> مع اهتزاز.</li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <h2>🔄 مراجعة سريعة <span class="tl">— Quick review (from A2)</span></h2>
+    <p>تعلمت الماضي البسيط في A2. الآن تحتاج <b>العمود الثالث</b> أيضًا. راجع هذه الأفعال الشاذة:</p>
+    <table class="tl">
+      <tr><th>Base</th><th>Past simple</th><th>Past participle</th><th>🔊</th></tr>
+      <tr><td>be</td><td>was / were</td><td><mark>been</mark></td><td><button class="say" data-text="be, was, were, been">🔊</button></td></tr>
+      <tr><td>go</td><td>went</td><td><mark>gone</mark></td><td><button class="say" data-text="go, went, gone">🔊</button></td></tr>
+      <tr><td>see</td><td>saw</td><td><mark>seen</mark></td><td><button class="say" data-text="see, saw, seen">🔊</button></td></tr>
+      <tr><td>eat</td><td>ate</td><td><mark>eaten</mark></td><td><button class="say" data-text="eat, ate, eaten">🔊</button></td></tr>
+      <tr><td>fly</td><td>flew</td><td><mark>flown</mark></td><td><button class="say" data-text="fly, flew, flown">🔊</button></td></tr>
+      <tr><td>take</td><td>took</td><td><mark>taken</mark></td><td><button class="say" data-text="take, took, taken">🔊</button></td></tr>
+      <tr><td>ride</td><td>rode</td><td><mark>ridden</mark></td><td><button class="say" data-text="ride, rode, ridden">🔊</button></td></tr>
+      <tr><td>lose</td><td>lost</td><td><mark>lost</mark></td><td><button class="say" data-text="lose, lost, lost">🔊</button></td></tr>
+    </table>
+    <p class="tl">Review words: passport · flight · luggage · abroad · souvenir · set off · look around</p>
+  </section>
+
+  <section id="next">
+    <h2>➡️ الدرس التالي <span class="tl">— Next lesson</span></h2>
+    <p>الدرس 2: <span class="tl">I've lived here for years</span> — المضارع التام مع <span class="tl">for / since / already / yet / just</span>. اكتب «التالي» لتبدأ.</p>
+  </section>
+
+</div>
+
+<footer>تعلّم خطوة بخطوة 🌍 · <span class="tl">English B1 · Lesson 1</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif" });
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("المتصفح لا يدعم الصوت. جرّب Chrome أو Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 السرعة: عادية" : "🐢 السرعة: بطيئة";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · ضع الفأرة على الخانة الحمراء لترى الإجابة." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition) — accepts alternatives separated by |
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "المتصفح لا يدعم التعرف على الصوت. جرّب Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ I'm listening... أستمع إليك...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var targets = box.getAttribute("data-text").split("|").map(norm);
+        var ok = targets.indexOf(norm(said)) !== -1;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again. حاول مرة أخرى.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ لم أسمع جيدًا. تأكد من إذن الميكروفون وحاول مرة أخرى."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>

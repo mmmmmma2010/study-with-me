@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درس 2: موازنة الأحمال والـ Caching بعمق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #f59e0b);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 760px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; align-items: center; margin: 12px 0; }
+  .mem-label { font-size: .85rem; color: var(--muted); }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.db { border-color: var(--good); }
+  .box.cache { border-color: var(--warn); }
+  .box.bad { border-color: var(--bad); color: var(--bad); text-decoration: line-through; }
+  .arrow { font-size: 1.4rem; color: var(--muted); }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>موازنة الأحمال والـ Caching بعمق <span class="en">(Load Balancing &amp; Caching)</span></h1>
+  <p>ستتعلم كيف توزّع الطلبات بذكاء، وكيف تجعل النظام أسرع 10 مرات بدون أن تعرض بيانات قديمة.</p>
+  <div class="badges">
+    <span class="badge">الدرس 2 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 40 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير من الدرس 1:</strong> تعلمنا أن التوسع الأفقي يحتاج موازن أحمال، وأن قاعدة البيانات غالبًا هي عنق الزجاجة. في هذا الدرس نحل المشكلتين.</div>
+      <p>بوابة الدفع عندنا تقرأ إعدادات التاجر في كل عملية دفع. اسم التاجر، ونسبة العمولة، وطرق الدفع المفعّلة. هذه البيانات نادرًا ما تتغير، لكننا نقرأها آلاف المرات في الثانية.</p>
+      <p>لماذا نسأل قاعدة البيانات كل مرة عن شيء نعرف جوابه؟ هنا يأتي دور الـ <span class="en">Cache</span>. وحتى نوزّع الطلبات على الخوادم بعدل، نحتاج موازن أحمال ذكيًا.</p>
+      <p>في هذا الدرس ستتعلم:</p>
+      <ul>
+        <li>الفرق بين موازن الطبقة الرابعة والطبقة السابعة <span class="en">(L4 / L7)</span>.</li>
+        <li>خوارزميات التوزيع، ومنها التجزئة المتسقة <span class="en">(Consistent Hashing)</span>.</li>
+        <li>استراتيجيات الـ Cache: متى نقرأ، ومتى نكتب، ومتى نحذف.</li>
+        <li>سياسات الإخراج <span class="en">(Eviction)</span> مثل <span class="en">LRU</span>.</li>
+        <li>ثلاث مشاكل خطيرة: التدافع، والاختراق، والانهيار الجماعي.</li>
+      </ul>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">
+        📚 <strong>تخيّل مكتبة جامعية كبيرة.</strong>
+        <p>المخزن الرئيسي في القبو فيه كل الكتب. لكن الوصول إليه يأخذ 10 دقائق. هذا هو <strong>قاعدة البيانات</strong>.</p>
+        <p>أمين المكتبة يضع الكتب الأكثر طلبًا على رف قريب من المكتب. يأخذها في 10 ثوانٍ. هذا الرف هو <strong>الـ Cache</strong>.</p>
+        <p>الرف صغير. عندما يمتلئ، يعيد أمين المكتبة إلى القبو الكتاب الذي لم يطلبه أحد منذ أطول وقت. هذه هي سياسة <strong>LRU</strong>.</p>
+        <p>إذا صدرت طبعة جديدة من كتاب، يجب أن يسحب أمين المكتبة الطبعة القديمة من الرف. وإلا سيقرأ الطلاب معلومات قديمة. هذا هو <strong>إبطال الـ Cache</strong> <span class="en">(Invalidation)</span>.</p>
+        <p>وفي المدخل موظف استقبال يوجّه كل طالب إلى أمين مكتبة غير مشغول. هذا هو <strong>موازن الأحمال</strong>.</p>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>موازن الطبقة الرابعة</td><td class="en">L4 Load Balancer</td><td>يوزّع حسب عنوان IP والمنفذ فقط. سريع جدًا، ولا يقرأ محتوى الطلب.</td></tr>
+        <tr><td>موازن الطبقة السابعة</td><td class="en">L7 Load Balancer</td><td>يقرأ طلب HTTP: الرابط والـ Headers. يستطيع التوجيه حسب المسار.</td></tr>
+        <tr><td>التجزئة المتسقة</td><td class="en">Consistent Hashing</td><td>طريقة توزيع تنقل أقل عدد من المفاتيح عند إضافة خادم أو حذفه.</td></tr>
+        <tr><td>إصابة / إخفاق</td><td class="en">Cache Hit / Miss</td><td>إصابة: وجدنا البيانات في الـ Cache. إخفاق: لم نجدها.</td></tr>
+        <tr><td>نسبة الإصابة</td><td class="en">Hit Ratio</td><td>نسبة الطلبات التي وجدت بياناتها في الـ Cache.</td></tr>
+        <tr><td>مدة الصلاحية</td><td class="en">TTL (Time To Live)</td><td>بعدها تنتهي صلاحية البيانات في الـ Cache وتُحذف.</td></tr>
+        <tr><td>الإخراج</td><td class="en">Eviction</td><td>حذف عنصر من الـ Cache لأنه امتلأ.</td></tr>
+        <tr><td>الإبطال</td><td class="en">Invalidation</td><td>حذف عنصر من الـ Cache لأن البيانات الأصلية تغيّرت.</td></tr>
+        <tr><td>بيانات قديمة</td><td class="en">Stale Data</td><td>بيانات في الـ Cache لم تعد مطابقة لقاعدة البيانات.</td></tr>
+        <tr><td>التدافع</td><td class="en">Cache Stampede</td><td>مفتاح مشهور تنتهي صلاحيته، فتهجم آلاف الطلبات على قاعدة البيانات معًا.</td></tr>
+        <tr><td>الاختراق</td><td class="en">Cache Penetration</td><td>طلبات لبيانات غير موجودة أصلًا، فتصل كلها إلى قاعدة البيانات.</td></tr>
+        <tr><td>الانهيار الجماعي</td><td class="en">Cache Avalanche</td><td>مفاتيح كثيرة تنتهي صلاحيتها في نفس اللحظة.</td></tr>
+        <tr><td>شبكة توصيل المحتوى</td><td class="en">CDN</td><td>خوادم Cache قريبة جغرافيًا من المستخدم، للملفات الثابتة غالبًا.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>الجزء الأول: موازنة الأحمال</h3>
+
+      <h4>1. الطبقة الرابعة مقابل الطبقة السابعة</h4>
+      <p>موازن <span class="en">L4</span> يرى فقط: "اتصال من هذا العنوان إلى هذا المنفذ". لا يفتح الطلب. لذلك هو سريع جدًا ورخيص.</p>
+      <p>موازن <span class="en">L7</span> يقرأ طلب HTTP كاملًا. يستطيع أن يرسل <code>/payments</code> إلى خوادم الدفع، و <code>/reports</code> إلى خوادم التقارير. لكنه أبطأ قليلًا لأنه يفك التشفير <span class="en">(TLS)</span> ويقرأ المحتوى.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  C["Client"] --> L7["L7 Load Balancer"]
+  L7 -- "/payments" --> P1["Payments 1"]
+  L7 -- "/payments" --> P2["Payments 2"]
+  L7 -- "/reports" --> R1["Reports 1"]
+  L7 -- "/static" --> CDN["CDN"]
+      </div>
+
+      <h4>2. خوارزميات التوزيع</h4>
+      <table>
+        <tr><th>الخوارزمية</th><th>كيف تعمل</th><th>متى تستخدمها</th></tr>
+        <tr><td class="en">Round Robin</td><td>بالدور: 1، 2، 3، 1، 2، 3...</td><td>خوادم متشابهة، وطلبات متشابهة المدة.</td></tr>
+        <tr><td class="en">Weighted Round Robin</td><td>الخادم الأقوى يأخذ حصة أكبر.</td><td>خوادم بأحجام مختلفة.</td></tr>
+        <tr><td class="en">Least Connections</td><td>إلى الخادم صاحب أقل اتصالات نشطة.</td><td>طلبات مدتها مختلفة كثيرًا.</td></tr>
+        <tr><td class="en">IP Hash</td><td>نفس عنوان IP يذهب دائمًا لنفس الخادم.</td><td>عندما تحتاج ربط المستخدم بخادم.</td></tr>
+        <tr><td class="en">Consistent Hashing</td><td>نفس المفتاح يذهب لنفس الخادم، مع حركة قليلة عند التغيير.</td><td>توزيع الـ Cache وقواعد البيانات الموزّعة.</td></tr>
+      </table>
+
+      <h4>3. فحص الصحة النشط والسلبي</h4>
+      <p><strong>الفحص النشط</strong> <span class="en">(Active)</span>: الموازن يرسل طلبًا إلى <code>/health</code> كل بضع ثوانٍ. إذا فشل 3 مرات متتالية، يخرج الخادم من الخدمة.</p>
+      <p><strong>الفحص السلبي</strong> <span class="en">(Passive)</span>: الموازن يراقب الطلبات الحقيقية. إذا رجعت أخطاء <code>5xx</code> كثيرة من خادم، يوقف الإرسال إليه مؤقتًا. الأفضل أن تستخدم النوعين معًا.</p>
+
+      <h3>الجزء الثاني: الـ Caching</h3>
+
+      <h4>4. أين نضع الـ Cache؟</h4>
+      <p>يوجد Cache في كل طبقة تقريبًا. كلما اقترب من المستخدم، صار أسرع. لكن التحكم فيه يصبح أصعب.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  B["Browser Cache"] --> CDN["CDN"]
+  CDN --> LB["Load Balancer"]
+  LB --> APP["App: Local Cache"]
+  APP --> RED[("Distributed Cache - Redis")]
+  RED --> DB[("Database + Buffer Pool")]
+      </div>
+      <ul>
+        <li><strong>Cache محلي داخل الخادم:</strong> أسرع شيء، بدون شبكة. لكن كل خادم عنده نسخة مختلفة، وإبطاله صعب.</li>
+        <li><strong>Cache موزّع مثل Redis:</strong> كل الخوادم تشترك فيه. يحتاج رحلة شبكة، حوالي 1ms.</li>
+      </ul>
+
+      <h4>5. استراتيجيات القراءة والكتابة</h4>
+      <table>
+        <tr><th>الاستراتيجية</th><th>كيف تعمل</th><th>الميزة</th><th>العيب</th></tr>
+        <tr><td class="en">Cache-Aside</td><td>التطبيق يسأل الـ Cache. عند الإخفاق يقرأ من قاعدة البيانات ويحفظ النتيجة.</td><td>بسيطة. الـ Cache يحتوي فقط ما نحتاجه.</td><td>أول طلب دائمًا بطيء.</td></tr>
+        <tr><td class="en">Read-Through</td><td>الـ Cache نفسه يقرأ من قاعدة البيانات عند الإخفاق.</td><td>كود التطبيق أبسط.</td><td>يحتاج مكتبة أو خدمة تدعمه.</td></tr>
+        <tr><td class="en">Write-Through</td><td>نكتب في الـ Cache وقاعدة البيانات معًا.</td><td>الـ Cache دائمًا محدّث.</td><td>الكتابة أبطأ.</td></tr>
+        <tr><td class="en">Write-Behind</td><td>نكتب في الـ Cache فقط، ثم نرسل إلى قاعدة البيانات لاحقًا.</td><td>كتابة سريعة جدًا.</td><td>⚠️ قد تضيع البيانات إذا توقف الـ Cache.</td></tr>
+        <tr><td class="en">Write-Around</td><td>نكتب في قاعدة البيانات فقط، ونترك الـ Cache.</td><td>لا نملأ الـ Cache ببيانات لن تُقرأ.</td><td>أول قراءة بعد الكتابة بطيئة.</td></tr>
+      </table>
+      <div class="callout warning">⚠️ <strong>تحذير:</strong> لا تستخدم <span class="en">Write-Behind</span> لبيانات الدفع أبدًا. عملية دفع ضاعت لأن الـ Cache أعيد تشغيله تعني أموالًا ضائعة.</div>
+
+      <h4>6. سياسات الإخراج</h4>
+      <ul>
+        <li><strong>LRU</strong> <span class="en">(Least Recently Used)</span>: نحذف العنصر الذي لم يُستخدم منذ أطول وقت. هذه هي الأكثر شيوعًا.</li>
+        <li><strong>LFU</strong> <span class="en">(Least Frequently Used)</span>: نحذف العنصر الأقل استخدامًا في المجموع.</li>
+        <li><strong>FIFO</strong>: نحذف الأقدم دخولًا، بغض النظر عن الاستخدام.</li>
+        <li><strong>TTL</strong>: ليست سياسة إخراج بالضبط. العنصر ينتهي بعد مدة محددة، حتى لو كان الـ Cache فارغًا.</li>
+      </ul>
+
+      <h4>7. أصعب مشكلة: الإبطال</h4>
+      <p>يوجد قول مشهور: "أصعب شيئين في علوم الحاسوب: إبطال الـ Cache، وتسمية الأشياء". المشكلة أن لديك الآن نسختين من البيانات. وأي اختلاف بينهما يعني أن المستخدم يرى بيانات قديمة.</p>
+      <p>القاعدة العملية مع <span class="en">Cache-Aside</span>: <strong>حدّث قاعدة البيانات أولًا، ثم احذف المفتاح من الـ Cache.</strong> لا تحدّث الـ Cache بالقيمة الجديدة. احذفه فقط، والقراءة التالية تملؤه. وضع دائمًا <span class="en">TTL</span> كشبكة أمان.</p>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>تدفق Cache-Aside</h3>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant A as App Server
+  participant C as Redis
+  participant DB as Database
+  A->>C: GET merchant:m1
+  alt cache hit
+    C-->>A: merchant data (1ms)
+  else cache miss
+    C-->>A: nil
+    A->>DB: SELECT * FROM merchants WHERE id='m1'
+    DB-->>A: row (20ms)
+    A->>C: SET merchant:m1 row EX 300
+  end
+      </div>
+
+      <h3>لماذا "حدّث ثم احذف" وليس العكس؟</h3>
+      <p>انظر ماذا يحدث إذا حذفنا من الـ Cache <strong>قبل</strong> تحديث قاعدة البيانات، وجاء قارئ في المنتصف:</p>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant W as Writer
+  participant R as Reader
+  participant C as Cache
+  participant DB as Database
+  W->>C: DELETE merchant:m1
+  R->>C: GET merchant:m1
+  C-->>R: miss
+  R->>DB: read fee
+  DB-->>R: fee = 2.5 (old)
+  W->>DB: UPDATE fee = 2.0
+  R->>C: SET fee = 2.5
+  Note over C: Stale until TTL expires!
+      </div>
+      <p>القارئ قرأ القيمة القديمة قبل التحديث، ثم وضعها في الـ Cache بعد الحذف. الآن الـ Cache يعرض العمولة القديمة حتى تنتهي الـ TTL. مع ترتيب "حدّث ثم احذف"، هذه المشكلة نادرة جدًا. والـ TTL تحميك في الحالة النادرة.</p>
+
+      <h3>كيف يعمل LRU خطوة بخطوة</h3>
+      <p>Cache سعته 3 عناصر. اليسار هو الأقدم استخدامًا، واليمين هو الأحدث.</p>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: <code>put(m1)</code></h4>
+          <div class="mem"><span class="mem-label">الأقدم</span><div class="box hl">m1</div><span class="mem-label">الأحدث</span></div>
+          <p>الـ Cache فارغ. نضيف <code>m1</code>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: <code>put(m2)</code> ثم <code>put(m3)</code></h4>
+          <div class="mem"><span class="mem-label">الأقدم</span><div class="box">m1</div><div class="box">m2</div><div class="box hl">m3</div><span class="mem-label">الأحدث</span></div>
+          <p>الـ Cache ممتلئ الآن. <code>m1</code> هو الأقدم.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: <code>get(m1)</code> ← إصابة</h4>
+          <div class="mem"><span class="mem-label">الأقدم</span><div class="box">m2</div><div class="box">m3</div><div class="box hl">m1</div><span class="mem-label">الأحدث</span></div>
+          <p>استخدمنا <code>m1</code>، فانتقل إلى نهاية القائمة. الآن <code>m2</code> هو الأقدم.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: <code>put(m4)</code> ← إخراج</h4>
+          <div class="mem"><div class="box bad">m2</div><span class="arrow">|</span><span class="mem-label">الأقدم</span><div class="box">m3</div><div class="box">m1</div><div class="box hl">m4</div><span class="mem-label">الأحدث</span></div>
+          <p>لا يوجد مكان. نحذف الأقدم وهو <code>m2</code>. لاحظ أن <code>m1</code> نجا لأننا استخدمناه في الخطوة 3.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: <code>get(m2)</code> ← إخفاق</h4>
+          <div class="mem"><div class="box cache">Cache: miss</div><span class="arrow">→</span><div class="box db hl">Database</div></div>
+          <p><code>m2</code> لم يعد موجودًا. نقرأه من قاعدة البيانات، ثم نضعه في الـ Cache، فيُخرج <code>m3</code>.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> لكي تكون عمليات <span class="en">LRU</span> بسرعة <code>O(1)</code>، نستخدم جدول تجزئة <span class="en">(Hash Map)</span> مع قائمة مترابطة مزدوجة <span class="en">(Doubly Linked List)</span>. في Python، <code>OrderedDict</code> يفعل هذا لك.</div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: LRU Cache باستخدام OrderedDict</h3>
+<pre><code class="language-python">from collections import OrderedDict
+
+
+class LRUCache:
+    def __init__(self, capacity: int) -> None:
+        if capacity &lt;= 0:
+            raise ValueError("capacity must be positive")
+        self.capacity = capacity
+        self._data: OrderedDict[str, str] = OrderedDict()
+        self.hits = 0
+        self.misses = 0
+
+    def get(self, key: str) -> str | None:
+        if key not in self._data:
+            self.misses += 1
+            return None
+        self._data.move_to_end(key)       # mark as most recent
+        self.hits += 1
+        return self._data[key]
+
+    def put(self, key: str, value: str) -> None:
+        if key in self._data:
+            self._data.move_to_end(key)
+        self._data[key] = value
+        if len(self._data) > self.capacity:
+            evicted, _ = self._data.popitem(last=False)  # oldest
+            print(f"evicted: {evicted}")
+
+
+cache = LRUCache(capacity=2)
+cache.put("m1", "Merchant One")
+cache.put("m2", "Merchant Two")
+cache.get("m1")                     # m1 becomes most recent
+cache.put("m3", "Merchant Three")   # no room: evict oldest
+print(cache.get("m2"))
+print(cache.get("m1"))
+print(f"hits={cache.hits} misses={cache.misses}")</code></pre>
+      <div class="output">evicted: m2
+None
+Merchant One
+hits=2 misses=1</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>OrderedDict</code>: قاموس يحفظ ترتيب العناصر. أول عنصر هو الأقدم.</li>
+        <li><code>move_to_end(key)</code>: عند كل استخدام، ننقل العنصر إلى النهاية. يصبح "الأحدث".</li>
+        <li><code>len(self._data) > self.capacity</code>: إذا تجاوزنا السعة، يجب أن نحذف عنصرًا.</li>
+        <li><code>popitem(last=False)</code>: نحذف من البداية، أي الأقدم استخدامًا.</li>
+        <li>بعد <code>get("m1")</code> صار الترتيب <code>m2, m1</code>. لذلك خرج <code>m2</code> وليس <code>m1</code>.</li>
+      </ol>
+
+      <h3>مثال 2: Cache-Aside مع TTL وإبطال</h3>
+      <p>نستخدم ساعة مزيفة <span class="en">(Fake Clock)</span> حتى نتحكم في الوقت أثناء الاختبار. هذه حيلة مهمة لاختبار أي كود فيه TTL.</p>
+<pre><code class="language-python">class FakeDB:
+    def __init__(self) -> None:
+        self.rows = {"m1": {"name": "Cairo Store", "fee": 2.5}}
+        self.reads = 0
+
+    def get_merchant(self, mid: str) -> dict | None:
+        self.reads += 1
+        row = self.rows.get(mid)
+        return dict(row) if row else None   # return a copy
+
+    def update_fee(self, mid: str, fee: float) -> None:
+        self.rows[mid]["fee"] = fee
+
+
+class TTLCache:
+    def __init__(self, clock) -> None:
+        self._data: dict[str, tuple[dict, float]] = {}
+        self.clock = clock
+
+    def get(self, key: str) -> dict | None:
+        item = self._data.get(key)
+        if item is None:
+            return None
+        value, expires_at = item
+        if self.clock() >= expires_at:
+            del self._data[key]
+            return None
+        return value
+
+    def set(self, key: str, value: dict, ttl: float) -> None:
+        self._data[key] = (value, self.clock() + ttl)
+
+    def delete(self, key: str) -> None:
+        self._data.pop(key, None)
+
+
+now = [0.0]
+
+
+def clock() -> float:
+    return now[0]
+
+
+db = FakeDB()
+cache = TTLCache(clock)
+
+
+def get_merchant(mid: str) -> dict | None:
+    key = f"merchant:{mid}"
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
+    row = db.get_merchant(mid)
+    if row is not None:
+        cache.set(key, row, ttl=60)
+    return row
+
+
+def update_fee(mid: str, fee: float) -> None:
+    db.update_fee(mid, fee)            # 1) update the source of truth
+    cache.delete(f"merchant:{mid}")    # 2) then invalidate
+
+
+for _ in range(3):
+    get_merchant("m1")
+print("db reads after 3 calls:", db.reads)
+
+update_fee("m1", 2.0)
+print("fee:", get_merchant("m1")["fee"], "| db reads:", db.reads)
+
+now[0] = 61                            # jump past the TTL
+get_merchant("m1")
+print("db reads after TTL:", db.reads)</code></pre>
+      <div class="output">db reads after 3 calls: 1
+fee: 2.0 | db reads: 2
+db reads after TTL: 3</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>return dict(row)</code>: نرجع نسخة. لو أرجعنا نفس الكائن، سيتغير الـ Cache مع قاعدة البيانات بالخطأ، ونظن أن الإبطال يعمل وهو لا يعمل.</li>
+        <li><code>(value, self.clock() + ttl)</code>: نحفظ القيمة مع وقت انتهائها.</li>
+        <li><code>if self.clock() >= expires_at</code>: إذا انتهت الصلاحية، نحذف ونعتبرها إخفاقًا.</li>
+        <li>ثلاث قراءات، لكن قاعدة البيانات قُرئت مرة واحدة. الاثنتان الأخريان من الـ Cache.</li>
+        <li><code>update_fee</code>: نحدّث قاعدة البيانات أولًا، ثم نحذف المفتاح. القراءة التالية تجلب <code>2.0</code> الجديدة.</li>
+        <li><code>now[0] = 61</code>: نقفز في الزمن. الـ TTL انتهت، فنقرأ من قاعدة البيانات مرة أخرى.</li>
+      </ol>
+
+      <h3>مثال 3: لماذا التجزئة المتسقة؟</h3>
+      <p>عندك 4 خوادم Cache. الطريقة البسيطة: <code>hash(key) % 4</code>. ماذا يحدث إذا أضفت خادمًا خامسًا؟</p>
+<pre><code class="language-python">import bisect
+import hashlib
+
+
+def h(value: str) -> int:
+    return int(hashlib.md5(value.encode()).hexdigest(), 16)
+
+
+class HashRing:
+    def __init__(self, nodes: list[str], vnodes: int = 200) -> None:
+        self.vnodes = vnodes
+        self._points: list[int] = []      # sorted positions on the ring
+        self._owner: dict[int, str] = {}  # position -> node
+        for node in nodes:
+            self.add(node)
+
+    def add(self, node: str) -> None:
+        for i in range(self.vnodes):
+            point = h(f"{node}#{i}")
+            bisect.insort(self._points, point)
+            self._owner[point] = node
+
+    def get(self, key: str) -> str:
+        idx = bisect.bisect(self._points, h(key)) % len(self._points)
+        return self._owner[self._points[idx]]
+
+
+def mod_n(key: str, nodes: list[str]) -> str:
+    return nodes[h(key) % len(nodes)]
+
+
+keys = [f"payment:{i}" for i in range(10_000)]
+old_nodes = ["cache-1", "cache-2", "cache-3", "cache-4"]
+new_nodes = old_nodes + ["cache-5"]
+
+moved_mod = sum(mod_n(k, old_nodes) != mod_n(k, new_nodes) for k in keys)
+
+ring = HashRing(old_nodes)
+before = {k: ring.get(k) for k in keys}
+ring.add("cache-5")
+after = {k: ring.get(k) for k in keys}
+moved_ring = [k for k in keys if before[k] != after[k]]
+only_to_new = all(after[k] == "cache-5" for k in moved_ring)
+
+print(f"mod-N moved : ~{round(100 * moved_mod / len(keys), -1):.0f}%")
+print(f"ring moved  : ~{round(100 * len(moved_ring) / len(keys), -1):.0f}%")
+print(f"moved keys all went to cache-5: {only_to_new}")</code></pre>
+      <div class="output">mod-N moved : ~80%
+ring moved  : ~20%
+moved keys all went to cache-5: True</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>h(value)</code>: نحوّل النص إلى رقم كبير ثابت. نستخدم <code>md5</code> لأن <code>hash()</code> في Python يتغير مع كل تشغيل.</li>
+        <li><code>vnodes=200</code>: كل خادم يظهر 200 مرة على الحلقة. هذه "العُقد الافتراضية" <span class="en">(Virtual Nodes)</span>. بدونها يكون التوزيع غير متساوٍ.</li>
+        <li><code>bisect.insort</code>: نضيف النقطة مع الحفاظ على الترتيب.</li>
+        <li><code>bisect.bisect(...)</code>: نبحث عن أول نقطة بعد مفتاحنا، في اتجاه عقارب الساعة. صاحب هذه النقطة هو الخادم المسؤول.</li>
+        <li><code>% len(self._points)</code>: إذا وصلنا إلى نهاية الحلقة، نرجع إلى البداية.</li>
+        <li><code>round(..., -1)</code>: نقرّب إلى أقرب 10%، لأن الرقم الدقيق يتغير قليلًا حسب التجزئة.</li>
+        <li><strong>النتيجة:</strong> مع <code>mod N</code> تحرّك 80% من المفاتيح. هذا يعني أن 80% من الـ Cache صار بلا فائدة فجأة. مع الحلقة تحرّك 20% فقط، وكلها ذهبت إلى الخادم الجديد.</li>
+      </ol>
+
+      <h3>مثال 4: منع التدافع (Cache Stampede)</h3>
+      <p>مفتاح مشهور انتهت صلاحيته. 50 طلبًا وصلت في نفس اللحظة. كم استعلامًا سيصل إلى قاعدة البيانات؟</p>
+<pre><code class="language-python">import threading
+import time
+
+calls = 0
+calls_lock = threading.Lock()
+cache: dict[str, str] = {}
+key_locks: dict[str, threading.Lock] = {}
+key_locks_guard = threading.Lock()
+
+
+def slow_db_query(key: str) -> str:
+    global calls
+    with calls_lock:
+        calls += 1
+    time.sleep(0.1)                     # expensive query
+    return f"value-of-{key}"
+
+
+def get_naive(key: str) -> str:
+    if key in cache:
+        return cache[key]
+    value = slow_db_query(key)
+    cache[key] = value
+    return value
+
+
+def get_single_flight(key: str) -> str:
+    if key in cache:
+        return cache[key]
+    with key_locks_guard:
+        lock = key_locks.setdefault(key, threading.Lock())
+    with lock:                          # one loader per key
+        if key in cache:                # filled while we waited
+            return cache[key]
+        value = slow_db_query(key)
+        cache[key] = value
+        return value
+
+
+def simulate(getter, n_requests: int = 50) -> int:
+    global calls
+    calls = 0
+    cache.clear()
+    barrier = threading.Barrier(n_requests)
+
+    def worker() -> None:
+        barrier.wait()                  # all requests arrive together
+        getter("merchant:m1")
+
+    threads = [threading.Thread(target=worker) for _ in range(n_requests)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    return calls
+
+
+print("naive         -> DB queries:", simulate(get_naive))
+print("single-flight -> DB queries:", simulate(get_single_flight))</code></pre>
+      <div class="output">naive         -> DB queries: 50
+single-flight -> DB queries: 1</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>threading.Barrier(n_requests)</code>: تجعل كل الطلبات تنتظر ثم تنطلق معًا. هكذا نحاكي لحظة انتهاء الصلاحية.</li>
+        <li><code>get_naive</code>: كل طلب يجد الـ Cache فارغًا، فيذهب إلى قاعدة البيانات. 50 استعلامًا لنفس البيانات!</li>
+        <li><code>key_locks.setdefault(...)</code>: قفل واحد لكل مفتاح. نحمي القاموس نفسه بقفل آخر.</li>
+        <li><code>with lock</code>: طلب واحد فقط يدخل. الباقون ينتظرون.</li>
+        <li><code>if key in cache</code> داخل القفل: هذا "الفحص المزدوج" <span class="en">(Double-Checked)</span>. من ينتظر يجد القيمة جاهزة بعد أن يدخل.</li>
+        <li>في الإنتاج مع عدة خوادم، يكون القفل موزّعًا، مثل <code>SET key NX EX</code> في Redis.</li>
+      </ol>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>1. اختراق الـ Cache: عدم حفظ "غير موجود"</h3>
+      <p>مهاجم يرسل 1000 طلب لتاجر غير موجود: <code>fake-999</code>. ماذا يحدث؟</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">db_reads = 0
+DB = {"m1": "Cairo Store"}
+cache: dict[str, str] = {}
+
+
+def query_db(mid: str) -> str | None:
+    global db_reads
+    db_reads += 1
+    return DB.get(mid)
+
+
+def get_merchant(mid: str) -> str | None:
+    if mid in cache:
+        return cache[mid]
+    row = query_db(mid)
+    if row is not None:      # misses never cached
+        cache[mid] = row
+    return row
+
+
+for _ in range(1000):
+    get_merchant("fake-999")
+print("db reads:", db_reads)</code></pre>
+          <div class="output">db reads: 1000</div>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">db_reads = 0
+DB = {"m1": "Cairo Store"}
+NOT_FOUND = object()         # sentinel value
+cache: dict[str, object] = {}
+
+
+def query_db(mid: str) -> str | None:
+    global db_reads
+    db_reads += 1
+    return DB.get(mid)
+
+
+def get_merchant(mid: str) -> str | None:
+    if mid in cache:
+        value = cache[mid]
+        return None if value is NOT_FOUND else value
+    row = query_db(mid)
+    cache[mid] = row if row is not None else NOT_FOUND
+    return row
+
+
+for _ in range(1000):
+    get_merchant("fake-999")
+print("db reads:", db_reads)</code></pre>
+          <div class="output">db reads: 1</div>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الطريقة الأولى خاطئة؟</strong> الـ Cache يحفظ النتائج الموجودة فقط. كل طلب لمفتاح غير موجود يصل إلى قاعدة البيانات. المهاجم يستطيع إسقاط قاعدة البيانات بمفاتيح عشوائية. الحل: احفظ "غير موجود" أيضًا، مع <span class="en">TTL</span> قصيرة (30–60 ثانية). وللحماية الأقوى استخدم <span class="en">Bloom Filter</span>.</div>
+
+      <h3>2. أخطاء أخرى شائعة</h3>
+      <ul>
+        <li><strong>❌ Cache بدون TTL:</strong> إذا فشل الإبطال مرة واحدة، تبقى البيانات القديمة للأبد. <strong>✅</strong> ضع TTL لكل مفتاح، حتى لو كانت طويلة.</li>
+        <li><strong>❌ نفس TTL لكل المفاتيح:</strong> ملأت الـ Cache عند التشغيل، فتنتهي كل المفاتيح بعد 5 دقائق بالضبط. هذا هو الانهيار الجماعي. <strong>✅</strong> أضف عشوائية صغيرة للـ TTL <span class="en">(Jitter)</span>.</li>
+        <li><strong>❌ الحذف قبل التحديث:</strong> يسبب بيانات قديمة كما رأينا في المخطط. <strong>✅</strong> حدّث قاعدة البيانات، ثم احذف.</li>
+        <li><strong>❌ اعتبار الـ Cache مصدر الحقيقة:</strong> Redis قد يُعاد تشغيله أو يُخرج المفاتيح. <strong>✅</strong> الكود يجب أن يعمل (أبطأ) إذا كان الـ Cache فارغًا تمامًا.</li>
+        <li><strong>❌ Cache محلي مع إبطال:</strong> حذفت المفتاح من خادم واحد، لكن 9 خوادم أخرى عندها نسخة قديمة. <strong>✅</strong> استخدم TTL قصيرة للـ Cache المحلي، أو Cache موزّعًا.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>اعرف ماذا تحفظ.</strong> الـ Cache مفيد للبيانات التي تُقرأ كثيرًا وتتغير قليلًا. إعدادات التاجر: نعم. رصيد الحساب: لا.</li>
+        <li><strong>صمّم أسماء المفاتيح بوضوح.</strong> مثل <code>merchant:v2:m1</code>. رقم الإصدار يسمح لك بإبطال كل المفاتيح القديمة عند تغيير شكل البيانات.</li>
+        <li><strong>راقب نسبة الإصابة.</strong> إذا نزلت فجأة، فهناك مشكلة: إخراج كثير، أو مفاتيح خاطئة.</li>
+        <li><strong>أضف Jitter للـ TTL.</strong> بدلًا من 300 ثانية بالضبط، استخدم رقمًا بين 270 و 330.</li>
+        <li><strong>احمِ المفاتيح المشهورة.</strong> استخدم قفلًا لكل مفتاح <span class="en">(Single-Flight)</span>، أو جدّد المفتاح قبل انتهائه.</li>
+        <li><strong>اختر L7 للتوجيه الذكي، و L4 للسرعة القصوى.</strong> كثير من الأنظمة تستخدم L4 أمام مجموعة من موازنات L7.</li>
+        <li><strong>اجعل فحص الصحة خفيفًا.</strong> إذا كان <code>/health</code> يشغّل استعلامًا ثقيلًا، فقد يسقط النظام بسبب الفحص نفسه.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة لأنظمة الدفع:</strong> لا تحفظ رقم البطاقة الكامل في أي Cache أبدًا. معيار <span class="en">PCI DSS</span> يفرض قيودًا صارمة على تخزين بيانات البطاقات. احفظ فقط توكن <span class="en">(Token)</span> أو آخر 4 أرقام.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+
+      <h3>رياضيات نسبة الإصابة</h3>
+      <p>مع <span class="en">Cache-Aside</span>، كل طلب يسأل الـ Cache أولًا. عند الإخفاق، نضيف رحلة إلى قاعدة البيانات. إذا كانت \(h\) نسبة الإصابة:</p>
+      <div dir="ltr">$$T_{\text{eff}} = T_{\text{cache}} + (1 - h) \times T_{\text{db}}$$</div>
+      <p>والحمل على قاعدة البيانات هو فقط الطلبات التي أخفقت:</p>
+      <div dir="ltr">$$\text{DB QPS} = (1 - h) \times \text{Total QPS}$$</div>
+      <p>لاحظ شيئًا مهمًا: رفع نسبة الإصابة من 90% إلى 99% يبدو تحسنًا صغيرًا. لكنه يقلل حمل قاعدة البيانات <strong>10 مرات</strong>، من 10% إلى 1%.</p>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>كم مفتاحًا يتحرك عند إضافة خادم؟</h3>
+      <p>مع <code>mod N</code>، عند الانتقال من \(N\) إلى \(N+1\) خادم:</p>
+      <div dir="ltr">$$\text{moved}_{\text{mod}} = \frac{N}{N+1} \qquad \text{moved}_{\text{ring}} \approx \frac{1}{N+1}$$</div>
+      <p>مع 4 خوادم: \(4/5 = 80\%\) مقابل \(1/5 = 20\%\). هذا ما رأيناه في المثال 3 بالضبط.</p>
+
+      <h3>مقارنة: Cache محلي أم موزّع؟</h3>
+      <table>
+        <tr><th>المعيار</th><th>Cache محلي (داخل الخادم)</th><th>Cache موزّع (Redis)</th></tr>
+        <tr><td>السرعة</td><td>✅ أقل من ميكروثانية</td><td>⚠️ حوالي 1ms بسبب الشبكة</td></tr>
+        <tr><td>الاتساق بين الخوادم</td><td>❌ كل خادم له نسخته</td><td>✅ نسخة واحدة مشتركة</td></tr>
+        <tr><td>الحجم</td><td>❌ محدود بذاكرة الخادم</td><td>✅ يتوسع بإضافة عُقد</td></tr>
+        <tr><td>بعد إعادة التشغيل</td><td>❌ يضيع كله</td><td>✅ يبقى</td></tr>
+        <tr><td>التعقيد</td><td>✅ بسيط جدًا</td><td>⚠️ خدمة إضافية تحتاج مراقبة</td></tr>
+        <tr><td>الأفضل لـ</td><td>بيانات صغيرة شبه ثابتة</td><td>الجلسات، والبيانات المشتركة</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: خدمة إعدادات التاجر</h2>
+      <p>ستبني خدمة تجمع كل ما تعلمته: <span class="en">LRU</span> و <span class="en">TTL</span> و <span class="en">Cache-Aside</span> والإبطال وقياس نسبة الإصابة. ثم نشغّل سيناريو محددًا ونتابع كل خطوة.</p>
+<pre><code class="language-python">from collections import OrderedDict
+from dataclasses import dataclass
+
+
+@dataclass
+class Stats:
+    hits: int = 0
+    misses: int = 0
+
+    @property
+    def hit_ratio(self) -> float:
+        total = self.hits + self.misses
+        return self.hits / total if total else 0.0
+
+
+class LRUTTLCache:
+    def __init__(self, capacity: int, ttl: float, clock) -> None:
+        self.capacity, self.ttl, self.clock = capacity, ttl, clock
+        self._data: OrderedDict[str, tuple[str, float]] = OrderedDict()
+        self.stats = Stats()
+
+    def get(self, key: str) -> str | None:
+        item = self._data.get(key)
+        if item is None or self.clock() >= item[1]:
+            self._data.pop(key, None)   # drop expired entry
+            self.stats.misses += 1
+            return None
+        self._data.move_to_end(key)
+        self.stats.hits += 1
+        return item[0]
+
+    def set(self, key: str, value: str) -> None:
+        self._data[key] = (value, self.clock() + self.ttl)
+        self._data.move_to_end(key)
+        if len(self._data) > self.capacity:
+            self._data.popitem(last=False)
+
+    def delete(self, key: str) -> None:
+        self._data.pop(key, None)
+
+
+class MerchantService:
+    def __init__(self, db: dict[str, str], cache: LRUTTLCache) -> None:
+        self.db, self.cache = db, cache
+        self.db_reads = 0
+
+    def get(self, mid: str) -> str:
+        if self.cache.get(mid) is not None:
+            return "cache"
+        self.db_reads += 1
+        self.cache.set(mid, self.db[mid])
+        return "db"
+
+    def update(self, mid: str, value: str) -> str:
+        self.db[mid] = value
+        self.cache.delete(mid)
+        return "invalidated"
+
+
+now = [0]
+cache = LRUTTLCache(capacity=2, ttl=30, clock=lambda: now[0])
+svc = MerchantService({"A": "fee=2.5", "B": "fee=1.9", "C": "fee=3.0"}, cache)
+
+events = [
+    (0, "get", "A"), (1, "get", "A"), (2, "get", "B"),
+    (3, "get", "A"), (4, "get", "C"), (5, "get", "A"),
+    (6, "update", "A"), (7, "get", "A"),
+    (40, "get", "A"), (41, "get", "A"), (42, "get", "B"),
+]
+
+for t, op, key in events:
+    now[0] = t
+    result = svc.get(key) if op == "get" else svc.update(key, "fee=2.0")
+    print(f"t={t:>2} {op:&lt;6} {key} -> {result}")
+
+s = cache.stats
+print(f"hits={s.hits} misses={s.misses} "
+      f"hit_ratio={s.hit_ratio:.0%} db_reads={svc.db_reads}")</code></pre>
+      <div class="output">t= 0 get    A -> db
+t= 1 get    A -> cache
+t= 2 get    B -> db
+t= 3 get    A -> cache
+t= 4 get    C -> db
+t= 5 get    A -> cache
+t= 6 update A -> invalidated
+t= 7 get    A -> db
+t=40 get    A -> db
+t=41 get    A -> cache
+t=42 get    B -> db
+hits=4 misses=6 hit_ratio=40% db_reads=6</div>
+      <h4>تتبّع السيناريو</h4>
+      <ol>
+        <li><code>t=0</code>: الـ Cache فارغ. نقرأ <code>A</code> من قاعدة البيانات.</li>
+        <li><code>t=1, t=3</code>: <code>A</code> في الـ Cache. إصابة.</li>
+        <li><code>t=4</code>: نضيف <code>C</code>. السعة 2، فيخرج <code>B</code> لأنه الأقدم استخدامًا.</li>
+        <li><code>t=6</code>: العمولة تغيرت. نحدّث قاعدة البيانات ونحذف <code>A</code>.</li>
+        <li><code>t=7</code>: إخفاق بسبب الإبطال. نجلب القيمة الجديدة. صلاحيتها حتى <code>t=37</code>.</li>
+        <li><code>t=40</code>: إخفاق لأن الـ TTL انتهت.</li>
+        <li><code>t=42</code>: <code>B</code> خرج منذ <code>t=4</code>، فنقرأه من قاعدة البيانات.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> نسبة 40% منخفضة لأن السيناريو قصير جدًا ومصمم لإظهار كل الحالات. في نظام حقيقي يقرأ نفس التجار آلاف المرات، تكون النسبة غالبًا فوق 95%.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+
+      <div class="quiz" data-explain="في Cache-Aside، التطبيق نفسه يسأل الـ Cache، وعند الإخفاق يقرأ من قاعدة البيانات ويحفظ النتيجة.">
+        <div class="q">1. التطبيق يسأل الـ Cache، وعند الإخفاق يقرأ من قاعدة البيانات ثم يحفظ النتيجة. ما اسم هذه الاستراتيجية؟</div>
+        <button class="option">Write-Behind</button>
+        <button class="option" data-correct="true">Cache-Aside</button>
+        <button class="option">Write-Around</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="مع mod N، عند الانتقال من 4 إلى 5 خوادم يتحرك 4/5 = 80% من المفاتيح.">
+        <div class="q">2. عندك 4 خوادم Cache تستخدم <span class="en">hash % N</span>. أضفت خادمًا خامسًا. كم مفتاحًا يتحرك تقريبًا؟</div>
+        <button class="option">20%</button>
+        <button class="option">50%</button>
+        <button class="option" data-correct="true">80%</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="التدافع يحدث عندما ينتهي مفتاح مشهور، فتذهب كل الطلبات إلى قاعدة البيانات في نفس اللحظة.">
+        <div class="q">3. مفتاح مشهور انتهت صلاحيته، فوصلت آلاف الاستعلامات إلى قاعدة البيانات في نفس الثانية. ما اسم المشكلة؟</div>
+        <button class="option" data-correct="true">Cache Stampede</button>
+        <button class="option">Cache Penetration</button>
+        <button class="option">Sticky Sessions</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الرصيد يجب أن يكون دقيقًا دائمًا. قراءته من Cache قديم قد تسمح بصرف أموال غير موجودة.">
+        <div class="q">4. في بوابة دفع، أي بيانات لا يجب أن يكون الـ Cache مصدرها؟</div>
+        <button class="option">اسم التاجر</button>
+        <button class="option">طرق الدفع المفعّلة</button>
+        <button class="option" data-correct="true">رصيد الحساب عند تنفيذ عملية سحب</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="T = 1 + (1 − 0.95) × 40 = 1 + 2 = 3ms.">
+        <div class="q">5. نسبة الإصابة 95%، وزمن الـ Cache 1ms، وزمن قاعدة البيانات 40ms. ما متوسط زمن الاستجابة؟</div>
+        <button class="option">2ms</button>
+        <button class="option" data-correct="true">3ms</button>
+        <button class="option">39ms</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): ما قيمة 9% إضافية؟</h3>
+      <p>النظام يستقبل 10,000 قراءة في الثانية. زمن الـ Cache 1ms، وزمن قاعدة البيانات 20ms. احسب زمن الاستجابة وحمل قاعدة البيانات عند نسبة إصابة 90%، ثم 99%.</p>
+      <details><summary>💡 تلميح</summary><p>استخدم المعادلتين في قسم الأداء. نسبة الإخفاق = 1 − h.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def cache_effect(hit_ratio: float, qps: int = 10_000,
+                 t_cache: float = 1, t_db: float = 20) -> tuple[float, float]:
+    miss = 1 - hit_ratio
+    return t_cache + miss * t_db, miss * qps
+
+
+for h in (0.90, 0.99):
+    latency, db_qps = cache_effect(h)
+    print(f"hit={h:.0%}  latency={latency:.1f} ms  db_qps={db_qps:,.0f}")</code></pre>
+        <div class="output">hit=90%  latency=3.0 ms  db_qps=1,000
+hit=99%  latency=1.2 ms  db_qps=100</div>
+        <p>الفرق في زمن الاستجابة صغير. لكن قاعدة البيانات ترتاح 10 مرات. هذا قد يعني خادم قاعدة بيانات واحدًا بدلًا من عشرة.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): التوزيع الدوري الموزون السلس</h3>
+      <p>عندك خادم كبير وزنه 5، وخادمان صغيران وزن كل منهما 1. اكتب موازنًا يوزّع الطلبات حسب الأوزان. لا يجب أن يرسل 5 طلبات متتالية إلى الخادم الكبير، بل يوزّعها بسلاسة. هذه خوارزمية <span class="en">Nginx</span>.</p>
+      <details><summary>💡 تلميح</summary><p>لكل خادم "وزن حالي" يبدأ من صفر. في كل طلب: أضف لكل خادم وزنه، واختر صاحب أكبر وزن حالي، ثم اطرح منه مجموع الأوزان.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">class SmoothWeightedRR:
+    def __init__(self, weights: dict[str, int]) -> None:
+        self.weights = weights
+        self.current = {s: 0 for s in weights}
+        self.total = sum(weights.values())
+
+    def next_server(self) -> str:
+        for server, weight in self.weights.items():
+            self.current[server] += weight
+        best = max(self.current, key=self.current.__getitem__)
+        self.current[best] -= self.total
+        return best
+
+
+lb = SmoothWeightedRR({"big": 5, "small-1": 1, "small-2": 1})
+print([lb.next_server() for _ in range(7)])</code></pre>
+        <div class="output">['big', 'big', 'small-1', 'big', 'small-2', 'big', 'big']</div>
+        <p>الخادم الكبير أخذ 5 من 7، وكل صغير أخذ 1. والطلبات موزّعة بالتناوب وليست متجمعة. بعد 7 طلبات ترجع كل الأوزان الحالية إلى صفر وتبدأ الدورة من جديد.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): امنع الانهيار الجماعي</h3>
+      <p>اكتب دالة <code>ttl_with_jitter(base, spread)</code> ترجع TTL عشوائية حول القيمة الأساسية. مثال: 300 ثانية ± 10%. ثم تأكد أن كل القيم داخل النطاق، وأنها ليست كلها متساوية.</p>
+      <details><summary>💡 تلميح</summary><p>استخدم <code>random.uniform(-delta, delta)</code>. ومرّر كائن <code>random.Random</code> حتى تستطيع اختبار الدالة.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">import random
+
+
+def ttl_with_jitter(base: int, spread: float = 0.1,
+                    rng: random.Random | None = None) -> int:
+    rng = rng or random.Random()
+    delta = base * spread
+    return int(base + rng.uniform(-delta, delta))
+
+
+rng = random.Random(42)
+ttls = [ttl_with_jitter(300, 0.1, rng) for _ in range(1000)]
+print(min(ttls) >= 270, max(ttls) &lt;= 330, len(set(ttls)) > 1)</code></pre>
+        <div class="output">True True True</div>
+        <p>الآن المفاتيح التي دخلت الـ Cache معًا تنتهي في أوقات مختلفة، موزّعة على دقيقة كاملة. قاعدة البيانات تستقبل الحمل تدريجيًا بدلًا من ضربة واحدة.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): خطة Cache لبوابة الدفع</h3>
+      <p>لكل نوع من البيانات التالية، قرّر: هل نستخدم Cache؟ وما الاستراتيجية؟ وما الـ TTL؟</p>
+      <ol>
+        <li>إعدادات التاجر (الاسم، العمولة، طرق الدفع).</li>
+        <li>أسعار تحويل العملات.</li>
+        <li>حالة عملية الدفع (معلّقة، ناجحة، فاشلة).</li>
+        <li>رصيد محفظة التاجر.</li>
+        <li>بيانات البطاقة.</li>
+      </ol>
+      <details><summary>💡 تلميح</summary><p>اسأل عن كل نوع: كم مرة يُقرأ؟ كم مرة يتغير؟ وما أسوأ شيء يحدث إذا كانت القيمة قديمة؟</p></details>
+      <details><summary>✅ الحل</summary>
+        <table>
+          <tr><th>البيانات</th><th>القرار</th><th>السبب</th></tr>
+          <tr><td>إعدادات التاجر</td><td>✅ Cache-Aside، TTL 5–10 دقائق + إبطال عند التحديث</td><td>تُقرأ في كل عملية وتتغير نادرًا.</td></tr>
+          <tr><td>أسعار العملات</td><td>✅ TTL قصيرة (30–60 ثانية)، مع حفظ السعر المستخدم في سجل العملية</td><td>تتغير باستمرار. لكن تأخير ثوانٍ مقبول إذا سجّلت السعر الذي استخدمته فعلًا.</td></tr>
+          <tr><td>حالة الدفع</td><td>⚠️ للعرض فقط مع TTL قصيرة جدًا. القرارات تُقرأ من قاعدة البيانات</td><td>حالة قديمة قد تجعل التاجر يشحن طلبًا لم يُدفع.</td></tr>
+          <tr><td>رصيد المحفظة</td><td>❌ لا Cache للسحب. قاعدة البيانات مع قفل أو معاملة <span class="en">(Transaction)</span></td><td>قيمة قديمة قد تسمح بسحب الرصيد مرتين.</td></tr>
+          <tr><td>بيانات البطاقة</td><td>❌ أبدًا. احفظ توكن فقط</td><td>متطلبات <span class="en">PCI DSS</span>، والمخاطر الأمنية.</td></tr>
+        </table>
+        <p>القاعدة العامة: <strong>كلما كانت القيمة القديمة أخطر، قلّت الـ TTL أو ألغيت الـ Cache.</strong></p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>موازن <span class="en">L4</span> سريع ويرى العنوان والمنفذ فقط. موازن <span class="en">L7</span> يقرأ طلب HTTP ويوجّه بذكاء.</li>
+        <li>اختر الخوارزمية حسب الحالة: بالدور، أو بالأوزان، أو أقل اتصالات، أو التجزئة المتسقة.</li>
+        <li>التجزئة المتسقة تحرّك حوالي <code>1/(N+1)</code> من المفاتيح فقط، مقابل <code>N/(N+1)</code> مع <code>mod N</code>.</li>
+        <li><span class="en">Cache-Aside</span> هي الاستراتيجية الأكثر شيوعًا: اقرأ من الـ Cache، وعند الإخفاق اقرأ من قاعدة البيانات واحفظ.</li>
+        <li>عند الكتابة: حدّث قاعدة البيانات، ثم احذف المفتاح. وضع TTL دائمًا.</li>
+        <li><span class="en">LRU</span> تحذف الأقدم استخدامًا، وتعمل بسرعة <code>O(1)</code>.</li>
+        <li>احمِ النظام من التدافع بقفل لكل مفتاح، ومن الاختراق بحفظ "غير موجود"، ومن الانهيار الجماعي بـ Jitter.</li>
+        <li>رفع نسبة الإصابة من 90% إلى 99% يقلل حمل قاعدة البيانات 10 مرات.</li>
+        <li>لا تستخدم الـ Cache كمصدر حقيقة للأموال أو الأرصدة.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <p>خطة سلسلة تصميم الأنظمة:</p>
+      <ol>
+        <li>✅ أساسيات التوسع والمكونات الأساسية</li>
+        <li>✅ موازنة الأحمال والـ Caching بعمق (هذا الدرس)</li>
+        <li>قواعد البيانات: النسخ المتماثل والتقسيم <span class="en">(Replication &amp; Sharding)</span>. سنستخدم التجزئة المتسقة التي تعلمتها اليوم.</li>
+        <li>طوابير الرسائل <span class="en">(Message Queues)</span> والأنظمة غير المتزامنة</li>
+        <li>نظرية <span class="en">CAP</span> ونماذج الاتساق <span class="en">(Consistency)</span></li>
+        <li>الخدمات المصغرة و <span class="en">API Gateway</span></li>
+        <li>الموثوقية: <span class="en">Rate Limiting</span> و <span class="en">Idempotency</span> وإعادة المحاولة</li>
+        <li>مقابلة تصميم كاملة: صمّم بوابة دفع من الصفر</li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀 — سلسلة تصميم الأنظمة، الدرس 2</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    new Chart(perf, {
+      type: "line",
+      data: {
+        labels: ["0%", "50%", "70%", "80%", "90%", "95%", "99%"],
+        datasets: [
+          { label: "زمن الاستجابة (ms)", data: [21, 11, 7, 5, 3, 2, 1.2], borderColor: "#2563eb", backgroundColor: "rgba(37,99,235,.15)", fill: true, tension: 0.3, yAxisID: "y" },
+          { label: "حمل قاعدة البيانات (QPS)", data: [10000, 5000, 3000, 2000, 1000, 500, 100], borderColor: "#ef4444", borderDash: [6, 6], fill: false, tension: 0.3, yAxisID: "y1" }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { rtl: true },
+          tooltip: { rtl: true },
+          title: { display: true, text: "أثر نسبة الإصابة (10,000 قراءة/ثانية، Cache = 1ms، DB = 20ms)" }
+        },
+        scales: {
+          x: { title: { display: true, text: "نسبة الإصابة" } },
+          y: { position: "left", title: { display: true, text: "ms" }, beginAtZero: true },
+          y1: { position: "right", title: { display: true, text: "DB QPS" }, beginAtZero: true, grid: { drawOnChartArea: false } }
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 7: صُنع في مصر — English B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Cairo',Tahoma,'Segoe UI',sans-serif; font-size:18px; line-height:1.9; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .progress { max-width:420px; margin:14px auto 0; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; }
+  .progress div { height:100%; background:#fde68a; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:210px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); }
+  .emoji { font-size:2.6rem; line-height:1.2; }
+  .word { font-size:1.4rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.15rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  /* Active -> passive swap */
+  .swap { border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin:14px 0; background:#fafafa; }
+  .swap .arrow { text-align:center; font-size:1.4rem; color:var(--primary); font-weight:800; }
+  /* Process strip */
+  .process { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; direction:ltr; margin:16px 0; }
+  .step { flex:1 1 150px; max-width:190px; border:2px solid var(--border); border-radius:14px; padding:10px; text-align:center; background:#fff; position:relative; }
+  .step .big { font-size:2rem; }
+  .step .n { position:absolute; top:-12px; left:-10px; background:var(--primary); color:#fff; border-radius:999px; width:26px; height:26px; font-size:.85rem; font-weight:800; line-height:26px; }
+  .step small { display:block; font-family:'Cairo',sans-serif; color:var(--muted); direction:rtl; }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; }
+  .bubble { max-width:80%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble.c { align-self:center; background:rgba(245,158,11,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:110px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:200px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>الدرس 7: صُنع في مصر <span class="tl">— It's made in Egypt</span></h1>
+  <p>صِف كيف تُصنع الأشياء ومن أين تأتي. <span class="tl">Describe how things are made and where they come from.</span></p>
+  <div class="badges">
+    <span class="badge">اللغة: الإنجليزية</span>
+    <span class="badge">المستوى: B1</span>
+    <span class="badge">الدرس 7 من 15</span>
+    <span class="badge">وقت الدراسة: 30 دقيقة</span>
+    <span class="badge tl">Passive: present &amp; past</span>
+  </div>
+  <div class="progress"><div style="width:47%"></div></div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 السرعة: عادية</button>
+  <span>النتيجة: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ حفظ PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section id="goals">
+    <h2>🎯 أهداف الدرس <span class="tl">— Can-do goals</span></h2>
+    <div class="cando">
+      <label><input type="checkbox"><span class="tl">I can describe products and processes with the present passive (is / are made).</span> — أستطيع أن أصف المنتجات وطريقة صنعها.</label>
+      <label><input type="checkbox"><span class="tl">I can talk about history with the past passive (was / were built).</span> — أستطيع أن أتحدث عن أشياء صُنعت أو بُنيت في الماضي.</label>
+      <label><input type="checkbox"><span class="tl">I can use by, made in, made of and made from correctly.</span> — أستطيع أن أستخدم <span class="tl">by / in / of / from</span> صحيحًا.</label>
+      <label><input type="checkbox"><span class="tl">I can pronounce /p/ and /b/ differently.</span> — أستطيع أن أفرّق بين صوتَي <span class="tl">/p/</span> و <span class="tl">/b/</span>.</label>
+    </div>
+  </section>
+
+  <section id="warmup">
+    <h2>🌱 تمهيد <span class="tl">— Warm-up</span></h2>
+    <p>انظر إلى ملابسك الآن. ابحث عن البطاقة الصغيرة <span class="tl">(label)</span>. ماذا مكتوب عليها؟ ربما «<b>صُنِعَ</b> في مصر».</p>
+    <p>لا نعرف <b>من</b> صنع القميص، ولا يهمّنا. المهم هو <b>القميص</b> نفسه. هذا هو <b>المبني للمجهول</b>.</p>
+    <p>بالإنجليزية: <span class="tl"><b>It's made in Egypt.</b></span> <button class="say" data-text="It's made in Egypt.">🔊</button></p>
+    <div class="callout note">📝 <b>Think:</b> <span class="tl">Where is your phone made? What is your favourite shirt made of?</span><br>فكّر: أين صُنع هاتفك؟ ومن أي مادة صُنع قميصك المفضل؟</div>
+  </section>
+
+  <section id="words">
+    <h2>📚 الكلمات الجديدة <span class="tl">— New words: Products &amp; shopping</span></h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. — اضغط على البطاقة لتقلبها. المقطع المنبور باللون الأحمر.</p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🏭</div><div class="word tl">factory</div><button class="say" data-text="factory">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">مصنع</div><span class="ipa">/<b>ˈfæk</b>.tər.i/</span><span class="tl">These shoes are made in a factory in Alexandria.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">⚙️</div><div class="word tl">produce</div><button class="say" data-text="produce">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يُنتج</div><span class="ipa">/prə<b>ˈduːs</b>/</span><span class="tl">Cars are produced in this city.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚢</div><div class="word tl">export</div><button class="say" data-text="export">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يُصدِّر</div><span class="ipa">/ɪk<b>ˈspɔːrt</b>/</span><span class="tl">Egyptian oranges are exported to Europe.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📦</div><div class="word tl">import</div><button class="say" data-text="import">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يستورد</div><span class="ipa">/ɪm<b>ˈpɔːrt</b>/</span><span class="tl">Most phones are imported from Asia.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌱</div><div class="word tl">cotton</div><button class="say" data-text="cotton">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">قطن</div><span class="ipa">/<b>ˈkɑː</b>.tən/</span><span class="tl">Cotton is grown in the Nile Delta.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👜</div><div class="word tl">leather</div><button class="say" data-text="leather">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">جلد (مادة)</div><span class="ipa">/<b>ˈleð</b>.ər/</span><span class="tl">This bag is made of leather.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤲</div><div class="word tl">handmade</div><button class="say" data-text="handmade">🔊</button><div class="hint">adjective</div></div>
+        <div class="back"><div class="word">مصنوع يدويًا</div><span class="ipa">/ˌhænd<b>ˈmeɪd</b>/</span><span class="tl">All the carpets are handmade.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🏷️</div><div class="word tl">brand</div><button class="say" data-text="brand">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">علامة تجارية / ماركة</div><span class="ipa">/<b>brænd</b>/</span><span class="tl">Which brand is your phone?</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🔖</div><div class="word tl">label</div><button class="say" data-text="label">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">بطاقة / ملصق المنتج</div><span class="ipa">/<b>ˈleɪ</b>.bəl/</span><span class="tl">Read the label before you buy.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚚</div><div class="word tl">deliver</div><button class="say" data-text="deliver">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يُوصِّل (طلبًا)</div><span class="ipa">/dɪ<b>ˈlɪv</b>.ər/</span><span class="tl">My order was delivered yesterday.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧾</div><div class="word tl">receipt</div><button class="say" data-text="receipt">🔊</button><div class="hint">noun — p صامتة</div></div>
+        <div class="back"><div class="word">إيصال / فاتورة الشراء</div><span class="ipa">/rɪ<b>ˈsiːt</b>/</span><span class="tl">Keep the receipt, please.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💸</div><div class="word tl">refund</div><button class="say" data-text="refund">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">استرداد المال</div><span class="ipa">/<b>ˈriː</b>.fʌnd/</span><span class="tl">Can I get a refund?</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👗</div><div class="word tl">try on</div><button class="say" data-text="try on">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يجرّب (ملابس)</div><span class="ipa">/traɪ <b>ˈɑːn</b>/</span><span class="tl">Can I try on this jacket?</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🈵</div><div class="word tl">sell out</div><button class="say" data-text="sell out">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">ينفد من المحل (بيع كله)</div><span class="ipa">/sel <b>ˈaʊt</b>/</span><span class="tl">The new phone sold out in one day.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">↩️</div><div class="word tl">send back</div><button class="say" data-text="send back">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يُرجِع (منتجًا)</div><span class="ipa">/send <b>ˈbæk</b>/</span><span class="tl">The shoes were too small, so I sent them back.</span></div>
+      </div></div>
+    </div>
+    <div class="callout warning">⚠️ <b>انتبه:</b> في <span class="tl">receipt</span> حرف <span class="tl">p</span> صامت: «رِسِيت». وكلمتا <span class="tl">export / import</span> فعلان هنا، والنبر على المقطع الثاني.</div>
+  </section>
+
+  <section id="grammar">
+    <h2>🎨 القاعدة بالألوان <span class="tl">— Grammar 1: Active → Passive</span></h2>
+    <p class="instr">Compare the two sentences. What is more important: the person or the thing?<span class="instr-ar">قارن بين الجملتين. ما الأهم: الشخص أم الشيء؟</span></p>
+    <div class="swap">
+      <div class="sent tl"><span class="w s">Workers<small>العمال (الفاعل)</small></span><span class="w v">make<small>يصنعون</small></span><span class="w o">these scarves<small>هذه الأوشحة</small></span><span class="w x">in Akhmim<small>في أخميم</small></span><button class="say" data-text="Workers make these scarves in Akhmim.">🔊</button></div>
+      <div class="arrow">⬇ Passive ⬇</div>
+      <div class="sent tl"><span class="w o">These scarves<small>هذه الأوشحة</small></span><span class="w v">are<small>be</small></span><span class="w v">made<small>تُصنع (التصريف الثالث)</small></span><span class="w x">in Akhmim<small>في أخميم</small></span><button class="say" data-text="These scarves are made in Akhmim.">🔊</button></div>
+    </div>
+    <p>في الجملة الثانية، <b>الشيء</b> (الأخضر) صار في <b>أول</b> الجملة. والفعل صار: <span class="tl"><b>be + past participle</b></span>.</p>
+
+    <h3>🧱 <span class="tl">Present &amp; past passive</span></h3>
+    <table class="tl">
+      <tr><th>Form</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Present ✅</td><td><mark>am / is / are</mark> + past participle</td><td>Cotton is grown in the Delta. <button class="say" data-text="Cotton is grown in the Delta.">🔊</button></td></tr>
+      <tr><td>Past ✅</td><td><mark>was / were</mark> + past participle</td><td>The Cairo Tower was built in 1961. <button class="say" data-text="The Cairo Tower was built in 1961.">🔊</button></td></tr>
+      <tr><td>Negative ❌</td><td><mark>isn't / aren't / wasn't / weren't</mark> + past participle</td><td>These bags aren't made in Egypt. <button class="say" data-text="These bags aren't made in Egypt.">🔊</button></td></tr>
+      <tr><td>Question ❓</td><td>(Wh-) + <mark>is / was</mark> + subject + past participle?</td><td>When was it built? <button class="say" data-text="When was it built?">🔊</button></td></tr>
+      <tr><td>Short answers</td><td>Yes, it <mark>is</mark>. / No, they <mark>weren't</mark>.</td><td>Yes, it is. <button class="say" data-text="Yes, it is.">🔊</button></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>When do we use it?</b> نستخدم المبني للمجهول عندما:<br>1) لا نعرف الفاعل: <span class="tl">My wallet <b>was stolen</b>.</span> (لا أعرف من سرقها)<br>2) الفاعل غير مهم أو واضح: <span class="tl">Oranges <b>are grown</b> in Ismailia.</span><br>3) نصف <b>عملية أو طريقة صنع</b>، كما في الصورة التالية.</div>
+
+    <h3>🔄 <span class="tl">A process: from cotton to T-shirt</span> — من القطن إلى القميص</h3>
+    <div class="process tl">
+      <div class="step"><span class="n">1</span><div class="big">🌱</div>Cotton <b>is grown</b>.<small>يُزرع القطن</small></div>
+      <div class="step"><span class="n">2</span><div class="big">🧺</div>It <b>is picked</b>.<small>يُقطف</small></div>
+      <div class="step"><span class="n">3</span><div class="big">🧵</div>It <b>is spun</b> into thread.<small>يُغزل خيطًا</small></div>
+      <div class="step"><span class="n">4</span><div class="big">👕</div>T-shirts <b>are made</b>.<small>تُصنع القمصان</small></div>
+      <div class="step"><span class="n">5</span><div class="big">🚢</div>They <b>are exported</b>.<small>تُصدَّر</small></div>
+    </div>
+    <p><button class="say" data-text="Cotton is grown. It is picked. It is spun into thread. T-shirts are made. They are exported.">🔊</button> استمع للعملية كاملة.</p>
+
+    <h3>👤 <span class="tl">Grammar 2: by + the doer</span></h3>
+    <p>إذا أردنا أن نذكر <b>من</b> فعل الشيء، نستخدم <span class="tl"><b>by</b></span>:</p>
+    <ul>
+      <li class="tl">This novel <b>was written by</b> Naguib Mahfouz. <button class="say" data-text="This novel was written by Naguib Mahfouz.">🔊</button></li>
+      <li class="tl">The lamps <b>are cut by</b> hand. <button class="say" data-text="The lamps are cut by hand.">🔊</button></li>
+    </ul>
+    <div class="callout note">📝 <b>Note:</b> في معظم جمل المبني للمجهول <b>لا</b> نذكر <span class="tl">by</span>. لا تقل <span class="tl">Cotton is grown <s>by farmers</s></span>، فهذا واضح.</div>
+
+    <h3>🧩 <span class="tl">Grammar 3: made in / of / from / by</span></h3>
+    <table>
+      <tr><th class="tl">Phrase</th><th>المعنى</th><th class="tl">Example</th></tr>
+      <tr><td class="tl"><b>made in</b> + place</td><td>المكان (البلد / المدينة)</td><td class="tl">It's made in Egypt. <button class="say" data-text="It's made in Egypt.">🔊</button></td></tr>
+      <tr><td class="tl"><b>made of</b> + material</td><td>المادة <b>ظاهرة</b> ولم تتغيّر</td><td class="tl">The table is made of wood. <button class="say" data-text="The table is made of wood.">🔊</button></td></tr>
+      <tr><td class="tl"><b>made from</b> + material</td><td>المادة <b>تغيّرت</b> ولا تراها</td><td class="tl">Paper is made from wood. <button class="say" data-text="Paper is made from wood.">🔊</button></td></tr>
+      <tr><td class="tl"><b>made by</b> + person / company</td><td>من صنعه</td><td class="tl">It was made by my grandmother. <button class="say" data-text="It was made by my grandmother.">🔊</button></td></tr>
+    </table>
+
+    <div class="diagram mermaid">
+flowchart TD
+  A["Who did it? Is the doer important? / هل الفاعل مهم؟"] -->|"Yes / نعم"| B["Active: Mahfouz wrote this novel."]
+  A -->|"No, or unknown / لا أو غير معروف"| C["Passive: be + past participle"]
+  C -->|"Now, in general / الآن أو بشكل عام"| D["am / is / are + pp: Cotton is grown in the Delta."]
+  C -->|"Finished past / في الماضي"| E["was / were + pp: The tower was built in 1961."]
+  D --> F["Want to name the doer? add by: ...by hand"]
+  E --> F
+    </div>
+    <div class="callout warning">⚠️ <b>Some verbs are never passive:</b> الأفعال التي ليس لها مفعول به <span class="tl">(happen, arrive, die, come, go, sleep)</span> لا تأتي مبنية للمجهول: <span class="tl">It was happened ❌ → It happened ✅</span>.</div>
+  </section>
+
+  <section id="compare">
+    <h2>🔁 العربية مقابل الإنجليزية <span class="tl">— Arabic vs English</span></h2>
+    <div class="vs">
+      <div>
+        <h4>العربية</h4>
+        <div class="sent"><span class="w v">صُنِعَ<small>was made (كلمة واحدة)</small></span><span class="w o">هذا القميص<small>this shirt</small></span><span class="w x">في مصر<small>in Egypt</small></span></div>
+        <div class="sent"><span class="w v">تمّ بناءُ<small>was built</small></span><span class="w o">البرج<small>the tower</small></span><span class="w x">عام 1961<small>in 1961</small></span></div>
+        <p>العربية تغيّر <b>حركات الفعل</b> فقط (صَنَعَ ← صُنِعَ)، أو تستخدم «تمّ + مصدر».</p>
+      </div>
+      <div>
+        <h4 class="tl">English</h4>
+        <div class="sent tl"><span class="w o">This shirt</span><span class="w gap">was<small>إجباري!</small></span><span class="w v">made</span><span class="w x">in Egypt.</span></div>
+        <div class="sent tl"><span class="w o">The tower</span><span class="w gap">was<small>إجباري!</small></span><span class="w v">built</span><span class="w x">in 1961.</span></div>
+        <p>الإنجليزية تحتاج <b>كلمتين</b>: <span class="tl">be</span> + التصريف الثالث.</p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>سهل عليك:</b> فكرة <b>المبني للمجهول</b> موجودة في العربية، وتستخدمها كثيرًا: «صُنِعَ، بُنِيَ، كُتِبَ، سُرِقَ». وفي العربية الفصحى أيضًا لا نذكر الفاعل عادةً، تمامًا كما في الإنجليزية.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (1):</b> لأن «صُنِعَ» كلمة واحدة، ينسى كثيرون فعل <span class="tl">be</span>: <span class="tl">It made in China ❌</span>. هذه الجملة تعني «هو صَنَعَ في الصين»! الصحيح: <span class="tl">It <b>is</b> made in China ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (2):</b> ترجمة «<b>من قِبَل</b>» إلى <span class="tl">from</span> خطأ: <span class="tl">made from Toyota ❌ → made <b>by</b> Toyota ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (3):</b> لا تترجم «تمّ + مصدر» حرفيًا: «تمّ عقدُ الاجتماع» ← <span class="tl">It was done holding the meeting ❌</span>. الصحيح: <span class="tl">The meeting <b>was held</b> ✅</span>.</div>
+  </section>
+
+  <section id="pron">
+    <h2>👄 النطق: صوت <span class="tl">/p/</span> مقابل <span class="tl">/b/</span></h2>
+    <p>صوت <span class="tl">/p/</span> غير موجود في العربية، لذلك يقول كثيرون <span class="tl">"broduct"</span> بدل <span class="tl">product</span>، و <span class="tl">"backed"</span> بدل <span class="tl">packed</span>. وهذا الصوت موجود في كلمات كثيرة في هذا الدرس: <span class="tl">produce, export, import, paper, shop, pay</span>.</p>
+    <p><b>How to make it:</b> أغلق شفتيك كما في <b>ب</b>، ثم افتحهما مع <b>نفخة هواء قوية</b> وبدون اهتزاز في الحلق. ضع ورقة أمام فمك: مع <span class="tl">/p/</span> تتحرك الورقة، ومع <span class="tl">/b/</span> لا تتحرك.</p>
+    <p class="instr">Listen and repeat the minimal pairs.<span class="instr-ar">استمع وكرّر الأزواج المتقاربة.</span></p>
+    <table>
+      <tr><th><span class="tl">/p/</span> — نفخة هواء، بلا اهتزاز</th><th><span class="tl">/b/</span> (ب) — مع اهتزاز</th></tr>
+      <tr><td><span class="tl">pack</span> <button class="say" data-text="pack">🔊</button> يحزم / يغلّف</td><td><span class="tl">back</span> <button class="say" data-text="back">🔊</button> ظهر / خلف</td></tr>
+      <tr><td><span class="tl">pay</span> <button class="say" data-text="pay">🔊</button> يدفع</td><td><span class="tl">bay</span> <button class="say" data-text="bay">🔊</button> خليج</td></tr>
+      <tr><td><span class="tl">pin</span> <button class="say" data-text="pin">🔊</button> دبّوس</td><td><span class="tl">bin</span> <button class="say" data-text="bin">🔊</button> سلة مهملات</td></tr>
+      <tr><td><span class="tl">pear</span> <button class="say" data-text="pear">🔊</button> كمثرى</td><td><span class="tl">bear</span> <button class="say" data-text="bear">🔊</button> دبّ</td></tr>
+    </table>
+    <ul>
+      <li><span class="tl">The products are packed in paper.</span> <span class="ipa">/<b>p</b>/ ×4</span> <button class="say" data-text="The products are packed in paper.">🔊</button></li>
+      <li><span class="tl">Can I pay by card?</span> <span class="ipa">/p/ … /b/</span> <button class="say" data-text="Can I pay by card?">🔊</button></li>
+    </ul>
+    <div class="callout tip">💡 <b>نصيحة:</b> كما تعلمت في الدرس 1 مع <span class="tl">/v/</span> و <span class="tl">/f/</span>: ضع يدك على رقبتك. مع <span class="tl">/b/</span> تشعر باهتزاز، ومع <span class="tl">/p/</span> لا يوجد اهتزاز. استخدم زر 🐢 لتسمع ببطء.</div>
+    <div class="ex quiz" data-explain="packed = غُلّفت (بصوت /p/). backed = دُعِمت، معنى مختلف تمامًا!">
+      <div class="q">🎧 <span class="tl">"The shirts were ___ in boxes." (غُلّفت في صناديق)</span></div>
+      <button class="option tl" data-correct="true">packed /pækt/</button>
+      <button class="option tl">backed /bækt/</button>
+      <button class="option tl">baked /beɪkt/</button>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section id="dialogue">
+    <h2>💬 حوار من الحياة <span class="tl">— Shopping in Khan el-Khalili</span></h2>
+    <p class="instr">Listen to Aya, her friend Emma and the shopkeeper. Find 6 passive sentences.<span class="instr-ar">استمع إلى آية وصديقتها إيما وصاحب المحل. ابحث عن 6 جمل مبنية للمجهول.</span></p>
+    <button class="btn" id="playDialogue">▶️ استمع للحوار كاملًا</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Emma</div><div class="tl line">Aya, these scarves are beautiful! Are they made in Egypt?</div></div>
+      <div class="bubble b"><div class="who">Aya</div><div class="tl line">Yes, they are. They're made of Egyptian cotton. Cotton is grown in the Nile Delta.</div></div>
+      <div class="bubble c"><div class="who">Mr. Samir</div><div class="tl line">Welcome! All our scarves are handmade. They're woven by local families in Akhmim.</div></div>
+      <div class="bubble a"><div class="who">Emma</div><div class="tl line">Wow. And what about these lamps?</div></div>
+      <div class="bubble c"><div class="who">Mr. Samir</div><div class="tl line">They're made of copper and glass, and each one is cut by hand. This shop was opened by my grandfather in 1950.</div></div>
+      <div class="bubble a"><div class="who">Emma</div><div class="tl line">Amazing! If I had more space in my suitcase, I'd buy three!</div></div>
+      <div class="bubble b"><div class="who">Aya</div><div class="tl line">Do you deliver abroad, Mr. Samir?</div></div>
+      <div class="bubble c"><div class="who">Mr. Samir</div><div class="tl line">Of course. Every order is packed carefully and sent by express mail.</div></div>
+      <div class="bubble a"><div class="who">Emma</div><div class="tl line">Great. You know, last year I bought a handmade bag in London. But when I read the label, it was made in a factory!</div></div>
+      <div class="bubble c"><div class="who">Mr. Samir</div><div class="tl line">Don't worry. Here, everything is made in Egypt. Have you ever seen real papyrus? It's made from a plant.</div></div>
+      <div class="bubble a"><div class="who">Emma</div><div class="tl line">Not yet! Can I pay by card?</div></div>
+      <div class="bubble c"><div class="who">Mr. Samir</div><div class="tl line">Yes, you can. Here's your receipt. Keep it if you want to send anything back.</div></div>
+    </div>
+    <details><summary>👀 Answers: passive sentences</summary>
+      <ul class="tl">
+        <li>Are they made in Egypt? · They're made of Egyptian cotton.</li>
+        <li>Cotton is grown in the Nile Delta.</li>
+        <li>They're woven by local families in Akhmim.</li>
+        <li>Each one is cut by hand.</li>
+        <li>This shop was opened by my grandfather in 1950.</li>
+        <li>Every order is packed carefully and sent by express mail.</li>
+        <li>It was made in a factory! · Everything is made in Egypt. · It's made from a plant.</li>
+      </ul>
+      <p>لاحظ: <span class="tl">woven</span> هو التصريف الثالث لـ <span class="tl">weave</span> (ينسج). وانظر إلى المراجعة: <span class="tl">If I had more space, I'd buy three!</span> من الدرس 6، و <span class="tl">Have you ever seen...? — Not yet!</span> من الدرسين 1 و 2.</p>
+    </details>
+  </section>
+
+  <section id="practice">
+    <h2>🏋️ تدريب <span class="tl">— Practice</span></h2>
+
+    <h3 class="instr">A. Choose the correct answer.<span class="instr-ar">اختر الإجابة الصحيحة.</span></h3>
+
+    <div class="ex quiz" data-explain="حقيقة عامة الآن → is + past participle (grown).">
+      <div class="q">1. <span class="tl">Cotton ___ in the Nile Delta.</span></div>
+      <button class="option tl" data-correct="true">is grown</button>
+      <button class="option tl">grows by</button>
+      <button class="option tl">is grow</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="in 1961 وقت محدد في الماضي → was + past participle.">
+      <div class="q">2. <span class="tl">The Cairo Tower ___ in 1961.</span></div>
+      <button class="option tl">built</button>
+      <button class="option tl" data-correct="true">was built</button>
+      <button class="option tl">is built</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="الشركة هي التي صنعته → made by. (لا تترجم «من قِبَل» إلى from)">
+      <div class="q">3. <span class="tl">This phone was made ___ Samsung.</span></div>
+      <button class="option tl">from</button>
+      <button class="option tl" data-correct="true">by</button>
+      <button class="option tl">of</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="happen ليس له مفعول به → لا يأتي مبنيًا للمجهول.">
+      <div class="q">4. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">The accident was happened at night.</button>
+      <button class="option tl" data-correct="true">The accident happened at night.</button>
+      <button class="option tl">The accident is happened at night.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="الخشب ظاهر في الطاولة ولم يتغير → made of.">
+      <div class="q">5. <span class="tl">This table is made ___ wood.</span></div>
+      <button class="option tl">by</button>
+      <button class="option tl">in</button>
+      <button class="option tl" data-correct="true">of</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="shoes جمع → are + past participle في السؤال.">
+      <div class="q">6. <span class="tl">Where ___ your shoes made?</span></div>
+      <button class="option tl">is</button>
+      <button class="option tl" data-correct="true">are</button>
+      <button class="option tl">do</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">B. Complete with the passive form of the verb.<span class="instr-ar">أكمل بصيغة المبني للمجهول (مضارع أو ماضٍ).</span></h3>
+    <div class="ex fill">
+      <p class="tl">7. Papyrus <input class="blank wide" data-answer="is made"> (make) from a plant.</p>
+      <p class="tl">8. These bags <input class="blank wide" data-answer="aren't produced|are not produced"> (not / produce) in Egypt. They're imported.</p>
+      <p class="tl">9. My wallet <input class="blank wide" data-answer="was stolen"> (steal) on the metro yesterday.</p>
+      <p class="tl">10. When <input class="blank" data-answer="was"> the shop <input class="blank" data-answer="opened"> (open)?</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">C. Active → Passive. Rewrite the sentences.<span class="instr-ar">حوّل الجمل من المبني للمعلوم إلى المبني للمجهول.</span></h3>
+    <div class="ex fill">
+      <p class="tl">11. Farmers grow oranges in Ismailia.<br>→ Oranges <input class="blank wide" data-answer="are grown"> in Ismailia.</p>
+      <p class="tl">12. Someone stole my bike last night.<br>→ My bike <input class="blank wide" data-answer="was stolen"> last night.</p>
+      <p class="tl">13. Naguib Mahfouz wrote this novel.<br>→ This novel <input class="blank wide" data-answer="was written"> <input class="blank" data-answer="by"> Naguib Mahfouz.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">D. Put the words in order.<span class="instr-ar">رتّب الكلمات لتكوّن جملة.</span></h3>
+    <div class="ex builder" data-answer="These scarves are made of Egyptian cotton">
+      <div class="q">14. 🧣</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex builder" data-answer="When was the Cairo Tower built">
+      <div class="q">15. ❓🗼</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">E. Say it! 🎤<span class="instr-ar">قل الجملة بصوتك. انتبه لصوت /p/.</span></h3>
+    <div class="ex speak-check" data-text="The products are packed in paper">
+      <div class="q">16. <span class="tl">The products are packed in paper.</span> <button class="say" data-text="The products are packed in paper.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+    <div class="ex speak-check" data-text="My order was delivered yesterday">
+      <div class="q">17. <span class="tl">My order was delivered yesterday.</span> <button class="say" data-text="My order was delivered yesterday.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+  </section>
+
+  <section id="task">
+    <h2>✍️ مهمة الكتابة <span class="tl">— Writing task (50–80 words)</span></h2>
+    <p class="instr">Describe a famous product or place from your country.<span class="instr-ar">صِف منتجًا أو مكانًا مشهورًا من بلدك. أرسل الفقرة لي في المحادثة وسأصححها.</span></p>
+    <ul class="tl">
+      <li>Where <b>is</b> it <b>made</b> / <b>grown</b> / <b>found</b>?</li>
+      <li>What <b>is</b> it <b>made of</b> or <b>made from</b>?</li>
+      <li>Something from the past: when <b>was</b> it <b>built</b> / <b>invented</b> / <b>first sold</b>?</li>
+      <li>Use at least 4 passive verbs.</li>
+    </ul>
+    <details><summary>👀 Model answer (74 words)</summary>
+      <p class="tl">Egyptian cotton is famous all over the world. It is grown in the Nile Delta, and it is picked by hand in late summer. Then the cotton is cleaned and spun into soft thread. It is used to make sheets, towels and shirts. A lot of it is exported to Europe and Asia. Cotton was first grown in Egypt on a large scale in the 1800s. If you buy one, check the label!</p>
+    </details>
+  </section>
+
+  <section id="mistakes">
+    <h2>🚫 الأخطاء الشائعة عند العرب <span class="tl">— Common mistakes</span></h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>لماذا؟</th></tr>
+      <tr><td class="tl">It made in China.</td><td class="tl">It is made in China.</td><td>«صُنِعَ» كلمة واحدة، لكن الإنجليزية تحتاج <span class="tl">be</span>.</td></tr>
+      <tr><td class="tl">The pyramids built 4,500 years ago.</td><td class="tl">The pyramids were built 4,500 years ago.</td><td>الماضي المبني للمجهول: <span class="tl">was / were + pp</span>.</td></tr>
+      <tr><td class="tl">The house was build in 1990.</td><td class="tl">The house was built in 1990.</td><td>بعد <span class="tl">be</span> التصريف الثالث، لا المصدر.</td></tr>
+      <tr><td class="tl">This car is made from Toyota.</td><td class="tl">This car is made by Toyota.</td><td>«من قِبَل» = <span class="tl">by</span>.</td></tr>
+      <tr><td class="tl">The shirt is made by cotton.</td><td class="tl">The shirt is made of cotton.</td><td>المادة: <span class="tl">of / from</span>. الصانع: <span class="tl">by</span>.</td></tr>
+      <tr><td class="tl">It was happened yesterday.</td><td class="tl">It happened yesterday.</td><td><span class="tl">happen / arrive / die</span> لا تأتي مبنية للمجهول.</td></tr>
+      <tr><td class="tl">Where made this phone?</td><td class="tl">Where was this phone made?</td><td>السؤال: <span class="tl">Wh- + be + subject + pp</span>.</td></tr>
+      <tr><td class="tl">"broduct" / "baber"</td><td class="tl">product /ˈprɑː.dʌkt/ · paper /ˈpeɪ.pər/</td><td>صوت <span class="tl">/p/</span> بنفخة هواء، وليس <b>ب</b>.</td></tr>
+    </table>
+  </section>
+
+  <section id="summary">
+    <h2>📌 الخلاصة <span class="tl">— Summary</span></h2>
+    <ul>
+      <li>المبني للمجهول = <span class="tl"><b>be + past participle</b></span>.</li>
+      <li>المضارع: <span class="tl">am / is / are + pp</span> · الماضي: <span class="tl">was / were + pp</span>.</li>
+      <li>نستخدمه عندما يكون <b>الشيء</b> أهم من <b>الفاعل</b>، أو الفاعل غير معروف، أو لوصف عملية.</li>
+      <li>الفاعل (إذا ذكرناه): <span class="tl"><b>by</b></span>، وليس <span class="tl">from</span>.</li>
+      <li><span class="tl">made in</span> + مكان · <span class="tl">made of</span> + مادة ظاهرة · <span class="tl">made from</span> + مادة تغيّرت · <span class="tl">made by</span> + صانع.</li>
+      <li>لا تقل <span class="tl">was happened</span>.</li>
+      <li>انطق <span class="tl">/p/</span> بنفخة هواء: <span class="tl">product, paper, pay, packed</span>.</li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <h2>🔄 مراجعة سريعة <span class="tl">— Quick review (Lesson 6)</span></h2>
+    <p>هل تتذكر الشرطية الثانية «لو» و <span class="tl">If I were you</span>؟</p>
+    <div class="ex quiz" data-explain="خيال → if + past simple.">
+      <div class="q">R1. <span class="tl">If I ___ more money, I'd buy a car.</span></div>
+      <button class="option tl">have</button>
+      <button class="option tl" data-correct="true">had</button>
+      <button class="option tl">would have</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="النصيحة: If I were you, I wouldn't + base verb.">
+      <div class="q">R2. <span class="tl">If I were you, I ___ quit my job.</span></div>
+      <button class="option tl">won't</button>
+      <button class="option tl" data-correct="true">wouldn't</button>
+      <button class="option tl">didn't</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="if + past، والنتيجة would. لا تخلط الشرطيتين.">
+      <div class="q">R3. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">If I won the lottery, I will travel.</button>
+      <button class="option tl">If I would win the lottery, I'd travel.</button>
+      <button class="option tl" data-correct="true">If I won the lottery, I'd travel.</button>
+      <div class="feedback"></div>
+    </div>
+    <p class="tl">Review words: afford · save up · pay off · invest · charity · give away · quit · come true</p>
+  </section>
+
+  <section id="review-pp">
+    <h2>📋 التصريف الثالث المهم للمبني للمجهول <span class="tl">— Key past participles</span></h2>
+    <table class="tl">
+      <tr><th>Base</th><th>Past simple</th><th>Past participle</th><th>🔊</th></tr>
+      <tr><td>make</td><td>made</td><td><mark>made</mark></td><td><button class="say" data-text="make, made, made">🔊</button></td></tr>
+      <tr><td>build</td><td>built</td><td><mark>built</mark></td><td><button class="say" data-text="build, built, built">🔊</button></td></tr>
+      <tr><td>grow</td><td>grew</td><td><mark>grown</mark></td><td><button class="say" data-text="grow, grew, grown">🔊</button></td></tr>
+      <tr><td>sell</td><td>sold</td><td><mark>sold</mark></td><td><button class="say" data-text="sell, sold, sold">🔊</button></td></tr>
+      <tr><td>write</td><td>wrote</td><td><mark>written</mark></td><td><button class="say" data-text="write, wrote, written">🔊</button></td></tr>
+      <tr><td>steal</td><td>stole</td><td><mark>stolen</mark></td><td><button class="say" data-text="steal, stole, stolen">🔊</button></td></tr>
+      <tr><td>weave</td><td>wove</td><td><mark>woven</mark></td><td><button class="say" data-text="weave, wove, woven">🔊</button></td></tr>
+      <tr><td>send</td><td>sent</td><td><mark>sent</mark></td><td><button class="say" data-text="send, sent, sent">🔊</button></td></tr>
+    </table>
+  </section>
+
+  <section id="next">
+    <h2>➡️ الدرس التالي <span class="tl">— Next lesson</span></h2>
+    <p>الدرس 8: <span class="tl">The man who helped me</span>: جمل الصلة <span class="tl">(who / which / that / where)</span>، لتصف الناس والأشياء والأماكن بوضوح. هناك ستعرف لماذا لا نقول <span class="tl">the man who I saw <s>him</s></span>. اكتب «التالي» لتبدأ.</p>
+  </section>
+
+</div>
+
+<footer>تعلّم خطوة بخطوة 🌍 · <span class="tl">English B1 · Lesson 7</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif" });
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("المتصفح لا يدعم الصوت. جرّب Chrome أو Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 السرعة: عادية" : "🐢 السرعة: بطيئة";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · ضع الفأرة على الخانة الحمراء لترى الإجابة." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition) — accepts alternatives separated by |
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "المتصفح لا يدعم التعرف على الصوت. جرّب Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ I'm listening... أستمع إليك...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var targets = box.getAttribute("data-text").split("|").map(norm);
+        var ok = targets.indexOf(norm(said)) !== -1;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again. حاول مرة أخرى.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ لم أسمع جيدًا. تأكد من إذن الميكروفون وحاول مرة أخرى."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>

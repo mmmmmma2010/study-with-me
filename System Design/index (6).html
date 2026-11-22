@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درس 7: الموثوقية - تحديد المعدل ومفاتيح منع التكرار وإعادة المحاولة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #0d9488);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 760px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; align-items: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.db { border-color: var(--good); }
+  .box.warn { border-color: var(--warn); background: rgba(245,158,11,.15); }
+  .box.bad { border-color: var(--bad); color: var(--bad); background: rgba(239,68,68,.08); }
+  .box.ghost { opacity: .35; border-style: dashed; }
+  .arrow { font-size: 1.4rem; color: var(--muted); }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>الموثوقية: تحديد المعدل ومنع التكرار وإعادة المحاولة <span class="en">(Rate Limiting, Idempotency &amp; Retries)</span></h1>
+  <p>ستتعلم كيف تحمي النظام من طوفان الطلبات، وكيف تضمن ألا يُخصم العميل مرتين أبدًا، حتى لو أعاد المحاولة عشر مرات.</p>
+  <div class="badges">
+    <span class="badge">الدرس 7 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 45 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 4 جعلنا المستهلك آمنًا عند التكرار. وفي الدرس 5 تعلمنا أن المهلة تعني "لا أعرف"، وليس "فشل". وفي الدرس 6 وضعنا البوابة أمام كل الخدمات. اليوم نجمع هذه الأفكار في أدوات عملية تحمي الطرفين: نظامك وعملاءك.</div>
+      <p>ثلاثة أشياء حدثت في بوابة الدفع هذا الأسبوع:</p>
+      <ol>
+        <li><strong>تاجر عنده خطأ في الكود:</strong> حلقة لا تنتهي ترسل 10,000 طلب في الثانية إلى <code>/v1/payments</code>. خدمة الدفع امتلأت، فتأخرت دفعات كل التجار الآخرين. هذه مشكلة <strong>الجار المزعج</strong> <span class="en">(Noisy Neighbor)</span>.</li>
+        <li><strong>عميلة ضغطت "ادفع" ثلاث مرات</strong> لأن الزر لم يستجب بسرعة. فوصلت ثلاث عمليات دفع.</li>
+        <li><strong>شبكة الجوال انقطعت</strong> بعد أن خصم النظام 500 جنيه، وقبل أن يصل الرد. التطبيق أعاد الطلب تلقائيًا، فخُصمت 500 مرة ثانية.</li>
+      </ol>
+      <p>المشكلة الأولى يحلها <strong>تحديد المعدل</strong> <span class="en">(Rate Limiting)</span>. والثانية والثالثة يحلهما <strong>مفتاح منع التكرار</strong> <span class="en">(Idempotency Key)</span>. وبينهما توجد قواعد <strong>إعادة المحاولة الآمنة</strong>: متى نعيد؟ وكم مرة؟ وما الذي لا نعيده أبدًا؟</p>
+      <p>في هذا الدرس ستتعلم:</p>
+      <ul>
+        <li>خمس خوارزميات لتحديد المعدل، ولماذا تسمح النافذة الثابتة بضعف الحد.</li>
+        <li>دلو الرموز <span class="en">(Token Bucket)</span>: الخوارزمية الأكثر استخدامًا في الـ APIs.</li>
+        <li>تحديد المعدل عبر عدة خوادم، ومشكلة "التحديث الضائع".</li>
+        <li>مفاتيح منع التكرار: التصميم الكامل وحالاته الأربع.</li>
+        <li>أي الأخطاء نعيد محاولتها، وأيها لا نعيدها أبدًا.</li>
+      </ul>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">
+        🎟️ <strong>تخيّل مدينة ملاهٍ بلعبة مشهورة.</strong>
+        <p>عند المدخل آلة توزّع <strong>تذاكر</strong>. تضيف تذكرتين كل دقيقة، وتتسع لخمس تذاكر فقط. إذا وصلت مجموعة من خمسة أشخاص والآلة ممتلئة، يدخلون كلهم فورًا. الشخص السادس ينتظر حتى تُطبع تذكرة جديدة. هذا هو <strong>دلو الرموز</strong>: يسمح بدفعة قصيرة، لكنه يحد المعدل على المدى الطويل.</p>
+        <p>والموظف يقول للشخص السادس: "ارجع بعد 30 ثانية". لا يتركه واقفًا بلا معلومة. هذا هو رد <code>429</code> مع <span class="en">Retry-After</span>.</p>
+        <p>🧾 <strong>وتخيّل أنك في مطعم ودفعت الحساب.</strong> النادل أخذ البطاقة، وانقطعت الكهرباء قبل أن تخرج الفاتورة. هل تدفع مرة ثانية؟ العاقل يقول: "انظر في سجلك أولًا. رقم طاولتي 12، وفاتورة اليوم رقم 345". النادل يجد الفاتورة مدفوعة، ويطبع لك نسخة منها فقط. رقم الفاتورة هنا هو <strong>مفتاح منع التكرار</strong>.</p>
+        <p>والمهم: الرقم يكون على الفاتورة <strong>قبل</strong> الدفع. لو أخذت رقمًا جديدًا مع كل محاولة، فلن يعرف النادل أنها نفس الفاتورة.</p>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>تحديد المعدل</td><td class="en">Rate Limiting</td><td>حد أقصى لعدد الطلبات من عميل واحد خلال مدة معينة.</td></tr>
+        <tr><td>الجار المزعج</td><td class="en">Noisy Neighbor</td><td>عميل واحد يستهلك الموارد فيتضرر كل العملاء الآخرين.</td></tr>
+        <tr><td>النافذة الثابتة</td><td class="en">Fixed Window</td><td>نعد الطلبات في كل دقيقة على الساعة، ونصفّر العداد مع بداية الدقيقة.</td></tr>
+        <tr><td>سجل النافذة المنزلقة</td><td class="en">Sliding Window Log</td><td>نحفظ وقت كل طلب، ونعد الطلبات في آخر 60 ثانية بالضبط.</td></tr>
+        <tr><td>عداد النافذة المنزلقة</td><td class="en">Sliding Window Counter</td><td>تقريب ذكي: عداد للنافذة الحالية وعداد للسابقة، مع وزن.</td></tr>
+        <tr><td>دلو الرموز</td><td class="en">Token Bucket</td><td>دلو يمتلئ بمعدل ثابت. كل طلب يأخذ رمزًا. الدلو الفارغ يعني رفضًا.</td></tr>
+        <tr><td>الدلو المسرّب</td><td class="en">Leaky Bucket</td><td>طابور يخرج منه الطلبات بمعدل ثابت تمامًا، مهما كان الدخول.</td></tr>
+        <tr><td>طلبات كثيرة جدًا</td><td class="en">429 Too Many Requests</td><td>رد HTTP يعني: تجاوزت الحد.</td></tr>
+        <tr><td>أعد المحاولة بعد</td><td class="en">Retry-After</td><td>Header يخبر العميل كم ثانية ينتظر.</td></tr>
+        <tr><td>التخلص من الحمل</td><td class="en">Load Shedding</td><td>رفض الطلبات الأقل أهمية عمدًا عندما يكون النظام مزدحمًا.</td></tr>
+        <tr><td>آمن عند التكرار</td><td class="en">Idempotent</td><td>تنفيذ العملية مرتين أو عشر مرات يعطي نفس أثر تنفيذها مرة واحدة.</td></tr>
+        <tr><td>مفتاح منع التكرار</td><td class="en">Idempotency Key</td><td>معرّف فريد يرسله العميل مع الطلب. نفس المفتاح = نفس العملية.</td></tr>
+        <tr><td>بصمة الطلب</td><td class="en">Request Fingerprint</td><td>تجزئة لجسم الطلب، لنكشف استخدام نفس المفتاح لطلب مختلف.</td></tr>
+        <tr><td>خطأ قابل لإعادة المحاولة</td><td class="en">Retryable Error</td><td>خطأ مؤقت قد ينجح إذا أعدت المحاولة، مثل 503.</td></tr>
+        <tr><td>الفشل المفتوح / المغلق</td><td class="en">Fail Open / Fail Closed</td><td>عند تعطل أداة الحماية: نسمح بالطلب (مفتوح)، أم نرفضه (مغلق)؟</td></tr>
+        <tr><td>الموعد النهائي</td><td class="en">Deadline</td><td>الوقت الكلي المسموح للطلب، شاملًا كل إعادات المحاولة.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>الجزء الأول: تحديد المعدل</h3>
+
+      <h4>1. لماذا نحدد المعدل؟</h4>
+      <ul>
+        <li><strong>العدالة:</strong> تاجر واحد لا يأكل طاقة النظام كله.</li>
+        <li><strong>الحماية من الهجمات:</strong> تخمين كلمات المرور، أو تجربة آلاف أرقام البطاقات المسروقة <span class="en">(Card Testing)</span>.</li>
+        <li><strong>حماية الخدمات التابعة:</strong> البنك يقبل 500 طلب في الثانية فقط. إذا أرسلت أكثر، يحظرك هو.</li>
+        <li><strong>التكلفة:</strong> كل طلب يكلف معالجًا وقاعدة بيانات، وأحيانًا رسومًا لخدمة خارجية.</li>
+        <li><strong>خطط الأسعار:</strong> التاجر الصغير 25 طلبًا في الثانية، والمؤسسات 500.</li>
+      </ul>
+
+      <h4>2. على أي أساس نحدد؟</h4>
+      <table>
+        <tr><th>المفتاح</th><th>مثال</th><th>ملاحظة</th></tr>
+        <tr><td>مفتاح الـ API أو التاجر</td><td><code>rl:merchant:m1</code></td><td>✅ الأفضل للـ APIs. كل تاجر له حده.</td></tr>
+        <tr><td>المستخدم</td><td><code>rl:user:sara</code></td><td>✅ للتطبيقات بعد تسجيل الدخول.</td></tr>
+        <tr><td>عنوان IP</td><td><code>rl:ip:41.33.x.x</code></td><td>⚠️ للطلبات قبل تسجيل الدخول فقط. شبكات الجوال تضع آلاف المستخدمين خلف عنوان واحد.</td></tr>
+        <tr><td>المسار</td><td><code>/login</code> أقل من <code>/payments</code></td><td>✅ المسارات الحساسة لها حد أقل.</td></tr>
+        <tr><td>عام</td><td>كل النظام</td><td>✅ حماية أخيرة: التخلص من الحمل عند الازدحام.</td></tr>
+      </table>
+      <p>في الواقع نجمع عدة حدود: حد لكل تاجر، وحد أقل لكل مسار حساس، وحد عام للنظام. الطلب يمر فقط إذا سمحت به كل الحدود.</p>
+
+      <h4>3. الخوارزميات</h4>
+      <p><strong>النافذة الثابتة:</strong> أبسط شيء. عداد لكل دقيقة. لكن لها ثغرة: الحد 5 في الدقيقة. المهاجم يرسل 5 في الثانية 59، و 5 في الثانية 60. العداد صُفّر بينهما، فيمر 10 طلبات في ثانيتين. <strong>ضعف الحد.</strong> سترى هذا في المثال 1.</p>
+      <p><strong>سجل النافذة المنزلقة:</strong> نحفظ وقت كل طلب، ونعد ما في آخر 60 ثانية بالضبط. دقيق تمامًا. لكن تاجر بحد 10,000 في الدقيقة يحتاج حفظ 10,000 وقت.</p>
+      <p><strong>عداد النافذة المنزلقة:</strong> نحفظ عددين فقط: النافذة السابقة والحالية. ونفترض أن طلبات السابقة كانت موزّعة بالتساوي. دقيق بدرجة كافية، وذاكرته صغيرة جدًا. ستبنيه في التمرين 2.</p>
+      <p><strong>دلو الرموز:</strong> له رقمان. <strong>السعة</strong> \(C\): أكبر دفعة مسموحة. و<strong>معدل الملء</strong> \(r\): كم رمزًا يُضاف كل ثانية. يسمح بدفعات قصيرة، وهذا طبيعي في الاستخدام الحقيقي. لذلك تستخدمه أغلب الـ APIs.</p>
+      <p><strong>الدلو المسرّب:</strong> الطلبات تدخل طابورًا وتخرج بمعدل ثابت تمامًا. مفيد عندما تحمي خدمة لا تتحمل أي دفعة، مثل API بنك بحد صارم.</p>
+
+      <h4>4. ماذا نرد عند الرفض؟</h4>
+      <p>نرد بـ <code>429 Too Many Requests</code> مع معلومات تساعد العميل:</p>
+<pre><code class="language-http">HTTP/1.1 429 Too Many Requests
+Retry-After: 2
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 0</code></pre>
+      <p>العميل الجيد يقرأ <code>Retry-After</code> وينتظر. بدون هذه المعلومة، يعيد المحاولة فورًا، فيزيد الحمل.</p>
+
+      <h4>5. التخلص من الحمل حسب الأولوية</h4>
+      <p>تحديد المعدل يحمي من عميل واحد. لكن ماذا لو كان كل العملاء ضمن حدودهم والنظام ما زال مزدحمًا، مثل يوم العروض؟ هنا نرفض <strong>الأقل أهمية أولًا</strong>: التقارير والتصدير، ثم لوحة التحكم. والدفع آخر شيء نرفضه. رفض تقرير أفضل بكثير من رفض عملية دفع.</p>
+
+      <h3>الجزء الثاني: منع التكرار</h3>
+
+      <h4>6. أي العمليات آمنة عند التكرار؟</h4>
+      <table>
+        <tr><th>العملية</th><th>آمنة؟</th><th>السبب</th></tr>
+        <tr><td><code>GET /payments/p1</code></td><td>✅</td><td>القراءة لا تغيّر شيئًا.</td></tr>
+        <tr><td><code>PUT /merchants/m1/logo</code></td><td>✅</td><td>"اجعل الشعار X". التنفيذ مرتين يعطي نفس النتيجة.</td></tr>
+        <tr><td><code>DELETE /webhooks/w1</code></td><td>✅</td><td>المحذوف يبقى محذوفًا.</td></tr>
+        <tr><td><code>POST /payments</code></td><td>❌</td><td>كل طلب ينشئ عملية دفع جديدة.</td></tr>
+        <tr><td><code>balance += 100</code></td><td>❌</td><td>التنفيذ مرتين يضيف 200.</td></tr>
+        <tr><td><code>status = 'paid'</code></td><td>✅</td><td>القيمة النهائية نفسها مهما تكرر.</td></tr>
+      </table>
+      <p>المشكلة أن أهم عملية عندنا، إنشاء الدفع، هي <code>POST</code>. لذلك نحتاج طريقة تجعلها آمنة: <strong>مفتاح منع التكرار</strong>.</p>
+
+      <h4>7. كيف يعمل مفتاح منع التكرار؟</h4>
+      <p>العميل ينشئ معرّفًا فريدًا (مثل <span class="en">UUID</span>) لكل <strong>عملية منطقية</strong>، أي لكل "دفعة"، وليس لكل محاولة إرسال. ويرسله في Header:</p>
+<pre><code class="language-http">POST /v1/payments
+Idempotency-Key: 7f3c9a2e-4b1d-4e8a-9c5f-1a2b3c4d5e6f
+Content-Type: application/json
+
+{"amount": 500, "currency": "EGP"}</code></pre>
+      <p>الخادم يحفظ المفتاح مع حالة العملية والرد. وعندما يصل طلب بمفتاح معروف، توجد أربع حالات:</p>
+      <table>
+        <tr><th>الحالة</th><th>الرد</th><th>المعنى</th></tr>
+        <tr><td>المفتاح جديد</td><td>نعالج الطلب</td><td>أول مرة نرى هذه العملية.</td></tr>
+        <tr><td>موجود ومكتمل، ونفس الجسم</td><td>نفس الرد المحفوظ</td><td>إعادة محاولة. لا نخصم مرة ثانية.</td></tr>
+        <tr><td>موجود وقيد المعالجة</td><td><code>409 Conflict</code></td><td>الطلب الأول ما زال يعمل. أعد المحاولة بعد قليل.</td></tr>
+        <tr><td>موجود، وجسم مختلف</td><td><code>422</code></td><td>خطأ عند العميل: استخدم نفس المفتاح لعملية أخرى.</td></tr>
+      </table>
+
+      <h4>8. خمس قواعد للتصميم الصحيح</h4>
+      <ul>
+        <li><strong>المفتاح يخص التاجر:</strong> المفتاح الفريد هو <code>(merchant_id, key)</code>. تاجران قد يستخدمان نفس النص صدفة.</li>
+        <li><strong>احفظ بصمة الطلب:</strong> تجزئة للجسم. هكذا تكشف المفتاح المعاد استخدامه بمبلغ مختلف.</li>
+        <li><strong>احجز المفتاح بعملية ذرية:</strong> <code>INSERT</code> مع قيد فريد، وليس "ابحث ثم أضف". وإلا يدخل طلبان متزامنان معًا. تذكّر "التحديث الضائع" في المثال 3.</li>
+        <li><strong>احفظ النتيجة والمفتاح في نفس المعاملة:</strong> مثل صندوق الصادر في الدرس 4.</li>
+        <li><strong>مدة الصلاحية:</strong> احتفظ بالمفاتيح مدة أطول من أطول نافذة لإعادة المحاولة عند العملاء. 24 ساعة أو أكثر شائعة.</li>
+      </ul>
+      <div class="callout warning">⚠️ <strong>ماذا نحفظ؟</strong> احفظ الردود النهائية، بما فيها الرفض المنطقي مثل "رصيد غير كافٍ". لكن لا تحفظ أخطاء <code>5xx</code> المؤقتة كرد نهائي. إذا حفظت "503"، فكل إعادة محاولة سترجع 503 للأبد، رغم أن النظام تعافى.</div>
+
+      <h4>9. منع التكرار من البداية للنهاية</h4>
+      <p>المفتاح يحمي خدمتك فقط. لكن خدمتك تستدعي البنك. إذا انقطع الاتصال مع البنك، وأعدت المحاولة، فقد يخصم البنك مرتين. الحل: <strong>مرّر مفتاحًا مشتقًا للبنك أيضًا</strong>، مثل <code>{merchant}:{key}</code>. هكذا يكون كل رابط في السلسلة آمنًا عند التكرار.</p>
+
+      <h3>الجزء الثالث: إعادة المحاولة الآمنة</h3>
+
+      <h4>10. أي الأخطاء نعيد محاولتها؟</h4>
+      <table>
+        <tr><th>الخطأ</th><th>نعيد؟</th><th>السبب</th></tr>
+        <tr><td>مهلة، أو انقطاع الاتصال</td><td>⚠️ فقط مع مفتاح منع التكرار</td><td>"لا أعرف". ربما نُفّذ الطلب فعلًا.</td></tr>
+        <tr><td><code>429</code></td><td>✅ بعد <span class="en">Retry-After</span></td><td>الحد مؤقت.</td></tr>
+        <tr><td><code>502 / 503 / 504</code></td><td>✅ بتأخير متزايد</td><td>عطل مؤقت غالبًا.</td></tr>
+        <tr><td><code>409</code> (قيد المعالجة)</td><td>✅ بعد قليل</td><td>الطلب الأول سينتهي.</td></tr>
+        <tr><td><code>400 / 401 / 403 / 404 / 422</code></td><td>❌ أبدًا</td><td>الطلب نفسه خاطئ. سيفشل كل مرة.</td></tr>
+        <tr><td>رفض البطاقة</td><td>❌ أبدًا آليًا</td><td>قرار نهائي من البنك. التكرار قد يبدو كاحتيال.</td></tr>
+      </table>
+      <p>ومع كل إعادة محاولة: <strong>تأخير متزايد مع عشوائية</strong> (الدرس 4)، و<strong>حد أقصى</strong> للمحاولات، و<strong>موعد نهائي</strong> للطلب كله، و<strong>ميزانية</strong> للمحاولات (الدرس 6).</p>
+
+      <h4>11. إذا تعطلت أداة الحماية نفسها</h4>
+      <p>كل من تحديد المعدل ومنع التكرار يعتمد غالبًا على <span class="en">Redis</span> أو قاعدة بيانات. ماذا لو توقف؟ الجواب مختلف لكل أداة:</p>
+      <table>
+        <tr><th>الأداة</th><th>عند التعطل</th><th>السبب</th></tr>
+        <tr><td>تحديد المعدل</td><td><strong>فشل مفتوح</strong>: اسمح بالطلب، مع حد محلي تقريبي على كل خادم</td><td>رفض كل الدفعات لأن العداد معطل أسوأ من السماح لبعض الزيادة.</td></tr>
+        <tr><td>منع التكرار</td><td><strong>فشل مغلق</strong>: ارفض الدفع بـ 503</td><td>الدفع بدون فحص التكرار قد يعني خصمًا مزدوجًا. العميل يستطيع إعادة المحاولة بأمان لاحقًا.</td></tr>
+      </table>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>دلو الرموز خطوة بخطوة</h3>
+      <p>السعة 5 رموز، ومعدل الملء رمزان في الثانية.</p>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: الدلو ممتلئ (t=0)</h4>
+          <div class="mem"><div class="box db">🪙</div><div class="box db">🪙</div><div class="box db">🪙</div><div class="box db">🪙</div><div class="box db">🪙</div></div>
+          <p>التاجر لم يرسل شيئًا منذ مدة، فالدلو ممتلئ: 5 رموز.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: دفعة من 5 طلبات</h4>
+          <div class="mem"><div class="box ghost">·</div><div class="box ghost">·</div><div class="box ghost">·</div><div class="box ghost">·</div><div class="box ghost">·</div><span class="arrow">←</span><div class="box hl">5 × 200 OK</div></div>
+          <p>خمسة طلبات في نفس اللحظة. كل طلب أخذ رمزًا. كلها مرت فورًا. هذه هي ميزة الدلو: يسمح بدفعة قصيرة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: الطلب السادس</h4>
+          <div class="mem"><div class="box ghost">·</div><div class="box ghost">·</div><div class="box ghost">·</div><div class="box ghost">·</div><div class="box ghost">·</div><span class="arrow">←</span><div class="box bad">429, Retry-After: 0.5</div></div>
+          <p>الدلو فارغ. نرفض ونقول: "رمز جديد بعد نصف ثانية" (رمز واحد ÷ رمزين في الثانية).</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: بعد ثانية واحدة (t=1)</h4>
+          <div class="mem"><div class="box db">🪙</div><div class="box db">🪙</div><div class="box ghost">·</div><div class="box ghost">·</div><div class="box ghost">·</div></div>
+          <p>مرّت ثانية، فأُضيف رمزان. لا نحتاج مؤقتًا يعمل في الخلفية: نحسب الرموز المضافة عند وصول الطلب التالي فقط: \(\text{elapsed} \times r\).</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: بعد دقيقة هدوء (t=61)</h4>
+          <div class="mem"><div class="box db">🪙</div><div class="box db">🪙</div><div class="box db">🪙</div><div class="box db">🪙</div><div class="box db">🪙</div><span class="arrow">|</span><div class="box ghost">+115 ضائعة</div></div>
+          <p>الحساب يعطي 2 + 120 = 122 رمزًا، لكن السعة 5. لذلك <code>min(capacity, ...)</code>. التاجر لا يستطيع "ادخار" ساعة من الصمت ثم يرسل 7,200 طلب دفعة واحدة.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+
+      <h3>تحديد المعدل عبر عدة خوادم</h3>
+      <p>البوابة تعمل على 20 خادمًا. إذا حفظ كل خادم عدّاده في ذاكرته، فالحد الحقيقي يصبح 20 ضعفًا! لذلك يكون العداد مشتركًا في Redis، والتحقق <strong>ذري</strong>.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  C1["Merchant m1"] --> G1["Gateway 1"]
+  C2["Merchant m2"] --> G2["Gateway 2"]
+  G1 -- "atomic check" --> R[("Redis: rl:m1, rl:m2")]
+  G2 -- "atomic check" --> R
+  G1 --> P["Payments"]
+  G2 --> P
+      </div>
+
+      <h3>رحلة إعادة محاولة آمنة</h3>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant C as Merchant App
+  participant A as Payments API
+  participant DB as Database
+  participant B as Bank
+  C->>A: POST /payments (Idempotency-Key: k1)
+  A->>DB: INSERT key k1 (in_progress)
+  A->>B: charge 500 (key m1:k1)
+  B-->>A: approved
+  A->>DB: save payment + response, k1 completed
+  A--xC: response lost (network drop)
+  Note over C: timeout = unknown, retry with SAME key
+  C->>A: POST /payments (Idempotency-Key: k1)
+  A->>DB: key k1 exists, completed, same hash
+  A-->>C: 201 pay_1 (replayed, no new charge)
+      </div>
+
+      <h3>شجرة القرار لكل طلب</h3>
+      <div class="diagram mermaid">
+flowchart TD
+  A["Request + Idempotency-Key"] --> B{"Key exists?"}
+  B -- "No" --> C["Save key: in_progress"]
+  C --> D["Process payment"]
+  D --> E["Save response: completed"]
+  B -- "Yes" --> F{"Same request hash?"}
+  F -- "No" --> G["422: key reused"]
+  F -- "Yes" --> H{"Status?"}
+  H -- "in_progress" --> I["409: retry later"]
+  H -- "completed" --> J["Return saved response"]
+      </div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: ثغرة النافذة الثابتة</h3>
+      <p>الحد 5 طلبات في 60 ثانية. المهاجم يرسل 5 طلبات قبل نهاية الدقيقة بثانية، و 5 بعد بدايتها مباشرة.</p>
+<pre><code class="language-python">from collections import deque
+
+
+def fixed_window(times: list[float], limit: int, window: float) -> list[float]:
+    counts: dict[int, int] = {}
+    allowed = []
+    for t in times:
+        w = int(t // window)                 # which window this request is in
+        if counts.get(w, 0) &lt; limit:
+            counts[w] = counts.get(w, 0) + 1
+            allowed.append(t)
+    return allowed
+
+
+def sliding_log(times: list[float], limit: int, window: float) -> list[float]:
+    log: deque[float] = deque()
+    allowed = []
+    for t in times:
+        while log and log[0] &lt;= t - window:  # drop requests older than window
+            log.popleft()
+        if len(log) &lt; limit:
+            log.append(t)
+            allowed.append(t)
+    return allowed
+
+
+burst = [59.0, 59.2, 59.4, 59.6, 59.8, 60.0, 60.2, 60.4, 60.6, 60.8]
+for name, fn in [("fixed window", fixed_window), ("sliding log", sliding_log)]:
+    ok = fn(burst, limit=5, window=60)
+    print(f"{name:&lt;12}: {len(ok)} allowed in {ok[-1] - ok[0]:.1f}s")</code></pre>
+      <div class="output">fixed window: 10 allowed in 1.8s
+sliding log : 5 allowed in 0.8s</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>int(t // window)</code>: رقم النافذة. الثانية 59.8 في النافذة 0، والثانية 60.0 في النافذة 1.</li>
+        <li><code>counts.get(w, 0) &lt; limit</code>: كل نافذة لها عداد خاص. النافذة الجديدة تبدأ من صفر.</li>
+        <li><code>log[0] &lt;= t - window</code>: في السجل المنزلق، نحذف كل طلب أقدم من 60 ثانية من <strong>اللحظة الحالية</strong>، وليس من بداية الدقيقة.</li>
+        <li><strong>النافذة الثابتة:</strong> 10 طلبات في 1.8 ثانية. ضعف الحد، لأن العداد صُفّر عند الثانية 60.</li>
+        <li><strong>السجل المنزلق:</strong> عند الثانية 60.0، يرى 5 طلبات في آخر 60 ثانية، فيرفض. الحد محترم تمامًا.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> النافذة الثابتة ليست سيئة دائمًا. هي بسيطة جدًا في Redis: <code>INCR</code> ثم <code>EXPIRE</code>. إذا كان "ضعف الحد لثانيتين" مقبولًا، مثل حد يومي للتقارير، فهي اختيار جيد.</div>
+
+      <h3>مثال 2: دلو الرموز</h3>
+<pre><code class="language-python">class TokenBucket:
+    def __init__(self, rate: float, capacity: float, clock) -> None:
+        self.rate = rate                # tokens added per second
+        self.capacity = capacity        # max burst size
+        self.tokens = capacity          # start full
+        self.clock = clock
+        self.last = clock()
+
+    def _refill(self) -> None:
+        now = self.clock()
+        elapsed = now - self.last
+        self.tokens = min(self.capacity, self.tokens + elapsed * self.rate)
+        self.last = now
+
+    def allow(self, cost: float = 1) -> bool:
+        self._refill()
+        if self.tokens >= cost:
+            self.tokens -= cost
+            return True
+        return False
+
+    def retry_after(self, cost: float = 1) -> float:
+        missing = max(0.0, cost - self.tokens)
+        return missing / self.rate
+
+
+now = [0.0]
+bucket = TokenBucket(rate=2, capacity=5, clock=lambda: now[0])
+
+for t, n in [(0, 7), (1, 3), (10, 1)]:
+    now[0] = t
+    results = ["ok" if bucket.allow() else "429" for _ in range(n)]
+    print(f"t={t:>2}: {results} tokens={bucket.tokens:.0f} "
+          f"retry_after={bucket.retry_after():.1f}s")</code></pre>
+      <div class="output">t= 0: ['ok', 'ok', 'ok', 'ok', 'ok', '429', '429'] tokens=0 retry_after=0.5s
+t= 1: ['ok', 'ok', '429'] tokens=0 retry_after=0.5s
+t=10: ['ok'] tokens=4 retry_after=0.0s</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>self.tokens = capacity</code>: نبدأ بدلو ممتلئ، حتى يستطيع التاجر الجديد أن يبدأ بدفعة.</li>
+        <li><code>_refill</code>: لا يوجد مؤقت. عند كل طلب نحسب الوقت منذ آخر طلب ونضيف الرموز. هذا يجعل الدلو رقمين فقط في الذاكرة: <code>tokens</code> و <code>last</code>.</li>
+        <li><code>min(self.capacity, ...)</code>: لا ندخر أكثر من السعة.</li>
+        <li><code>cost</code>: بعض الطلبات أغلى. تصدير تقرير كبير قد يكلف 10 رموز.</li>
+        <li><code>retry_after</code>: الرموز الناقصة ÷ المعدل. هذه القيمة نضعها في Header الـ <span class="en">Retry-After</span>.</li>
+        <li><strong>t=0:</strong> 5 مرت، و 2 رُفضت. <strong>t=1:</strong> رمزان جديدان فقط. <strong>t=10:</strong> الحساب يعطي 18، لكن الدلو يقف عند 5.</li>
+      </ol>
+
+      <h3>مثال 3: التحديث الضائع عبر خادمين</h3>
+      <p>الحد 5، والتاجر استخدم 4. يصل طلبان في نفس اللحظة إلى خادمين مختلفين. يجب أن يمر واحد فقط.</p>
+<pre><code class="language-python">LIMIT = 5
+store = {"rl:m1": 4}                  # stands in for Redis
+
+# Naive: GET, check, then SET. Two gateways interleave.
+a = store["rl:m1"]                    # gateway A reads 4
+b = store["rl:m1"]                    # gateway B reads 4 (before A writes)
+allowed = 0
+for seen in (a, b):
+    if seen &lt; LIMIT:
+        store["rl:m1"] = seen + 1     # both write 5
+        allowed += 1
+print("naive : allowed", allowed, "| counter", store["rl:m1"])
+
+# Atomic: INCR reads and adds in ONE command.
+store["rl:m1"] = 4
+
+
+def incr(key: str) -> int:
+    store[key] += 1                   # Redis runs commands one at a time
+    return store[key]
+
+
+allowed = sum(1 for _ in range(2) if incr("rl:m1") &lt;= LIMIT)
+print("atomic: allowed", allowed, "| counter", store["rl:m1"])</code></pre>
+      <div class="output">naive : allowed 2 | counter 5
+atomic: allowed 1 | counter 6</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>a = ...</code> و <code>b = ...</code>: الخادمان قرآ القيمة 4 قبل أن يكتب أي منهما. هذا يحدث كثيرًا تحت الحمل.</li>
+        <li><strong>الطريقة الساذجة:</strong> كلاهما رأى 4 &lt; 5، فسمح. ثم كتب كلاهما 5. مرّ 6 طلبات، والعداد يقول 5. زيادة واحدة <strong>ضاعت</strong>.</li>
+        <li><code>incr</code>: في Redis، الأمر الواحد ينفذ كاملًا قبل أي أمر آخر. القراءة والزيادة لا يمكن فصلهما.</li>
+        <li><strong>الطريقة الذرية:</strong> الأول حصل على 5 فمرّ. الثاني حصل على 6 فرُفض. العداد 6 يعكس الحقيقة: 6 محاولات.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> دلو الرموز يحتاج "اقرأ، احسب، اكتب"، وهذا أكثر من أمر واحد. لذلك ننفذه في Redis كسكربت <span class="en">Lua</span>، لأن Redis ينفذ السكربت كاملًا كعملية واحدة. ونفس الدرس ينطبق على مفاتيح منع التكرار: الحجز يكون بـ <code>INSERT</code> مع قيد فريد، أو <code>SET key NX</code>.</div>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>1. مفتاح جديد مع كل محاولة</h3>
+      <p>الخادم يطبّق منع التكرار بشكل صحيح. لكن العميل يُنشئ المفتاح داخل حلقة إعادة المحاولة. الرد يضيع مرتين، ثم يصل في المرة الثالثة.</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">charges: list[int] = []
+seen: set[str] = set()
+key_ids = iter(range(1, 100))
+
+
+def server(key: str, amount: int) -> None:
+    if key not in seen:          # server side is correct
+        seen.add(key)
+        charges.append(amount)
+
+
+def send(key: str, amount: int, attempt: int) -> None:
+    server(key, amount)
+    if attempt &lt; 3:
+        raise TimeoutError("response lost")
+
+
+for attempt in range(1, 4):
+    key = f"key_{next(key_ids)}"   # new key every attempt!
+    try:
+        send(key, 100, attempt)
+        break
+    except TimeoutError:
+        continue
+print("charges:", charges)</code></pre>
+          <div class="output">charges: [100, 100, 100]</div>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">charges: list[int] = []
+seen: set[str] = set()
+key_ids = iter(range(1, 100))
+
+
+def server(key: str, amount: int) -> None:
+    if key not in seen:
+        seen.add(key)
+        charges.append(amount)
+
+
+def send(key: str, amount: int, attempt: int) -> None:
+    server(key, amount)
+    if attempt &lt; 3:
+        raise TimeoutError("response lost")
+
+
+key = f"key_{next(key_ids)}"       # one key per payment
+for attempt in range(1, 4):
+    try:
+        send(key, 100, attempt)
+        break
+    except TimeoutError:
+        continue
+print("charges:", charges)</code></pre>
+          <div class="output">charges: [100]</div>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الطريقة الأولى خاطئة؟</strong> المفتاح يمثل <strong>العملية</strong>، وليس المحاولة. ثلاثة مفاتيح تعني للخادم ثلاث عمليات مختلفة، فخصم 300 جنيه بدلًا من 100. والأفضل أكثر: احفظ المفتاح في قاعدة بيانات التطبيق مع الطلب <strong>قبل</strong> الإرسال. هكذا إذا أُغلق التطبيق وأعيد فتحه، يستخدم نفس المفتاح.</div>
+
+      <h3>2. أخطاء أخرى شائعة</h3>
+      <ul>
+        <li><strong>❌ عداد في ذاكرة كل خادم:</strong> 20 خادمًا = 20 ضعف الحد. <strong>✅</strong> عداد مشترك وذري في Redis.</li>
+        <li><strong>❌ "ابحث ثم أضف" للمفتاح:</strong> طلبان متزامنان لا يجدان المفتاح، فيخصمان معًا. <strong>✅</strong> <code>INSERT</code> مع قيد فريد: واحد فقط ينجح.</li>
+        <li><strong>❌ مفتاح عام لكل النظام:</strong> تاجران يستخدمان <code>order-1001</code>، فيرى الثاني رد الأول! <strong>✅</strong> المفتاح الفريد هو <code>(merchant_id, key)</code>.</li>
+        <li><strong>❌ تجاهل بصمة الطلب:</strong> نفس المفتاح بمبلغ 999 بدلًا من 100 يرجع رد الـ 100 بصمت. التاجر يظن أن 999 نجحت. <strong>✅</strong> قارن البصمة وارفض بـ 422.</li>
+        <li><strong>❌ إعادة محاولة أخطاء 4xx:</strong> طلب ناقص الحقول يُرسل 5 مرات، ويفشل 5 مرات. <strong>✅</strong> صنّف الأخطاء أولًا (التمرين 3).</li>
+        <li><strong>❌ 429 بدون Retry-After:</strong> العميل يعيد فورًا، فيزيد الحمل. <strong>✅</strong> أخبره متى يعود.</li>
+        <li><strong>❌ الحد حسب IP فقط للـ API:</strong> كل عملاء شبكة جوال واحدة يتشاركون الحد، والمهاجم يغيّر عنوانه بسهولة. <strong>✅</strong> الحد حسب مفتاح الـ API.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>حدّد المعدل في البوابة</strong> (الدرس 6)، قبل أن يصل الطلب لأي خدمة. والخدمات المهمة لها حد داخلي إضافي.</li>
+        <li><strong>دلو الرموز للـ APIs العامة.</strong> اجعل السعة تسمح بالدفعات الطبيعية، مثل 2–5 ثوانٍ من المعدل.</li>
+        <li><strong>انشر الحدود للتجار في الوثائق</strong>، وأرسلها في الـ Headers مع كل رد، حتى يتكيفوا قبل أن يُرفضوا.</li>
+        <li><strong>حدود أقل للمسارات الحساسة:</strong> تسجيل الدخول، وإضافة بطاقة، وإنشاء مفاتيح API.</li>
+        <li><strong>اجعل منع التكرار إلزاميًا</strong> لكل <code>POST</code> يحرّك المال: الدفع، والاسترداد، والتحويلات.</li>
+        <li><strong>المكتبات الرسمية <span class="en">(SDKs)</span> تنشئ المفتاح تلقائيًا</strong> وتعيد المحاولة به. أغلب التجار لن يفكروا في هذا وحدهم.</li>
+        <li><strong>رد مُعاد عليه علامة:</strong> مثل <code>Idempotent-Replayed: true</code>، حتى يفهم التاجر ما حدث عند التتبع.</li>
+        <li><strong>مرّر المفتاح للأسفل:</strong> للبنك ولكل خدمة تابعة تحرّك المال.</li>
+        <li><strong>راقب:</strong> نسبة 429 لكل تاجر، وعدد الردود المعادة، والمفاتيح العالقة في <code>in_progress</code>.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة لأنظمة الدفع:</strong> احمِ نفسك من <strong>اختبار البطاقات المسروقة</strong>. المهاجم يجرب آلاف البطاقات بمبالغ صغيرة ليعرف أيها يعمل. ضع حدًا لعدد <strong>الرفض</strong> لكل تاجر ولكل جهاز، وليس لعدد الطلبات فقط. 50 رفضًا في دقيقة إشارة واضحة.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+
+      <h3>حدود كل خوارزمية</h3>
+      <p>مع النافذة الثابتة بحد \(L\)، أي فترة بطول النافذة قد تحتوي حتى:</p>
+      <div dir="ltr">$$N_{\max} = 2L$$</div>
+      <p>ومع دلو الرموز، أي فترة بطول \(T\) تقبل على الأكثر:</p>
+      <div dir="ltr">$$N(T) \leq C + r \times T$$</div>
+      <p>ومع عداد النافذة المنزلقة، التقدير هو:</p>
+      <div dir="ltr">$$\hat{n} = n_{\text{prev}} \times \left(1 - \frac{t}{W}\right) + n_{\text{curr}}$$</div>
+      <p>حيث \(t\) الوقت منذ بداية النافذة الحالية، و \(W\) طول النافذة.</p>
+
+      <h3>إعادة المحاولة رخيصة عندما يكون النظام سليمًا، ومدمرة عندما يتعطل</h3>
+      <p>إذا كان احتمال فشل الطلب \(p\)، والحد \(k\) محاولات، فمتوسط المحاولات لكل طلب:</p>
+      <div dir="ltr">$$E = 1 + p + p^2 + \cdots + p^{k-1} = \frac{1 - p^k}{1 - p}$$</div>
+      <p>مع \(p = 1\%\) و \(k = 3\): حوالي 1.01. تكلفة لا تُذكر. لكن عندما تتعطل الخدمة تمامًا (\(p = 1\))، يصبح الحمل \(k = 3\) أضعاف، في أسوأ لحظة ممكنة. لهذا نضع ميزانية للمحاولات (الدرس 6).</p>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>كم تخزين تحتاج المفاتيح؟</h3>
+      <p>من الدرس 1: 6 ملايين دفعة في اليوم. إذا كان كل مفتاح مع الرد حوالي 1KB، ونحتفظ به 24 ساعة: حوالي <strong>6GB</strong>. ومع 7 أيام: حوالي 42GB. هذا صغير، ويستحق تمامًا. خصم مزدوج واحد لعميل كبير يكلف أكثر من سنة تخزين.</p>
+
+      <h3>مقارنة الخوارزميات</h3>
+      <table>
+        <tr><th>الخوارزمية</th><th>الذاكرة لكل مفتاح</th><th>الدقة</th><th>الدفعات</th><th>الاستخدام الشائع</th></tr>
+        <tr><td>نافذة ثابتة</td><td>✅ عدد واحد</td><td>❌ حتى ضعف الحد عند الحدود</td><td>⚠️ عند حد النافذة</td><td>الحدود اليومية والبسيطة</td></tr>
+        <tr><td>سجل منزلق</td><td>❌ وقت لكل طلب</td><td>✅ دقيق تمامًا</td><td>✅ لا</td><td>حدود صغيرة وحساسة، مثل تسجيل الدخول</td></tr>
+        <tr><td>عداد منزلق</td><td>✅ عددان</td><td>✅ تقريب جيد جدًا</td><td>✅ قليلة</td><td>الحدود الكبيرة على نطاق واسع</td></tr>
+        <tr><td>دلو الرموز</td><td>✅ عددان</td><td>✅ دقيق للمعدل</td><td>✅ مسموحة حتى السعة</td><td>الـ APIs العامة</td></tr>
+        <tr><td>دلو مسرّب</td><td>⚠️ طابور</td><td>✅ معدل خروج ثابت</td><td>❌ تُسوّى تمامًا</td><td>حماية خدمة خارجية بحد صارم</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: API دفع آمنة عند التكرار</h2>
+      <p>ستبني نقطة <code>POST /payments</code> كاملة بمفاتيح منع التكرار، باستخدام <code>sqlite3</code> وقيد فريد حقيقي. ثم نجرّب خمسة سيناريوهات: طلب أول، وإعادة بعد ضياع الرد، ونفس المفتاح بمبلغ مختلف، وتاجر آخر بنفس المفتاح، وضغطة مزدوجة تصل والطلب الأول ما زال يعمل.</p>
+<pre><code class="language-python">import hashlib
+import json
+import sqlite3
+
+
+class IdempotentPaymentAPI:
+    def __init__(self) -> None:
+        self.db = sqlite3.connect(":memory:")
+        self.db.executescript("""
+            CREATE TABLE idempotency (
+                merchant TEXT, key TEXT, request_hash TEXT,
+                status TEXT, code INTEGER, body TEXT,
+                PRIMARY KEY (merchant, key));
+            CREATE TABLE payments (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                   merchant TEXT, amount INTEGER);
+        """)
+        self.bank_charges = 0
+
+    @staticmethod
+    def _fingerprint(body: dict) -> str:
+        raw = json.dumps(body, sort_keys=True).encode()
+        return hashlib.sha256(raw).hexdigest()
+
+    def handle(self, merchant: str, key: str, body: dict,
+               during_charge=None) -> tuple[int, str]:
+        req_hash = self._fingerprint(body)
+        try:
+            with self.db:                                  # 1) claim the key
+                self.db.execute(
+                    "INSERT INTO idempotency VALUES "
+                    "(?, ?, ?, 'in_progress', NULL, NULL)",
+                    (merchant, key, req_hash))
+        except sqlite3.IntegrityError:
+            return self._existing(merchant, key, req_hash)
+
+        if during_charge:
+            during_charge()                                # a second click arrives
+        self.bank_charges += 1                             # 2) call the bank once
+
+        with self.db:                                      # 3) result + key together
+            cur = self.db.execute(
+                "INSERT INTO payments (merchant, amount) VALUES (?, ?)",
+                (merchant, body["amount"]))
+            code, text = 201, f"pay_{cur.lastrowid}: {body['amount']} EGP"
+            self.db.execute(
+                "UPDATE idempotency SET status = 'completed', code = ?, "
+                "body = ? WHERE merchant = ? AND key = ?",
+                (code, text, merchant, key))
+        return code, text
+
+    def _existing(self, merchant: str, key: str,
+                  req_hash: str) -> tuple[int, str]:
+        stored_hash, status, code, text = self.db.execute(
+            "SELECT request_hash, status, code, body FROM idempotency "
+            "WHERE merchant = ? AND key = ?", (merchant, key)).fetchone()
+        if stored_hash != req_hash:
+            return 422, "key reused with a different request"
+        if status == "in_progress":
+            return 409, "same request still in progress"
+        return code, f"{text} (replayed)"
+
+
+api = IdempotentPaymentAPI()
+inner: list[tuple[int, str]] = []
+
+scenarios = [
+    ("first request", "m1", "k1", {"amount": 100}, None),
+    ("retry after timeout", "m1", "k1", {"amount": 100}, None),
+    ("same key, new amount", "m1", "k1", {"amount": 999}, None),
+    ("other merchant, same key", "m2", "k1", {"amount": 100}, None),
+    ("double click", "m1", "k2", {"amount": 50},
+     lambda: inner.append(api.handle("m1", "k2", {"amount": 50}))),
+]
+for label, merchant, key, body, hook in scenarios:
+    code, text = api.handle(merchant, key, body, hook)
+    print(f"{label:&lt;24} -> {code} {text}")
+
+print("  second click during the first ->", *inner[0])
+count = api.db.execute("SELECT COUNT(*) FROM payments").fetchone()[0]
+print("bank charges:", api.bank_charges, "| payments:", count)</code></pre>
+      <div class="output">first request            -> 201 pay_1: 100 EGP
+retry after timeout      -> 201 pay_1: 100 EGP (replayed)
+same key, new amount     -> 422 key reused with a different request
+other merchant, same key -> 201 pay_2: 100 EGP
+double click             -> 201 pay_3: 50 EGP
+  second click during the first -> 409 same request still in progress
+bank charges: 3 | payments: 3</div>
+      <h4>تتبّع السيناريو</h4>
+      <ol>
+        <li><strong>الطلب الأول:</strong> المفتاح جديد، فحجزناه بـ <code>INSERT</code>. خصمنا من البنك، وحفظنا الدفع والرد في معاملة واحدة.</li>
+        <li><strong>إعادة بعد ضياع الرد:</strong> القيد الفريد رفض الإضافة. البصمة مطابقة، والحالة <code>completed</code>، فأرجعنا نفس الرد بالضبط: نفس <code>pay_1</code>. البنك لم يُستدعَ.</li>
+        <li><strong>نفس المفتاح بمبلغ مختلف:</strong> البصمة مختلفة، فرفضنا بـ 422. لم نرجع رد الـ 100 بصمت.</li>
+        <li><strong>تاجر آخر:</strong> <code>(m2, k1)</code> مفتاح مختلف تمامًا عن <code>(m1, k1)</code>. دفعة جديدة صحيحة.</li>
+        <li><strong>الضغطة المزدوجة:</strong> بينما الطلب الأول يتحدث مع البنك، وصلت الضغطة الثانية. وجدت المفتاح في حالة <code>in_progress</code>، فرجعت 409. والأول اكتمل بنجاح.</li>
+        <li><strong>النتيجة:</strong> 6 طلبات، و 3 خصومات فقط، وكلها مقصودة.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة مهمة:</strong> ماذا لو توقف الخادم بعد خصم البنك وقبل الخطوة 3؟ المفتاح يبقى <code>in_progress</code> للأبد، والعميل يرى 409 دائمًا. الحل: عامل استعادة يبحث عن المفاتيح العالقة أكثر من دقيقة، ويسأل البنك عن الحالة بالمفتاح المشتق <code>m1:k1</code>. ثم يكمل أو يعلّم الطلب فاشلًا. تذكّر الدرس 5: "لا أعرف" ليست "فشل".</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+
+      <div class="quiz" data-explain="العداد يُصفّر عند حد النافذة: 100 في آخر ثانية من الدقيقة و 100 في أول ثانية من التالية.">
+        <div class="q">1. نافذة ثابتة بحد 100 طلب في الدقيقة. كم طلبًا قد يمر في ثانيتين حول حد الدقيقة؟</div>
+        <button class="option">100</button>
+        <button class="option" data-correct="true">200</button>
+        <button class="option">6,000</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الدلو لا يمتلئ أكثر من سعته. بعد فترة هدوء طويلة، فيه 50 رمزًا بالضبط.">
+        <div class="q">2. دلو رموز بمعدل 10 في الثانية وسعة 50. التاجر صامت منذ ساعة. كم طلبًا يمر فورًا؟</div>
+        <button class="option" data-correct="true">50</button>
+        <button class="option">10</button>
+        <button class="option">36,000</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="المفتاح يمثل العملية المنطقية. نفس المفتاح يجعل الخادم يعرف أنها إعادة، فيرجع الرد المحفوظ.">
+        <div class="q">3. طلب POST /payments انتهت مهلته. ماذا يجب أن يرسل العميل عند إعادة المحاولة؟</div>
+        <button class="option">مفتاح منع تكرار جديد</button>
+        <button class="option" data-correct="true">نفس مفتاح منع التكرار ونفس الجسم</button>
+        <button class="option">لا يعيد المحاولة أبدًا</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="البصمة مختلفة، فهذا خطأ عند العميل. نرفض بـ 422 بدلًا من إرجاع رد عملية أخرى بصمت.">
+        <div class="q">4. وصل طلب بمفتاح مستخدم من قبل، لكن المبلغ مختلف. ماذا يفعل الخادم؟</div>
+        <button class="option">ينفذ الدفع الجديد</button>
+        <button class="option">يرجع الرد القديم</button>
+        <button class="option" data-correct="true">يرفض بخطأ 422</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="400 يعني أن الطلب نفسه خاطئ. سيفشل في كل محاولة، فلا فائدة من الإعادة.">
+        <div class="q">5. أي خطأ لا يجب إعادة محاولته أبدًا؟</div>
+        <button class="option">503 Service Unavailable</button>
+        <button class="option" data-correct="true">400 Bad Request</button>
+        <button class="option">429 Too Many Requests</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الدفع بدون فحص التكرار قد يخصم مرتين. لذلك مخزن منع التكرار يفشل مغلقًا، والعميل يعيد المحاولة بأمان لاحقًا.">
+        <div class="q">6. قاعدة بيانات مفاتيح منع التكرار متوقفة. ماذا تفعل خدمة الدفع؟</div>
+        <button class="option">تكمل الدفع بدون فحص</button>
+        <button class="option" data-correct="true">ترفض بـ 503 حتى تعود القاعدة</button>
+        <button class="option">تحفظ المفاتيح في ذاكرة الخادم مؤقتًا</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): متى يبدأ الرفض؟</h3>
+      <p>تاجر حده دلو رموز بمعدل 100 في الثانية وسعة 500. في يوم العروض يرسل 300 طلب في الثانية. بعد كم ثانية يبدأ في رؤية 429؟ وكم طلبًا يُقبل كحد أقصى في أول 10 ثوانٍ؟</p>
+      <details><summary>💡 تلميح</summary><p>الدلو يفرغ بالفرق بين الدخول والملء. واستخدم معادلة \(C + rT\).</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">rate, capacity, spike = 100, 500, 300
+
+print("seconds until 429:", capacity / (spike - rate))
+print("max accepted in first 10 s:", capacity + rate * 10)</code></pre>
+        <div class="output">seconds until 429: 2.5
+max accepted in first 10 s: 1500</div>
+        <p>الدلو امتص أول 2.5 ثانية من الذروة. بعدها يستقر القبول على 100 في الثانية. إذا كانت ذروات هذا التاجر حقيقية ومتوقعة، فارفع خطته، ولا تكتفِ برفع السعة.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): عداد النافذة المنزلقة</h3>
+      <p>اكتب <code>SlidingWindowCounter</code> يحفظ ثلاثة أرقام فقط: بداية النافذة الحالية، وعدادها، وعداد النافذة السابقة. ثم جرّبه على نفس دفعة المثال 1. هل يسمح بـ 5 بالضبط؟</p>
+      <details><summary>💡 تلميح</summary><p>إذا انتقلت إلى النافذة التالية مباشرة، يصبح العداد الحالي هو السابق. وإذا مرّت نافذتان أو أكثر، فالسابق صفر.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">class SlidingWindowCounter:
+    def __init__(self, limit: int, window: float) -> None:
+        self.limit = limit
+        self.window = window
+        self.curr_start = 0.0
+        self.curr = 0
+        self.prev = 0
+
+    def allow(self, now: float) -> bool:
+        start = (now // self.window) * self.window
+        if start != self.curr_start:
+            gap = start - self.curr_start
+            self.prev = self.curr if gap == self.window else 0
+            self.curr, self.curr_start = 0, start
+        elapsed = now - start
+        estimate = self.prev * (1 - elapsed / self.window) + self.curr
+        if estimate &lt; self.limit:
+            self.curr += 1
+            return True
+        return False
+
+
+burst = [59.0, 59.2, 59.4, 59.6, 59.8, 60.0, 60.2, 60.4, 60.6, 60.8]
+counter = SlidingWindowCounter(limit=5, window=60)
+print("burst allowed:", sum(counter.allow(t) for t in burst), "of", len(burst))
+print("t=90 allowed :", counter.allow(90.0))</code></pre>
+        <div class="output">burst allowed: 6 of 10
+t=90 allowed : True</div>
+        <p>سمح بـ 6 بدلًا من 5. عند الثانية 60.2، التقدير هو \(5 \times (1 - 0.2/60) \approx 4.98\)، أقل من 5. السبب: الخوارزمية تفترض أن طلبات النافذة السابقة كانت موزّعة بالتساوي، لكنها كانت كلها في آخر ثانية. هذا هو ثمن التقريب: خطأ صغير في الحالات المتطرفة، مقابل ثلاثة أرقام فقط بدلًا من سجل كامل. وهو أفضل بكثير من 10 في النافذة الثابتة.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): هل أعيد المحاولة؟</h3>
+      <p>اكتب <code>should_retry(method, status, has_key)</code>. حيث <code>status = None</code> يعني مهلة أو انقطاع اتصال. القواعد: لا تُعد أخطاء العميل. والطرق الآمنة بطبيعتها (GET و HEAD و PUT و DELETE) تُعاد. و <code>POST</code> يُعاد فقط مع مفتاح منع تكرار.</p>
+      <details><summary>💡 تلميح</summary><p>ابدأ بمجموعة الأكواد المؤقتة: 408 و 429 و 500 و 502 و 503 و 504.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">RETRYABLE = {408, 429, 500, 502, 503, 504}
+SAFE_METHODS = {"GET", "HEAD", "PUT", "DELETE"}
+
+
+def should_retry(method: str, status: int | None, has_key: bool) -> bool:
+    if status is not None and status not in RETRYABLE:
+        return False                      # client errors fail again
+    return method in SAFE_METHODS or has_key
+
+
+cases = [("GET", 503, False), ("POST", None, False), ("POST", None, True),
+         ("POST", 400, True), ("POST", 429, True), ("PUT", 500, False)]
+for method, status, has_key in cases:
+    print(f"{method:&lt;4} {str(status):&lt;4} key={has_key!s:&lt;5} -> "
+          f"{should_retry(method, status, has_key)}")</code></pre>
+        <div class="output">GET  503  key=False -> True
+POST None key=False -> False
+POST None key=True  -> True
+POST 400  key=True  -> False
+POST 429  key=True  -> True
+PUT  500  key=False -> True</div>
+        <p>أهم سطر هو الثاني: <code>POST</code> بدون مفتاح ومع مهلة. لا نعرف هل خُصم المال أم لا. إعادة المحاولة هنا قد تخصم مرتين. والمطلوب: اسأل عن حالة الدفع أولًا، أو لا تُرسل <code>POST</code> بدون مفتاح من الأساس.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): صمّم طبقة الحماية لبوابة الدفع</h3>
+      <p>عندك 20 خادم بوابة، و 50,000 تاجر بثلاث خطط: 25 و 100 و 500 طلب في الثانية. صمّم: أين يُحفظ العداد؟ ما الخوارزمية؟ ماذا يحدث إذا توقف Redis؟ وكيف تحمي البنك الذي يقبل 2,000 طلب في الثانية فقط من كل التجار معًا؟</p>
+      <details><summary>💡 تلميح</summary><p>فكّر في ثلاث طبقات: حد لكل تاجر، وحد عام للبنك، وتخلص من الحمل حسب الأولوية. وتذكّر قرار الفشل المفتوح والمغلق.</p></details>
+      <details><summary>✅ الحل</summary>
+        <ul>
+          <li><strong>حد لكل تاجر:</strong> دلو رموز في Redis كسكربت Lua ذري. المفتاح <code>rl:{merchant_id}</code>. المعدل والسعة من خطة التاجر، والسعة حوالي 3 ثوانٍ من المعدل.</li>
+          <li><strong>تقسيم Redis:</strong> مجموعة Redis مقسّمة حسب <code>merchant_id</code> بالتجزئة المتسقة (الدرس 2). كل تاجر في قسم واحد، فتبقى العملية ذرية.</li>
+          <li><strong>حدود المسارات:</strong> <code>/payments</code> بحد الخطة، و <code>/reports/export</code> بتكلفة 10 رموز، وإضافة البطاقات بحد أقل بكثير.</li>
+          <li><strong>إذا توقف Redis:</strong> فشل مفتوح لتحديد المعدل، مع دلو محلي على كل خادم بحد الخطة ÷ 20. الحد ليس دقيقًا، لكن الدفع لا يتوقف. وتنبيه فوري لفريق التشغيل.</li>
+          <li><strong>حماية البنك:</strong> دلو مسرّب عام أمام موصّل البنك <span class="en">(Bank Connector)</span> بـ 1,800 في الثانية، أقل من حد البنك بهامش. الطلبات الزائدة تنتظر في طابور قصير مع موعد نهائي، ثم 503 مع Retry-After.</li>
+          <li><strong>التخلص من الحمل:</strong> عند الازدحام، ارفض أولًا التصدير والتقارير، ثم لوحة التحكم، والدفع آخرًا.</li>
+          <li><strong>منع التكرار:</strong> في قاعدة الدفع نفسها، مع فشل مغلق. ومفتاح مشتق يُمرَّر للبنك.</li>
+          <li><strong>المراقبة:</strong> نسبة 429 لكل تاجر، وتنبيه للتاجر نفسه عندما يقترب من حده. والتاجر الذي يصل إلى حده كل يوم مرشح لترقية خطته.</li>
+        </ul>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>تحديد المعدل يحمي من الجار المزعج والهجمات، ويحمي الخدمات التابعة والبنك.</li>
+        <li>حدّد حسب مفتاح الـ API أو التاجر، وليس حسب IP فقط. واجمع حدودًا لكل تاجر ولكل مسار وللنظام كله.</li>
+        <li>النافذة الثابتة بسيطة لكنها تسمح حتى بـ \(2L\). والسجل المنزلق دقيق لكنه مكلف. والعداد المنزلق تقريب ممتاز.</li>
+        <li>دلو الرموز: سعة للدفعات ومعدل ملء، ويقبل على الأكثر \(C + rT\). وهو الأشهر للـ APIs.</li>
+        <li>عبر عدة خوادم: عداد مشترك وعمليات ذرية (<code>INCR</code> أو سكربت Lua). وإلا تضيع التحديثات.</li>
+        <li>رد بـ 429 مع Retry-After. وعند الازدحام تخلّص من الطلبات الأقل أهمية أولًا.</li>
+        <li><code>POST</code> يحرّك المال يحتاج مفتاح منع تكرار: مفتاح لكل عملية، وليس لكل محاولة.</li>
+        <li>الحالات الأربع: جديد ← عالج، مكتمل ← أرجع الرد المحفوظ، قيد المعالجة ← 409، بصمة مختلفة ← 422.</li>
+        <li>احجز المفتاح بقيد فريد، واحفظ النتيجة معه في نفس المعاملة، ومرّر مفتاحًا مشتقًا للبنك.</li>
+        <li>أعد محاولة الأخطاء المؤقتة فقط. وتحديد المعدل يفشل مفتوحًا، ومنع التكرار يفشل مغلقًا.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <p>خطة سلسلة تصميم الأنظمة:</p>
+      <ol>
+        <li>✅ أساسيات التوسع والمكونات الأساسية</li>
+        <li>✅ موازنة الأحمال والـ Caching بعمق</li>
+        <li>✅ قواعد البيانات: النسخ المتماثل والتقسيم</li>
+        <li>✅ طوابير الرسائل والأنظمة غير المتزامنة</li>
+        <li>✅ نظرية CAP ونماذج الاتساق ونمط Saga</li>
+        <li>✅ الخدمات المصغرة و API Gateway وقاطع الدائرة</li>
+        <li>✅ الموثوقية: تحديد المعدل ومنع التكرار وإعادة المحاولة (هذا الدرس)</li>
+        <li>مقابلة تصميم كاملة: صمّم بوابة دفع من الصفر. خطوة بخطوة كما في مقابلة حقيقية: المتطلبات، والحسابات، والتصميم العام، ثم التعمق في دفتر الحسابات ثنائي القيد <span class="en">(Double-Entry Ledger)</span> والمطابقة، مع كل ما تعلمناه في السلسلة.</li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀 — سلسلة تصميم الأنظمة، الدرس 7</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    new Chart(perf, {
+      type: "line",
+      data: {
+        labels: ["0%", "10%", "30%", "50%", "70%", "90%", "100%"],
+        datasets: [
+          { label: "3 محاولات بدون ميزانية", data: [1, 1.11, 1.39, 1.75, 2.19, 2.71, 3], borderColor: "#ef4444", backgroundColor: "rgba(239,68,68,.12)", fill: true, tension: 0.3 },
+          { label: "مع ميزانية 10%", data: [1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1], borderColor: "#10b981", borderDash: [6, 6], fill: false, tension: 0 }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { rtl: true },
+          tooltip: { rtl: true },
+          title: { display: true, text: "الحمل على الخدمة التابعة حسب نسبة الفشل" }
+        },
+        scales: {
+          x: { title: { display: true, text: "نسبة فشل الطلبات" } },
+          y: { title: { display: true, text: "مضاعف الحمل" }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

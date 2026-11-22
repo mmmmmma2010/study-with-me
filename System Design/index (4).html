@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درس 5: نظرية CAP ونماذج الاتساق ونمط Saga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #e11d48);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 760px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; align-items: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.db { border-color: var(--good); }
+  .box.warn { border-color: var(--warn); background: rgba(245,158,11,.15); }
+  .box.bad { border-color: var(--bad); color: var(--bad); }
+  .arrow { font-size: 1.4rem; color: var(--muted); }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>نظرية CAP ونماذج الاتساق ونمط Saga <span class="en">(CAP, Consistency &amp; Sagas)</span></h1>
+  <p>ستتعلم ماذا يختار النظام عندما تنقطع الشبكة، وكيف تنفذ عملية دفع تمر بعدة خدمات بدون أن يضيع جنيه واحد.</p>
+  <div class="badges">
+    <span class="badge">الدرس 5 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 45 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 3 رأينا تأخر النسخ والنِصاب \(R + W > N\). وفي الدرس 4 قبلنا أن الرسائل تصل "بعد قليل". اليوم نفهم القاعدة العامة وراء كل هذا: لماذا لا يمكن أن تحصل على كل شيء في نظام موزّع؟</div>
+      <p>بوابة الدفع عندنا تعمل الآن في مركزي بيانات: القاهرة والإسكندرية. كل مركز فيه نسخة من محافظ العملاء. فجأة ينقطع الكابل بينهما. كل مركز ما زال يعمل، لكنه لا يرى الآخر.</p>
+      <p>عميلة رصيدها 100 جنيه. تطلب سحب 80 جنيهًا في القاهرة. وفي نفس الدقيقة، يطلب شخص آخر بنفس البطاقة سحب 80 جنيهًا في الإسكندرية. هل يقبل النظام الطلبين؟ إذا قبلهما، صار الرصيد −60. وإذا رفض أحدهما، فالنظام "متوقف" عند بعض المستخدمين.</p>
+      <p>هذا هو جوهر نظرية <span class="en">CAP</span>: عند انقطاع الشبكة، يجب أن تختار بين <strong>الدقة</strong> و<strong>التوافرية</strong>.</p>
+      <p>وعندنا مشكلة ثانية: عملية الدفع من المحفظة تمر الآن بثلاث خدمات. خدمة المحفظة، وخدمة دفتر الحسابات، وخدمة الطلبات. كل خدمة لها قاعدة بيانات خاصة. كيف ننفذ "كل شيء أو لا شيء" بدون معاملة واحدة؟</p>
+      <p>في هذا الدرس ستتعلم:</p>
+      <ul>
+        <li>نظرية <span class="en">CAP</span> بشكل صحيح، وامتدادها <span class="en">PACELC</span>.</li>
+        <li>نماذج الاتساق: من القوي إلى المتأخر، ومتى تستخدم كل واحد.</li>
+        <li>حل التعارضات: لماذا "آخر كتابة تفوز" تضيّع البيانات، وما هي <span class="en">CRDTs</span>.</li>
+        <li>الالتزام على مرحلتين <span class="en">(2PC)</span> ولماذا يتجمد.</li>
+        <li>نمط <span class="en">Saga</span> والعمليات التعويضية.</li>
+      </ul>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">
+        🏦 <strong>تخيّل بنكًا له فرعان، وخط الهاتف بينهما انقطع.</strong>
+        <p>عميل يطلب سحب مال من الفرع الأول. الموظف لا يستطيع أن يسأل الفرع الثاني: "هل سحب هذا العميل شيئًا عندكم اليوم؟".</p>
+        <p><strong>الخيار الأول:</strong> يقول الموظف: "آسف، لا أستطيع التأكد من رصيدك الآن. ارجع بعد إصلاح الخط". هذا نظام <strong>CP</strong>: دقيق، لكنه غير متاح للعميل.</p>
+        <p><strong>الخيار الثاني:</strong> يقول الموظف: "تفضل"، ويعتمد على آخر رصيد يعرفه. هذا نظام <strong>AP</strong>: متاح دائمًا، لكن العميل قد يسحب نفس المال من الفرعين.</p>
+        <p>لا يوجد خيار ثالث. لا يستطيع الموظف أن يكون دقيقًا ومتاحًا في نفس الوقت والخط مقطوع.</p>
+        <p>✈️ <strong>وتخيّل حجز رحلة:</strong> طيران، ثم فندق، ثم سيارة. لا توجد شركة واحدة تحجز الثلاثة معًا. فتحجز الطيران، ثم الفندق. إذا لم تجد سيارة، تلغي الفندق ثم تلغي الطيران. هذه الإلغاءات هي <strong>العمليات التعويضية</strong>. والرحلة كلها هي <strong>Saga</strong>.</p>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>الاتساق (في CAP)</td><td class="en">Consistency</td><td>كل قراءة ترى أحدث كتابة، كأن هناك نسخة واحدة فقط من البيانات.</td></tr>
+        <tr><td>التوافرية (في CAP)</td><td class="en">Availability</td><td>كل طلب يصل إلى خادم سليم يحصل على رد ناجح، وليس خطأ.</td></tr>
+        <tr><td>تحمّل الانقسام</td><td class="en">Partition Tolerance</td><td>النظام يستمر في العمل حتى لو انقطعت الشبكة بين أجزائه.</td></tr>
+        <tr><td>انقسام الشبكة</td><td class="en">Network Partition</td><td>مجموعتان من الخوادم تعملان، لكنهما لا تريان بعضهما.</td></tr>
+        <tr><td>PACELC</td><td class="en">PACELC</td><td>عند الانقسام: توافرية أم اتساق. وفي غيره: سرعة أم اتساق.</td></tr>
+        <tr><td>الاتساق القوي</td><td class="en">Linearizability</td><td>أقوى نموذج. كل عملية تبدو كأنها حدثت في لحظة واحدة، على نسخة واحدة.</td></tr>
+        <tr><td>الاتساق السببي</td><td class="en">Causal Consistency</td><td>إذا تسببت عملية في أخرى، فالجميع يراهما بنفس الترتيب.</td></tr>
+        <tr><td>القراءات المتصاعدة</td><td class="en">Monotonic Reads</td><td>المستخدم لا يرى بيانات أقدم مما رآه من قبل.</td></tr>
+        <tr><td>الاتساق النهائي</td><td class="en">Eventual Consistency</td><td>إذا توقفت الكتابات، تتطابق كل النسخ في النهاية.</td></tr>
+        <tr><td>آخر كتابة تفوز</td><td class="en">Last-Write-Wins (LWW)</td><td>عند التعارض نأخذ القيمة صاحبة أحدث وقت، ونرمي الباقي.</td></tr>
+        <tr><td>أنواع بيانات قابلة للدمج</td><td class="en">CRDT</td><td>بيانات تُدمج تلقائيًا بدون تعارض، بأي ترتيب.</td></tr>
+        <tr><td>الإجماع</td><td class="en">Consensus (Raft, Paxos)</td><td>خوارزمية تجعل عدة خوادم تتفق على قيمة واحدة، حتى مع الأعطال.</td></tr>
+        <tr><td>الالتزام على مرحلتين</td><td class="en">Two-Phase Commit (2PC)</td><td>منسّق يسأل الجميع "هل أنتم جاهزون؟" ثم يقول "نفّذوا" أو "ألغوا".</td></tr>
+        <tr><td>Saga</td><td class="en">Saga</td><td>سلسلة معاملات محلية. إذا فشلت خطوة، ننفذ عمليات تعويضية للخطوات السابقة.</td></tr>
+        <tr><td>العملية التعويضية</td><td class="en">Compensating Transaction</td><td>عملية جديدة تلغي أثر عملية سابقة. مثل الاسترداد بدلًا من الحذف.</td></tr>
+        <tr><td>نقطة اللاعودة</td><td class="en">Pivot Transaction</td><td>الخطوة التي بعدها لا نتراجع، بل نكمل للأمام فقط.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>1. نظرية CAP بشكل صحيح</h3>
+      <p>كثيرون يقولون: "اختر حرفين من ثلاثة". هذا مضلل. في أي نظام موزّع، <strong>انقسام الشبكة سيحدث</strong>. الكابلات تنقطع، والموجّهات تتعطل، والإعدادات تُكتب بالخطأ. لذلك حرف <span class="en">P</span> ليس اختيارًا.</p>
+      <p>الصياغة الصحيحة: <strong>عندما يحدث انقسام، اختر: الاتساق أم التوافرية؟</strong></p>
+      <div class="diagram mermaid">
+flowchart LR
+  subgraph CAI["مركز القاهرة"]
+    C1[("cairo-1")]
+    C2[("cairo-2")]
+  end
+  subgraph ALX["مركز الإسكندرية"]
+    A1[("alex-1")]
+  end
+  U1["عميل في القاهرة"] --> C1
+  U2["عميل في الإسكندرية"] --> A1
+  C2 -. "انقطاع الشبكة" .- A1
+      </div>
+      <ul>
+        <li><strong>نظام CP:</strong> الجانب الذي لا يملك الأغلبية يرفض الطلبات. البيانات صحيحة دائمًا، لكن بعض المستخدمين يرون أخطاء.</li>
+        <li><strong>نظام AP:</strong> كل جانب يقبل الطلبات. لا أحد يرى خطأ، لكن الجانبين يختلفان، ويجب دمج الاختلاف لاحقًا.</li>
+      </ul>
+      <div class="callout warning">⚠️ <strong>انتبه:</strong> كلمة "الاتساق" في CAP تختلف عن حرف C في <span class="en">ACID</span>. في ACID تعني "البيانات تحترم القواعد"، مثل: الرصيد لا يكون سالبًا. في CAP تعني "كل القراءات ترى أحدث كتابة".</div>
+
+      <h3>2. PACELC: ماذا يحدث في الأيام العادية؟</h3>
+      <p>الانقسام نادر. لكن حتى بدونه يوجد اختيار: الاتساق القوي يعني أن تنتظر نسخًا أخرى قبل الرد. والانتظار يعني بطئًا.</p>
+      <p><span class="en">PACELC</span> تقول: عند الانقسام <span class="en">(P)</span> اختر التوافرية <span class="en">(A)</span> أو الاتساق <span class="en">(C)</span>. وفي غيره <span class="en">(Else)</span> اختر سرعة الاستجابة <span class="en">(L)</span> أو الاتساق <span class="en">(C)</span>.</p>
+      <table>
+        <tr><th>النوع</th><th>المعنى</th><th>أمثلة شائعة</th></tr>
+        <tr><td class="en">PA/EL</td><td>متاح عند الانقسام، وسريع في الأيام العادية.</td><td class="en">Cassandra, DynamoDB (default)</td></tr>
+        <tr><td class="en">PC/EC</td><td>دقيق دائمًا، ويدفع الثمن بطئًا.</td><td class="en">Spanner, etcd, ZooKeeper</td></tr>
+        <tr><td class="en">PC/EL</td><td>دقيق عند الانقسام، لكنه يسمح بقراءات أسرع وقديمة قليلًا في العادة.</td><td>قاعدة رئيسية مع نسخ قراءة غير متزامنة (الدرس 3)</td></tr>
+      </table>
+
+      <h3>3. نماذج الاتساق: طيف، وليس خيارين</h3>
+      <p>بين "قوي" و"متأخر" توجد درجات كثيرة. كلما نزلت، صار النظام أسرع وأكثر توافرية، لكن المستخدم يرى أشياء أغرب.</p>
+      <table>
+        <tr><th>النموذج</th><th>الضمان</th><th>مثال في بوابة الدفع</th></tr>
+        <tr><td>قوي <span class="en">(Linearizable)</span></td><td>كأن هناك نسخة واحدة. كل قراءة ترى آخر كتابة.</td><td>رصيد المحفظة قبل السحب.</td></tr>
+        <tr><td>سببي <span class="en">(Causal)</span></td><td>السبب يظهر قبل النتيجة دائمًا.</td><td>لا يرى أحد "استرداد" قبل أن يرى "الدفع" الأصلي.</td></tr>
+        <tr><td>قراءة ما كتبت <span class="en">(Read-Your-Writes)</span></td><td>المستخدم يرى تغييراته فورًا.</td><td>العميل يرى عمليته في صفحة الإيصال (الدرس 3).</td></tr>
+        <tr><td>قراءات متصاعدة <span class="en">(Monotonic Reads)</span></td><td>لا ترجع البيانات إلى الوراء.</td><td>التاجر لا يرى "ناجحة" ثم "معلّقة" بعد تحديث الصفحة.</td></tr>
+        <tr><td>نهائي <span class="en">(Eventual)</span></td><td>كل النسخ تتطابق "في النهاية".</td><td>عدد المبيعات اليومي في لوحة التاجر.</td></tr>
+      </table>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> لا تختر نموذجًا واحدًا لكل النظام. اختر لكل نوع من البيانات. اسأل دائمًا: "ما أسوأ شيء يحدث إذا قرأ المستخدم قيمة قديمة؟".</div>
+
+      <h3>4. كيف تعمل الأنظمة CP؟ الإجماع</h3>
+      <p>الأنظمة CP تستخدم خوارزمية إجماع مثل <span class="en">Raft</span>. القاعدة البسيطة: <strong>أي قرار يحتاج موافقة الأغلبية</strong>. مع 3 خوادم، الأغلبية 2. مع 5 خوادم، الأغلبية 3.</p>
+      <p>لماذا الأغلبية؟ لأن أي أغلبيتين تتقاطعان دائمًا في خادم واحد على الأقل. لذلك لا يمكن أن يتخذ جانبان من الانقسام قرارين مختلفين. هذه نفس فكرة \(R + W > N\) من الدرس 3، ونفس سبب أرقام الدورات <span class="en">(Terms)</span>.</p>
+      <p>الثمن: الجانب الذي فيه أقلية يتوقف عن الكتابة. ولهذا السبب نضع الخوادم في <strong>3 مواقع</strong>، وليس في موقعين. سنرى السبب بالأرقام في التمرين 1.</p>
+
+      <h3>5. كيف تعمل الأنظمة AP؟ دمج التعارضات</h3>
+      <p>في نظام AP، كل جانب يقبل الكتابات أثناء الانقسام. عندما تعود الشبكة، يوجد نسختان مختلفتان. كيف ندمجهما؟</p>
+      <ul>
+        <li><strong>آخر كتابة تفوز (LWW):</strong> نأخذ القيمة صاحبة أحدث وقت. بسيط جدًا، لكنه <strong>يرمي بيانات</strong> بصمت. وساعات الخوادم ليست متطابقة تمامًا، فقد "يفوز" خادم ساعته متقدمة فقط.</li>
+        <li><strong>CRDTs:</strong> أنواع بيانات مصممة لتندمج تلقائيًا. مثل العدّاد: كل خادم يزيد خانته الخاصة فقط، والقيمة هي المجموع. الدمج يعطي نفس النتيجة بأي ترتيب، ومهما تكرر.</li>
+        <li><strong>إرجاع التعارض للتطبيق:</strong> نحفظ النسختين، ونترك منطق العمل يقرر. مثل سلة المشتريات: ندمج المنتجات من النسختين.</li>
+      </ul>
+      <div class="callout warning">⚠️ <strong>تحذير:</strong> الـ CRDTs ممتازة للعدّادات والمجموعات. لكنها <strong>لا تستطيع</strong> فرض قاعدة مثل "الرصيد لا يكون سالبًا". هذه القاعدة تحتاج تنسيقًا، أي نظام CP.</div>
+
+      <h3>6. المعاملات الموزّعة: الالتزام على مرحلتين</h3>
+      <p>نريد خصم المحفظة وتسجيل الدفتر معًا، وهما في قاعدتي بيانات مختلفتين. الحل التقليدي هو <span class="en">2PC</span>:</p>
+      <ol>
+        <li><strong>المرحلة 1 (التحضير):</strong> المنسّق يسأل كل مشارك: "هل تستطيع التنفيذ؟". كل مشارك يقفل الصفوف ويحفظ التغيير مؤقتًا، ثم يرد "نعم" أو "لا".</li>
+        <li><strong>المرحلة 2 (القرار):</strong> إذا قال الجميع "نعم"، يرسل المنسّق "نفّذ". وإلا يرسل "ألغِ".</li>
+      </ol>
+      <p>المشكلة الكبيرة: إذا توقف المنسّق بعد المرحلة 1، فالمشاركون <strong>عالقون</strong>. قالوا "نعم"، فلا يستطيعون الإلغاء وحدهم. ولم يسمعوا "نفّذ"، فلا يستطيعون التنفيذ. والأقفال محجوزة طوال هذا الوقت. كل عملية دفع أخرى على نفس المحفظة تنتظر.</p>
+      <p>ولهذا لا نستخدم 2PC بين الخدمات المصغرة غالبًا. والأهم: <strong>البنوك وشبكات البطاقات لا تدعم "التحضير"</strong>. لا تستطيع أن تقول لبنك: "استعد للتحويل، وسأخبرك لاحقًا".</p>
+
+      <h3>7. نمط Saga</h3>
+      <p>بدلًا من معاملة كبيرة واحدة، نقسّم العملية إلى <strong>معاملات محلية صغيرة</strong>. كل خدمة تنفذ معاملتها وتلتزم فورًا. وإذا فشلت خطوة، ننفذ <strong>عمليات تعويضية</strong> للخطوات السابقة، بالترتيب العكسي.</p>
+      <table>
+        <tr><th>الخطوة</th><th>الخدمة</th><th>العملية التعويضية</th></tr>
+        <tr><td>1. حجز المبلغ</td><td>المحفظة</td><td>فك الحجز وإرجاع المبلغ.</td></tr>
+        <tr><td>2. قيد في الدفتر</td><td>الدفتر</td><td>قيد عكسي جديد <span class="en">(Reversal)</span>. لا نحذف القيد الأصلي.</td></tr>
+        <tr><td>3. تأكيد الطلب</td><td>الطلبات</td><td>— (نقطة اللاعودة)</td></tr>
+        <tr><td>4. تحصيل المبلغ نهائيًا</td><td>المحفظة</td><td>— (تُعاد حتى تنجح)</td></tr>
+      </table>
+      <p>لاحظ ثلاث قواعد مهمة:</p>
+      <ul>
+        <li><strong>التعويض ليس حذفًا.</strong> في الأنظمة المالية لا نمسح التاريخ أبدًا. نضيف عملية جديدة تلغي الأثر. المراجع <span class="en">(Auditor)</span> يجب أن يرى ما حدث بالضبط.</li>
+        <li><strong>التعويض يجب أن يكون آمنًا عند التكرار.</strong> المنسّق قد يتوقف ويعيد التعويض مرتين. تذكر الدرس 4.</li>
+        <li><strong>بعد نقطة اللاعودة، نكمل للأمام فقط.</strong> الخطوات بعدها يجب ألا تفشل لأسباب منطقية، ونعيد محاولتها حتى تنجح.</li>
+      </ul>
+      <div class="callout warning">⚠️ <strong>Saga ليس فيها عزل كامل:</strong> بين الخطوات، الخدمات الأخرى ترى حالة "في المنتصف". الحل: استخدم حالات واضحة مثل <code>pending</code> و <code>reserved</code>. المبلغ المحجوز لا يُحسب ضمن الرصيد المتاح، والطلب المعلّق لا يُشحن.</div>
+
+      <h3>8. التنسيق المركزي مقابل التنسيق بالأحداث</h3>
+      <div class="diagram mermaid">
+flowchart LR
+  subgraph O["التنسيق المركزي - Orchestration"]
+    OR["Checkout Orchestrator"] --> W1["Wallet"]
+    OR --> L1["Ledger"]
+    OR --> M1["Orders"]
+  end
+  subgraph CH["التنسيق بالأحداث - Choreography"]
+    W2["Wallet"] -- "FundsReserved" --> L2["Ledger"]
+    L2 -- "LedgerRecorded" --> M2["Orders"]
+    M2 -- "OrderFailed" --> W2
+  end
+      </div>
+      <table>
+        <tr><th>المعيار</th><th>التنسيق المركزي</th><th>التنسيق بالأحداث</th></tr>
+        <tr><td>من يقرر الخطوة التالية؟</td><td>منسّق واحد يعرف كل الخطوات.</td><td>كل خدمة تستمع لحدث وتنشر حدثًا.</td></tr>
+        <tr><td>الفهم والتتبع</td><td>✅ التدفق كله في مكان واحد.</td><td>❌ موزّع على عدة خدمات.</td></tr>
+        <tr><td>الارتباط</td><td>⚠️ المنسّق يعرف كل الخدمات.</td><td>✅ ارتباط ضعيف جدًا.</td></tr>
+        <tr><td>الأفضل لـ</td><td>تدفقات طويلة ومهمة، مثل الدفع.</td><td>تدفقات قصيرة، 2–3 خطوات.</td></tr>
+      </table>
+      <p>المنسّق يحفظ حالته في قاعدة بيانات بعد كل خطوة. إذا توقف، يقرأ حالته ويكمل من حيث توقف. وأدوات مثل <span class="en">Temporal</span> تفعل هذا لك.</p>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>لماذا يتجمد 2PC؟</h3>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant C as Coordinator
+  participant W as Wallet DB
+  participant L as Ledger DB
+  C->>W: PREPARE
+  C->>L: PREPARE
+  W-->>C: YES (rows locked)
+  L-->>C: YES (rows locked)
+  Note over C: crashes before deciding
+  Note over W,L: blocked: cannot commit or abort alone
+      </div>
+
+      <h3>Saga تفشل وتعوّض خطوة بخطوة</h3>
+      <p>سارة رصيدها 1000 جنيه. تشتري هاتفًا بـ 300 جنيه. لكن آخر هاتف بيع قبل ثانية.</p>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: حجز المبلغ ✓</h4>
+          <div class="mem"><div class="box db">Wallet: 1000 → 700</div><div class="box hl">hold o2: 300</div></div>
+          <p>خدمة المحفظة تنقل 300 من "المتاح" إلى "المحجوز" في معاملة محلية، وتلتزم فورًا. سارة لا تستطيع صرف هذا المبلغ في مكان آخر.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: قيد في الدفتر ✓</h4>
+          <div class="mem"><div class="box db">Wallet: 700</div><div class="box hl">Ledger: (o2, debit, 300)</div></div>
+          <p>خدمة الدفتر تسجل القيد. الدفتر يقبل الإضافة فقط <span class="en">(Append-Only)</span>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: تأكيد الطلب ✗</h4>
+          <div class="mem"><div class="box bad">Orders: out of stock</div></div>
+          <p>خدمة الطلبات ترفض: لا يوجد مخزون. الآن المال محجوز والقيد مسجّل، لكن لا يوجد طلب. يجب أن نعوّض بالترتيب العكسي.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: تعويض الدفتر ↩</h4>
+          <div class="mem"><div class="box">(o2, debit, 300)</div><div class="box warn">(o2, reversal, −300)</div></div>
+          <p>لا نحذف القيد الأصلي. نضيف قيدًا عكسيًا. صافي العملية صفر، والتاريخ كامل للمراجعة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: تعويض المحفظة ↩</h4>
+          <div class="mem"><div class="box db hl">Wallet: 700 → 1000</div><div class="box">holds: {}</div></div>
+          <p>نفك الحجز ونرجع 300. سارة ترى: "فشل الطلب، لم يُخصم أي مبلغ". النظام كله متسق، بدون أي قفل موزّع.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> هذه هي فكرة "الحجز ثم التحصيل" في بطاقات الدفع <span class="en">(Authorize / Capture)</span>. التفويض يحجز المبلغ على بطاقة العميل، والتحصيل يأخذه فعلًا. وإذا ألغي الطلب قبل التحصيل، يُفك الحجز <span class="en">(Void)</span>.</div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: الانقسام في نظام CP ونظام AP</h3>
+      <p>ثلاث نسخ من محفظة رصيدها 100: اثنتان في القاهرة وواحدة في الإسكندرية. الشبكة تنقطع. ثم يصل طلبا سحب، كل واحد 80 جنيهًا.</p>
+<pre><code class="language-python">NODES = ["cairo-1", "cairo-2", "alex-1"]
+MAJORITY = len(NODES) // 2 + 1
+
+
+class Wallet:
+    def __init__(self, mode: str, balance: int) -> None:
+        self.mode = mode                       # "CP" or "AP"
+        self.copies = {n: balance for n in NODES}
+        self.groups = [set(NODES)]
+        self.start = balance
+        self.accepted: list[int] = []
+
+    def partition(self, *groups: set[str]) -> None:
+        self.groups = list(groups)
+
+    def _group_of(self, node: str) -> set[str]:
+        return next(g for g in self.groups if node in g)
+
+    def withdraw(self, node: str, amount: int) -> str:
+        group = self._group_of(node)
+        if self.mode == "CP" and len(group) &lt; MAJORITY:
+            return "rejected: no majority (unavailable)"
+        if self.copies[node] &lt; amount:
+            return "rejected: insufficient funds"
+        for n in group:                        # replicate inside the group
+            self.copies[n] -= amount
+        self.accepted.append(amount)
+        return "accepted"
+
+    def heal(self) -> int:
+        self.groups = [set(NODES)]
+        final = self.start - sum(self.accepted)  # merge all withdrawals
+        self.copies = {n: final for n in NODES}
+        return final
+
+
+for mode in ("CP", "AP"):
+    w = Wallet(mode, balance=100)
+    w.partition({"cairo-1", "cairo-2"}, {"alex-1"})
+    r1 = w.withdraw("cairo-1", 80)
+    r2 = w.withdraw("alex-1", 80)
+    print(f"{mode}: cairo -> {r1} | alex -> {r2} | after heal = {w.heal()}")</code></pre>
+      <div class="output">CP: cairo -> accepted | alex -> rejected: no majority (unavailable) | after heal = 20
+AP: cairo -> accepted | alex -> accepted | after heal = -60</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>MAJORITY = len(NODES) // 2 + 1</code>: مع 3 نسخ، الأغلبية 2.</li>
+        <li><code>self.groups</code>: مجموعات الخوادم التي ترى بعضها. قبل الانقسام، مجموعة واحدة فيها الكل.</li>
+        <li><code>w.partition(...)</code>: القاهرة (نسختان) لا ترى الإسكندرية (نسخة واحدة).</li>
+        <li><code>len(group) &lt; MAJORITY</code>: في وضع CP، الجانب الذي فيه أقلية يرفض. الإسكندرية فيها نسخة واحدة فقط.</li>
+        <li><code>for n in group</code>: الكتابة تصل فقط إلى الخوادم التي نراها.</li>
+        <li><code>heal</code>: عند عودة الشبكة، نجمع كل السحوبات المقبولة من الجانبين.</li>
+        <li><strong>CP:</strong> عميل الإسكندرية رأى خطأ. لكن الرصيد النهائي 20، صحيح تمامًا.</li>
+        <li><strong>AP:</strong> كل جانب رأى رصيد 100 وقبل السحب. النتيجة −60. البنك خسر 60 جنيهًا.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> في وضع CP، يجب أن ترفض الإسكندرية <strong>القراءة</strong> أيضًا، وليس الكتابة فقط. نسختها تقول 100، والرصيد الحقيقي 20. القراءة منها تكسر الاتساق القوي.</div>
+
+      <h3>مثال 2: "آخر كتابة تفوز" تضيّع المبيعات</h3>
+      <p>عدّاد مبيعات التاجر اليوم كان 10. أثناء الانقسام: 3 مبيعات في القاهرة، و 2 في الإسكندرية. القيمة الصحيحة بعد الدمج هي 15.</p>
+<pre><code class="language-python"># Last-Write-Wins register: (value, timestamp)
+def lww_merge(a: tuple[int, float], b: tuple[int, float]) -> tuple[int, float]:
+    return a if a[1] >= b[1] else b
+
+
+start = 10
+cairo = (start + 3, 5.0)    # 3 sales, last write at t=5
+alex = (start + 2, 6.0)     # 2 sales, last write at t=6
+
+
+# G-Counter: each node increments only its own slot
+def g_merge(a: dict[str, int], b: dict[str, int]) -> dict[str, int]:
+    return {n: max(a.get(n, 0), b.get(n, 0)) for n in a.keys() | b.keys()}
+
+
+base = {"cairo": 6, "alex": 4}                 # total 10 before the split
+cairo_c = {**base, "cairo": base["cairo"] + 3}
+alex_c = {**base, "alex": base["alex"] + 2}
+merged = g_merge(cairo_c, alex_c)
+
+print("LWW result      :", lww_merge(cairo, alex)[0])
+print("G-Counter result:", sum(merged.values()))
+print("order-independent:", g_merge(cairo_c, alex_c) == g_merge(alex_c, cairo_c))
+print("merge twice safe :", g_merge(merged, cairo_c) == merged)</code></pre>
+      <div class="output">LWW result      : 12
+G-Counter result: 15
+order-independent: True
+merge twice safe : True</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>lww_merge</code>: نأخذ القيمة صاحبة الوقت الأحدث. الإسكندرية كتبت في <code>t=6</code>، ففازت بقيمة 12.</li>
+        <li><strong>النتيجة 12 خاطئة:</strong> مبيعات القاهرة الثلاث اختفت بصمت. لا خطأ ولا تنبيه.</li>
+        <li><code>base = {"cairo": 6, "alex": 4}</code>: في الـ G-Counter، كل خادم له خانة خاصة. المجموع 10.</li>
+        <li>القاهرة تزيد خانتها فقط: 6 → 9. والإسكندرية تزيد خانتها فقط: 4 → 6.</li>
+        <li><code>max(...)</code> لكل خانة: القاهرة 9، والإسكندرية 6. المجموع 15، صحيح.</li>
+        <li><strong>الدمج لا يتأثر بالترتيب ولا بالتكرار.</strong> لذلك يمكن أن تتبادل الخوادم حالتها بأي طريقة، ومهما تكررت الرسائل.</li>
+      </ol>
+
+      <h3>مثال 3: الالتزام على مرحلتين وتجمده</h3>
+<pre><code class="language-python">class Participant:
+    def __init__(self, name: str, can_commit: bool = True) -> None:
+        self.name = name
+        self.can_commit = can_commit
+        self.state = "idle"
+
+    def prepare(self) -> bool:
+        self.state = "prepared" if self.can_commit else "aborted"
+        return self.can_commit              # locks are held from here
+
+    def commit(self) -> None:
+        self.state = "committed"
+
+    def abort(self) -> None:
+        self.state = "aborted"
+
+
+def two_phase_commit(parts: list[Participant],
+                     crash_after_prepare: bool = False) -> str:
+    votes = [p.prepare() for p in parts]    # phase 1: vote
+    if crash_after_prepare:
+        return "coordinator crashed"
+    if all(votes):                          # phase 2: decide
+        for p in parts:
+            p.commit()
+        return "committed"
+    for p in parts:
+        p.abort()
+    return "aborted"
+
+
+scenarios = [("all yes", True, False),
+             ("ledger votes no", False, False),
+             ("coordinator crash", True, True)]
+for label, ledger_ok, crash in scenarios:
+    parts = [Participant("wallet"), Participant("ledger", ledger_ok)]
+    result = two_phase_commit(parts, crash)
+    states = ", ".join(f"{p.name}={p.state}" for p in parts)
+    print(f"{label}: {result} | {states}")</code></pre>
+      <div class="output">all yes: committed | wallet=committed, ledger=committed
+ledger votes no: aborted | wallet=aborted, ledger=aborted
+coordinator crash: coordinator crashed | wallet=prepared, ledger=prepared</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>prepare</code>: المشارك يصوّت. إذا قال "نعم"، يحجز الأقفال ويعد بأن ينفذ عندما يُطلب منه.</li>
+        <li><code>votes = [...]</code>: المرحلة الأولى. نجمع الأصوات من الجميع.</li>
+        <li><code>if all(votes)</code>: المرحلة الثانية. يكفي صوت "لا" واحد لإلغاء الكل.</li>
+        <li><strong>الحالة الأولى والثانية:</strong> تعملان بشكل صحيح. إما ينفذ الجميع، أو يلغي الجميع.</li>
+        <li><strong>الحالة الثالثة:</strong> المشاركان في حالة <code>prepared</code> للأبد. لا يعرفان القرار. والأقفال محجوزة حتى يعود المنسّق.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> بعض قواعد البيانات الموزّعة تستخدم 2PC داخليًا، لكن مع منسّق مكرر بخوارزمية إجماع. هذا يحل مشكلة التجمد. لا تبنِ 2PC بنفسك بين خدماتك.</div>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>1. عملية تعويضية غير آمنة عند التكرار</h3>
+      <p>المنسّق أرسل "فك الحجز" لخدمة المحفظة. الرد تأخر، فانتهت المهلة، فأعاد المنسّق الإرسال.</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">wallet = {"sara": 700}
+holds = {"o2": 300}
+
+
+def release_funds(order: str, user: str, amount: int) -> None:
+    wallet[user] += amount
+
+
+release_funds("o2", "sara", 300)
+release_funds("o2", "sara", 300)   # retried after a timeout
+print("wallet:", wallet["sara"])</code></pre>
+          <div class="output">wallet: 1300</div>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">wallet = {"sara": 700}
+holds = {"o2": 300}
+
+
+def release_funds(order: str, user: str) -> None:
+    amount = holds.pop(order, 0)   # 0 if already released
+    wallet[user] += amount
+
+
+release_funds("o2", "sara")
+release_funds("o2", "sara")        # retried after a timeout
+print("wallet:", wallet["sara"])</code></pre>
+          <div class="output">wallet: 1000</div>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الطريقة الأولى خاطئة؟</strong> سارة كان رصيدها 1000، فحجزنا 300. التعويض يجب أن يرجعها إلى 1000. لكن التكرار أعطاها 300 جنيه مجانية. الطريقة الصحيحة تعتمد على <strong>الحجز نفسه</strong>: إذا لم يعد موجودًا، فقد تم فكه من قبل. في الإنتاج، احذف الحجز وأرجع المبلغ في نفس المعاملة.</div>
+
+      <h3>2. أخطاء أخرى شائعة</h3>
+      <ul>
+        <li><strong>❌ "نظامنا CA":</strong> لا يوجد نظام موزّع بدون انقسامات. إذا لم تقرر ماذا يحدث عند الانقسام، فالشبكة ستقرر عنك. <strong>✅</strong> اكتب قرارك لكل نوع بيانات.</li>
+        <li><strong>❌ الاتساق المتأخر للأرصدة:</strong> AP للرصيد يعني إنفاقًا مزدوجًا <span class="en">(Double Spending)</span>. <strong>✅</strong> الرصيد في نظام CP دائمًا.</li>
+        <li><strong>❌ الاتساق القوي لكل شيء:</strong> عدّاد المشاهدات لا يحتاج إجماعًا عبر 3 مناطق. <strong>✅</strong> القوي حيث الأموال، والمتأخر حيث الإحصاءات.</li>
+        <li><strong>❌ التعويض بالحذف:</strong> <code>DELETE FROM ledger WHERE ...</code> يمسح الدليل. <strong>✅</strong> قيد عكسي جديد، والتاريخ يبقى كاملًا.</li>
+        <li><strong>❌ الاعتماد على ساعات الخوادم:</strong> الساعات تختلف بأجزاء من الثانية أو أكثر. LWW قد يختار القيمة الخاطئة. <strong>✅</strong> أرقام إصدار، أو ساعات منطقية <span class="en">(Logical Clocks)</span>، أو CRDTs.</li>
+        <li><strong>❌ اعتبار المهلة فشلًا:</strong> البنك لم يرد خلال 30 ثانية، فعوّضت وأرجعت المال. لكن البنك نفّذ التحويل فعلًا! <strong>✅</strong> المهلة تعني "لا أعرف". اسأل عن الحالة قبل أن تعوّض. هذا هو التمرين 4.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>صنّف بياناتك.</strong> لكل نوع: CP أم AP؟ وما نموذج الاتساق؟ اكتب القرار في وثيقة التصميم.</li>
+        <li><strong>عدد فردي من النسخ في 3 مواقع على الأقل</strong> للأنظمة CP. هكذا يبقى للنظام أغلبية إذا توقف موقع كامل.</li>
+        <li><strong>صمّم الحالات الوسيطة بوضوح.</strong> <code>pending</code> و <code>reserved</code> و <code>failed</code> و <code>refunded</code>. الحالة الوسيطة الواضحة أفضل من حالة "نهائية" خاطئة.</li>
+        <li><strong>كل خطوة في Saga وكل تعويض آمن عند التكرار.</strong> استخدم معرّف العملية كمفتاح تكرار <span class="en">(Idempotency Key)</span>.</li>
+        <li><strong>احفظ حالة المنسّق بعد كل خطوة.</strong> المنسّق سيتوقف يومًا ما، ويجب أن يكمل من حيث توقف.</li>
+        <li><strong>ضع الخطوات التي يمكن أن تفشل قبل نقطة اللاعودة.</strong> مثلًا: افحص المخزون قبل أن تحصّل المال.</li>
+        <li><strong>المطابقة اليومية</strong> <span class="en">(Reconciliation)</span>: قارن سجلاتك بكشوف البنك كل يوم. هذه شبكة الأمان الأخيرة لأي نظام مالي موزّع.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة لأنظمة الدفع:</strong> الرصيد ودفتر الحسابات ومفاتيح منع التكرار تحتاج اتساقًا قويًا. أما لوحات التحكم والإحصاءات والإشعارات فالاتساق المتأخر يكفيها. هذا التقسيم وحده يحل أغلب قرارات CAP.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+
+      <h3>ثمن الاتساق القوي: الانتظار</h3>
+      <p>في نظام CP، الكتابة لا تنجح حتى تؤكدها الأغلبية. لذلك زمن الكتابة على الأقل:</p>
+      <div dir="ltr">$$T_{\text{write}} \geq T_{\text{local}} + \text{RTT}_{\text{quorum}}$$</div>
+      <p>حيث \(\text{RTT}_{\text{quorum}}\) هو زمن الذهاب والعودة إلى أقرب نسخ تكمل الأغلبية. داخل منطقة واحدة: بضع ميلي ثوانٍ. عبر دول أو قارات: عشرات أو مئات الميلي ثوانٍ لكل كتابة.</p>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>توافرية الأغلبية</h3>
+      <p>إذا كانت توافرية كل نسخة \(p\)، وعدد النسخ \(n\)، والأغلبية \(m = \lfloor n/2 \rfloor + 1\)، فالنظام يعمل إذا كانت \(m\) نسخ على الأقل سليمة:</p>
+      <div dir="ltr">$$A_{\text{quorum}} = \sum_{k=m}^{n} \binom{n}{k} p^k (1-p)^{n-k}$$</div>
+      <p>مع \(p = 99\%\): نسخة واحدة 99%. ثلاث نسخ حوالي 99.97%. خمس نسخ حوالي 99.999%. وأربع نسخ؟ أقل من ثلاث! ستحسبها بنفسك في التمرين 1.</p>
+
+      <h3>مقارنة: 2PC مقابل Saga</h3>
+      <table>
+        <tr><th>المعيار</th><th>الالتزام على مرحلتين</th><th>Saga</th></tr>
+        <tr><td>العزل</td><td>✅ لا أحد يرى الحالة الوسيطة</td><td>❌ الحالات الوسيطة مرئية</td></tr>
+        <tr><td>الأقفال</td><td>❌ محجوزة طوال المعاملة عبر الشبكة</td><td>✅ كل معاملة محلية قصيرة</td></tr>
+        <tr><td>عند توقف المنسّق</td><td>❌ تجمد</td><td>✅ يكمل من آخر حالة محفوظة</td></tr>
+        <tr><td>الخدمات الخارجية</td><td>❌ البنوك لا تدعم "التحضير"</td><td>✅ تعمل مع أي API</td></tr>
+        <tr><td>التعقيد</td><td>⚠️ في البنية التحتية</td><td>⚠️ في منطق العمل: تعويضات وحالات</td></tr>
+        <tr><td>متى تستخدمه؟</td><td>داخل قاعدة بيانات موزّعة واحدة</td><td>بين الخدمات المصغرة والأنظمة الخارجية</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: منسّق Saga لعملية الشراء من المحفظة</h2>
+      <p>ستبني منسّقًا مركزيًا ينفذ أربع خطوات، ويعوّض بالترتيب العكسي عند الفشل. ثم نشغّل ثلاثة طلبات: واحد ينجح، وواحد يفشل بعد خطوتين، وواحد يفشل من البداية.</p>
+<pre><code class="language-python">from dataclasses import dataclass
+from typing import Callable
+
+system = {"wallet": {"sara": 1000}, "holds": {}, "ledger": [],
+          "stock": {"phone": 1, "laptop": 5}, "orders": {}}
+
+
+def reserve_funds(c: dict) -> None:
+    wallet = system["wallet"]
+    if wallet[c["user"]] &lt; c["amount"]:
+        raise ValueError("insufficient funds")
+    wallet[c["user"]] -= c["amount"]
+    system["holds"][c["order"]] = c["amount"]
+
+
+def release_funds(c: dict) -> None:
+    amount = system["holds"].pop(c["order"], 0)   # safe to run twice
+    system["wallet"][c["user"]] += amount
+
+
+def record_ledger(c: dict) -> None:
+    system["ledger"].append((c["order"], "debit", c["amount"]))
+
+
+def reverse_ledger(c: dict) -> None:
+    system["ledger"].append((c["order"], "reversal", -c["amount"]))
+
+
+def confirm_order(c: dict) -> None:               # pivot step
+    if system["stock"][c["item"]] &lt;= 0:
+        raise ValueError("out of stock")
+    system["stock"][c["item"]] -= 1
+    system["orders"][c["order"]] = "confirmed"
+
+
+def capture_funds(c: dict) -> None:               # retried until it succeeds
+    system["holds"].pop(c["order"])
+
+
+@dataclass
+class Step:
+    name: str
+    action: Callable[[dict], None]
+    compensate: Callable[[dict], None] | None = None
+
+
+CHECKOUT = [
+    Step("reserve_funds", reserve_funds, release_funds),
+    Step("record_ledger", record_ledger, reverse_ledger),
+    Step("confirm_order", confirm_order),
+    Step("capture_funds", capture_funds),
+]
+
+
+def run_saga(steps: list[Step], c: dict) -> list[str]:
+    log: list[str] = []
+    done: list[Step] = []
+    for step in steps:
+        try:
+            step.action(c)
+        except ValueError as err:
+            log.append(f"FAIL {step.name}: {err}")
+            for prev in reversed(done):           # undo in reverse order
+                if prev.compensate:
+                    prev.compensate(c)
+                    log.append(f"undo {prev.name}")
+            return log
+        log.append(f"ok {step.name}")
+        done.append(step)
+    return log
+
+
+orders = [
+    {"order": "o1", "user": "sara", "item": "phone", "amount": 300},
+    {"order": "o2", "user": "sara", "item": "phone", "amount": 300},
+    {"order": "o3", "user": "sara", "item": "laptop", "amount": 900},
+]
+for c in orders:
+    print(c["order"], "->", " | ".join(run_saga(CHECKOUT, c)))
+
+net = sum(amount for _, _, amount in system["ledger"])
+print("wallet :", system["wallet"]["sara"])
+print("holds  :", system["holds"])
+print("orders :", system["orders"])
+print("ledger :", len(system["ledger"]), "rows, net =", net)</code></pre>
+      <div class="output">o1 -> ok reserve_funds | ok record_ledger | ok confirm_order | ok capture_funds
+o2 -> ok reserve_funds | ok record_ledger | FAIL confirm_order: out of stock | undo record_ledger | undo reserve_funds
+o3 -> FAIL reserve_funds: insufficient funds
+wallet : 700
+holds  : {}
+orders : {'o1': 'confirmed'}
+ledger : 3 rows, net = 300</div>
+      <h4>تتبّع السيناريو</h4>
+      <ol>
+        <li><strong>o1:</strong> كل الخطوات نجحت. الرصيد 700، والهاتف الوحيد بيع، والحجز تحوّل إلى تحصيل.</li>
+        <li><strong>o2:</strong> حجزنا 300 (الرصيد 400)، وسجلنا القيد. ثم لا يوجد مخزون. عوّضنا الدفتر بقيد عكسي، ثم فككنا الحجز. الرصيد رجع إلى 700.</li>
+        <li><strong>o3:</strong> الرصيد 700 أقل من 900. فشلت أول خطوة، فلا يوجد شيء نعوّضه.</li>
+        <li><strong>الدفتر:</strong> 3 قيود (قيد o1، وقيد o2 وعكسه). الصافي 300، وهو بالضبط المبلغ الذي خرج من المحفظة: 1000 − 700.</li>
+        <li><strong>لا حجوزات معلّقة:</strong> <code>holds</code> فارغ. لا يوجد مال "عالق" في المنتصف.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> هذا المنسّق يعيش في الذاكرة. في الإنتاج، احفظ <code>done</code> والحالة في قاعدة بيانات بعد كل خطوة. ونفّذ كل خطوة كرسالة عبر صندوق الصادر من الدرس 4. هكذا يكمل المنسّق بعد أي توقف.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+
+      <div class="quiz" data-explain="في نظام CP، الجانب الذي لا يملك الأغلبية يرفض الطلبات حتى لا يعطي بيانات قديمة أو يقبل كتابات متعارضة.">
+        <div class="q">1. حدث انقسام في نظام CP من 5 نسخ. جانب فيه 2 نسخ فقط. ماذا يفعل هذا الجانب؟</div>
+        <button class="option">يقبل الكتابات ويدمجها لاحقًا</button>
+        <button class="option" data-correct="true">يرفض الطلبات حتى تعود الشبكة</button>
+        <button class="option">ينتخب رئيسيًا جديدًا</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الانقسامات تحدث دائمًا في الأنظمة الموزّعة. لذلك الاختيار الحقيقي هو بين C و A عند حدوث الانقسام.">
+        <div class="q">2. لماذا لا يوجد نظام موزّع "CA" عمليًا؟</div>
+        <button class="option">لأن الاتساق مكلف جدًا</button>
+        <button class="option" data-correct="true">لأن انقسام الشبكة سيحدث حتمًا، فلا يمكن تجاهل P</button>
+        <button class="option">لأن قواعد البيانات لا تدعمه</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="التعويض عملية جديدة تلغي الأثر، مثل الاسترداد أو القيد العكسي. لا نحذف التاريخ المالي أبدًا.">
+        <div class="q">3. في Saga، كيف نعوّض قيدًا مسجلًا في دفتر الحسابات؟</div>
+        <button class="option">نحذف القيد من الجدول</button>
+        <button class="option">نعدّل المبلغ إلى صفر</button>
+        <button class="option" data-correct="true">نضيف قيدًا عكسيًا جديدًا</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="إذا توقف المنسّق بعد التحضير، يبقى المشاركون في حالة prepared والأقفال محجوزة، ولا يستطيعون القرار وحدهم.">
+        <div class="q">4. ما المشكلة الكبرى في الالتزام على مرحلتين؟</div>
+        <button class="option" data-correct="true">يتجمد المشاركون مع الأقفال إذا توقف المنسّق</button>
+        <button class="option">لا يضمن "كل شيء أو لا شيء"</button>
+        <button class="option">يسمح برؤية الحالات الوسيطة</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الرصيد قبل السحب يحتاج اتساقًا قويًا، وإلا يحدث إنفاق مزدوج. الباقي يتحمل الاتساق المتأخر.">
+        <div class="q">5. أي بيانات في بوابة الدفع تحتاج نظام CP؟</div>
+        <button class="option">عدد زيارات صفحة الدفع</button>
+        <button class="option" data-correct="true">رصيد المحفظة عند السحب</button>
+        <button class="option">إجمالي مبيعات اليوم في لوحة التاجر</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): كم نسخة تحتاج؟</h3>
+      <p>اكتب دالة تحسب توافرية نظام يعمل بالأغلبية، حسب المعادلة في قسم الأداء. احسبها لـ 1 و 3 و 4 و 5 نسخ، مع توافرية 99% لكل نسخة. ماذا تلاحظ في 4 نسخ؟</p>
+      <details><summary>💡 تلميح</summary><p>استخدم <code>math.comb(n, k)</code>، واجمع من \(k = m\) إلى \(n\).</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from math import comb
+
+
+def quorum_availability(n: int, p: float) -> float:
+    m = n // 2 + 1
+    return sum(comb(n, k) * p**k * (1 - p)**(n - k)
+               for k in range(m, n + 1))
+
+
+for n in (1, 3, 4, 5):
+    print(f"n={n}: {quorum_availability(n, 0.99):.3%}")</code></pre>
+        <div class="output">n=1: 99.000%
+n=3: 99.970%
+n=4: 99.941%
+n=5: 99.999%</div>
+        <p>4 نسخ أسوأ من 3! الأغلبية في 4 هي 3. إذن النظام يتحمل توقف نسخة واحدة فقط، مثل 3 نسخ. لكن عنده نسخة إضافية قد تتوقف. لهذا تستخدم الأنظمة CP عددًا فرديًا دائمًا.</p>
+        <p>ونفس الفكرة مع المواقع: إذا وضعت نسختين في القاهرة ونسختين في الإسكندرية، وانقطعت الشبكة، فلا يملك أي جانب الأغلبية. النظام كله يتوقف. لذلك نحتاج 3 مواقع.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): عدّاد يزيد وينقص</h3>
+      <p>الـ G-Counter يزيد فقط. لكن المبيعات فيها استردادات. ابنِ <span class="en">PN-Counter</span>: عدّادان من نوع G-Counter، واحد للزيادة وواحد للنقص. القاهرة: 5 مبيعات واسترداد واحد. الإسكندرية: 3 مبيعات. بعد الدمج في الاتجاهين، يجب أن يرى الجانبان 7.</p>
+      <details><summary>💡 تلميح</summary><p>القيمة = مجموع عدّاد الزيادة − مجموع عدّاد النقص. والدمج يدمج كل عدّاد وحده بـ <code>max</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def g_merge(a: dict[str, int], b: dict[str, int]) -> dict[str, int]:
+    return {n: max(a.get(n, 0), b.get(n, 0)) for n in a.keys() | b.keys()}
+
+
+class PNCounter:
+    def __init__(self, node: str) -> None:
+        self.node = node
+        self.p: dict[str, int] = {}
+        self.n: dict[str, int] = {}
+
+    def add(self, x: int) -> None:
+        self.p[self.node] = self.p.get(self.node, 0) + x
+
+    def sub(self, x: int) -> None:
+        self.n[self.node] = self.n.get(self.node, 0) + x
+
+    def merge(self, other: "PNCounter") -> None:
+        self.p = g_merge(self.p, other.p)
+        self.n = g_merge(self.n, other.n)
+
+    def value(self) -> int:
+        return sum(self.p.values()) - sum(self.n.values())
+
+
+cairo, alex = PNCounter("cairo"), PNCounter("alex")
+cairo.add(5)
+cairo.sub(1)          # one refund
+alex.add(3)
+cairo.merge(alex)
+alex.merge(cairo)
+print(cairo.value(), alex.value())</code></pre>
+        <div class="output">7 7</div>
+        <p>هذا العدّاد ممتاز للإحصاءات. لكن لاحظ: لا يستطيع منع القيمة من أن تصبح سالبة. لذلك لا تستخدمه للأرصدة أبدًا.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): صنّف بيانات بوابة الدفع</h3>
+      <p>لكل نوع، اختر: CP أم AP؟ وما نموذج الاتساق المناسب؟</p>
+      <ol>
+        <li>رصيد محفظة العميل.</li>
+        <li>مفاتيح منع تكرار الدفع.</li>
+        <li>إجمالي مبيعات اليوم في لوحة التاجر.</li>
+        <li>حالة الدفع في صفحة الإيصال.</li>
+        <li>إعدادات التاجر (الشعار، اللغة).</li>
+      </ol>
+      <details><summary>💡 تلميح</summary><p>اسأل عن كل نوع: هل القيمة القديمة تسبب خسارة مالية؟ أم مجرد إزعاج؟</p></details>
+      <details><summary>✅ الحل</summary>
+        <table>
+          <tr><th>البيانات</th><th>القرار</th><th>السبب</th></tr>
+          <tr><td>رصيد المحفظة</td><td>CP، اتساق قوي</td><td>القيمة القديمة تعني إنفاقًا مزدوجًا.</td></tr>
+          <tr><td>مفاتيح منع التكرار</td><td>CP، اتساق قوي مع قيد فريد</td><td>إذا لم يرَ خادمٌ المفتاح، يُنفَّذ الدفع مرتين.</td></tr>
+          <tr><td>مبيعات اليوم</td><td>AP، اتساق نهائي مع CRDT</td><td>تأخير ثوانٍ لا يضر، والتوافرية أهم للوحة التحكم.</td></tr>
+          <tr><td>حالة الإيصال</td><td>قراءة ما كتبت + قراءات متصاعدة</td><td>العميل يجب أن يرى عمليته، ولا يجب أن يراها ترجع من "ناجحة" إلى "معلّقة".</td></tr>
+          <tr><td>إعدادات التاجر</td><td>AP، اتساق نهائي مع Cache (الدرس 2)</td><td>شعار قديم لدقيقة ليس مشكلة.</td></tr>
+        </table>
+      </details>
+
+      <h3>تمرين 4 (صعب): Saga لتحويل أرباح التاجر</h3>
+      <p>صمّم Saga لتحويل أرباح التاجر إلى حسابه البنكي: خصم الرصيد، ثم استدعاء API البنك، ثم تعليم التحويل "مكتمل" وإشعار التاجر. أهم سؤال: البنك لم يرد خلال 30 ثانية. ماذا تفعل؟</p>
+      <details><summary>💡 تلميح</summary><p>المهلة لا تعني الفشل. ما الذي يمنع التحويل مرتين إذا أعدت المحاولة؟</p></details>
+      <details><summary>✅ الحل</summary>
+        <ol>
+          <li><strong>إنشاء التحويل وحجز المبلغ:</strong> في معاملة محلية واحدة: سجل <code>payout</code> بحالة <code>pending</code>، ونقل المبلغ من "المتاح" إلى "محجوز للتحويل"، ورسالة في صندوق الصادر.</li>
+          <li><strong>استدعاء البنك:</strong> مع مفتاح تكرار = <code>payout_id</code>. هذه نقطة اللاعودة، لأن المال إذا خرج لا نستطيع سحبه.</li>
+          <li><strong>رد واضح بالنجاح:</strong> الحالة <code>paid</code>، ونحوّل الحجز إلى خصم نهائي، ونشعر التاجر.</li>
+          <li><strong>رفض واضح</strong> (مثل رقم حساب خاطئ): نعوّض. نفك الحجز ونرجع المبلغ للمتاح، والحالة <code>failed</code>، ونطلب من التاجر تصحيح البيانات.</li>
+          <li><strong>مهلة أو خطأ شبكة:</strong> <strong>لا نعوّض!</strong> الحالة <code>unknown</code>. نسأل البنك عن حالة التحويل بنفس المفتاح، أو نعيد الطلب بنفس المفتاح فيرفض البنك التكرار. نستمر حتى نحصل على جواب واضح.</li>
+          <li><strong>المطابقة اليومية:</strong> نقارن كل تحويلاتنا بكشف حساب البنك. أي تحويل في حالة <code>unknown</code> لأكثر من يوم يذهب لفريق العمليات.</li>
+        </ol>
+        <p>الدرس الأهم: <strong>"لا أعرف" ليست "فشل".</strong> لو عوّضنا عند المهلة والبنك نفّذ فعلًا، فالتاجر يأخذ المال مرتين: مرة من البنك، ومرة في رصيده. سنتعمق في مفاتيح التكرار في الدرس 7.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>الانقسام حتمي في الأنظمة الموزّعة. CAP تعني: عند الانقسام اختر الاتساق أو التوافرية.</li>
+        <li>PACELC تضيف: في الأيام العادية، الاتساق القوي ثمنه بطء.</li>
+        <li>الاتساق طيف: قوي، سببي، قراءة ما كتبت، قراءات متصاعدة، نهائي. اختر لكل نوع بيانات.</li>
+        <li>الأنظمة CP تعتمد على الأغلبية. استخدم عددًا فرديًا من النسخ في 3 مواقع على الأقل.</li>
+        <li>"آخر كتابة تفوز" تضيّع البيانات بصمت. الـ CRDTs تدمج بدون تعارض، لكنها لا تفرض قواعد مثل "الرصيد لا يكون سالبًا".</li>
+        <li>2PC يضمن الذرية، لكنه يتجمد إذا توقف المنسّق، ولا يعمل مع البنوك والأنظمة الخارجية.</li>
+        <li>Saga: معاملات محلية + تعويضات بالترتيب العكسي. التعويض عملية جديدة وليس حذفًا، ويجب أن يكون آمنًا عند التكرار.</li>
+        <li>ضع الخطوات التي قد تفشل قبل نقطة اللاعودة، والخطوات بعدها تُعاد حتى تنجح.</li>
+        <li>المهلة تعني "لا أعرف". اسأل عن الحالة قبل أن تعوّض، وطابق مع البنك يوميًا.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <p>خطة سلسلة تصميم الأنظمة:</p>
+      <ol>
+        <li>✅ أساسيات التوسع والمكونات الأساسية</li>
+        <li>✅ موازنة الأحمال والـ Caching بعمق</li>
+        <li>✅ قواعد البيانات: النسخ المتماثل والتقسيم</li>
+        <li>✅ طوابير الرسائل والأنظمة غير المتزامنة</li>
+        <li>✅ نظرية CAP ونماذج الاتساق ونمط Saga (هذا الدرس)</li>
+        <li>الخدمات المصغرة و <span class="en">API Gateway</span>: متى تقسّم النظام إلى خدمات؟ وكيف تحمي الخدمات من بعضها بقاطع الدائرة <span class="en">(Circuit Breaker)</span>؟</li>
+        <li>الموثوقية: <span class="en">Rate Limiting</span> و <span class="en">Idempotency</span> وإعادة المحاولة</li>
+        <li>مقابلة تصميم كاملة: صمّم بوابة دفع من الصفر</li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀 — سلسلة تصميم الأنظمة، الدرس 5</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    new Chart(perf, {
+      type: "bar",
+      data: {
+        labels: ["غير متزامن (محلي فقط)", "نسخة متزامنة في نفس المنطقة", "نِصاب عبر 3 مناطق"],
+        datasets: [
+          { label: "زمن الكتابة (ms)", data: [2, 5, 70], backgroundColor: ["#10b981", "#f59e0b", "#ef4444"] }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { display: false },
+          tooltip: { rtl: true },
+          title: { display: true, text: "ثمن الاتساق القوي: زمن الكتابة (أرقام توضيحية)" }
+        },
+        scales: {
+          y: { title: { display: true, text: "ms" }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

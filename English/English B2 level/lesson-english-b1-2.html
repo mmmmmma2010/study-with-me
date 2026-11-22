@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 2: أسكن هنا منذ سنوات — English B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Cairo',Tahoma,'Segoe UI',sans-serif; font-size:18px; line-height:1.9; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .progress { max-width:420px; margin:14px auto 0; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; }
+  .progress div { height:100%; background:#fde68a; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:210px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); }
+  .emoji { font-size:2.6rem; line-height:1.2; }
+  .word { font-size:1.4rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.15rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  /* Timeline */
+  .timeline-viz { position:relative; height:140px; margin:20px 10px; direction:ltr; }
+  .tl-line { position:absolute; top:64px; left:0; right:0; height:4px; background:linear-gradient(90deg,#94a3b8,#4f46e5,#06b6d4); border-radius:4px; }
+  .tl-now { position:absolute; top:34px; height:64px; border-left:3px solid var(--v); }
+  .tl-now span, .tl-event span { position:absolute; top:-28px; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; background:var(--card); padding:0 6px; }
+  .tl-now span { color:var(--v); }
+  .tl-event { position:absolute; top:56px; width:20px; height:20px; margin-left:-10px; border-radius:50%; background:var(--o); border:3px solid #fff; box-shadow:0 0 0 2px var(--o); }
+  .tl-event span { top:28px; color:var(--o); }
+  .tl-range { position:absolute; top:60px; height:12px; background:rgba(79,70,229,.35); border-radius:6px; }
+  .tl-range span { position:absolute; top:-34px; left:50%; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; color:var(--primary); background:var(--card); padding:0 6px; }
+  .tl-labels { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; color:var(--muted); font-size:.85rem; font-weight:700; }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; }
+  .bubble { max-width:80%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:110px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:200px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>الدرس 2: أسكن هنا منذ سنوات <span class="tl">— I've lived here for years</span></h1>
+  <p>تحدّث عن التغيّرات في حياتك وعن الأخبار الجديدة. <span class="tl">Talk about changes in your life and recent news.</span></p>
+  <div class="badges">
+    <span class="badge">اللغة: الإنجليزية</span>
+    <span class="badge">المستوى: B1</span>
+    <span class="badge">الدرس 2 من 15</span>
+    <span class="badge">وقت الدراسة: 30 دقيقة</span>
+    <span class="badge tl">for · since · already · yet · just</span>
+  </div>
+  <div class="progress"><div style="width:13%"></div></div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 السرعة: عادية</button>
+  <span>النتيجة: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ حفظ PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section id="goals">
+    <h2>🎯 أهداف الدرس <span class="tl">— Can-do goals</span></h2>
+    <div class="cando">
+      <label><input type="checkbox"><span class="tl">I can say how long something has continued, using for and since.</span> — أستطيع أن أقول منذ متى أفعل شيئًا.</label>
+      <label><input type="checkbox"><span class="tl">I can ask "How long have you...?"</span> — أستطيع أن أسأل «منذ متى...؟».</label>
+      <label><input type="checkbox"><span class="tl">I can give news with just, already and yet.</span> — أستطيع أن أخبر عن أشياء حدثت للتو أو لم تحدث بعد.</label>
+      <label><input type="checkbox"><span class="tl">I can pronounce -ed endings: /t/, /d/, /ɪd/.</span> — أستطيع أن أنطق نهاية <span class="tl">-ed</span> صحيحًا.</label>
+    </div>
+  </section>
+
+  <section id="warmup">
+    <h2>🌱 تمهيد <span class="tl">— Warm-up</span></h2>
+    <p>في الدرس 1 قلت: <span class="tl">I've been to Jordan.</span> هذه تجربة انتهت.</p>
+    <p>لكن ماذا عن شيء <b>بدأ في الماضي وما زال مستمرًا الآن</b>؟ مثلًا: «أسكن في القاهرة منذ عشر سنوات». أنت ما زلت تسكن هناك!</p>
+    <p>بالإنجليزية: <span class="tl"><b>I have lived in Cairo for ten years.</b></span> <button class="say" data-text="I have lived in Cairo for ten years.">🔊</button></p>
+    <div class="callout note">📝 <b>Think:</b> <span class="tl">How long have you lived in your home? How long have you studied English?</span><br>فكّر: منذ متى تسكن في بيتك؟ ومنذ متى تدرس الإنجليزية؟</div>
+  </section>
+
+  <section id="words">
+    <h2>📚 الكلمات الجديدة <span class="tl">— New words: Home &amp; life changes</span></h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. — اضغط على البطاقة لتقلبها. المقطع المنبور باللون الأحمر.</p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🏢</div><div class="word tl">flat</div><button class="say" data-text="flat">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">شقّة</div><span class="ipa">/<b>flæt</b>/</span><span class="tl">We've lived in this flat for five years.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🏘️</div><div class="word tl">neighbourhood</div><button class="say" data-text="neighbourhood">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">حيّ / منطقة سكنية</div><span class="ipa">/<b>ˈneɪ</b>.bə.hʊd/</span><span class="tl">My neighbourhood is very quiet.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👋</div><div class="word tl">neighbour</div><button class="say" data-text="neighbour">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">جار</div><span class="ipa">/<b>ˈneɪ</b>.bər/</span><span class="tl">I've known my neighbour since 2015.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💵</div><div class="word tl">rent</div><button class="say" data-text="rent">🔊</button><div class="hint">noun + verb</div></div>
+        <div class="back"><div class="word">إيجار / يستأجر</div><span class="ipa">/<b>rent</b>/</span><span class="tl">The rent has gone up again.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🔑</div><div class="word tl">landlord</div><button class="say" data-text="landlord">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">صاحب البيت (المؤجِّر)</div><span class="ipa">/<b>ˈlænd</b>.lɔːrd/</span><span class="tl">Our landlord has just called.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🛋️</div><div class="word tl">furniture</div><button class="say" data-text="furniture">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">أثاث</div><span class="ipa">/<b>ˈfɜːr</b>.nɪ.tʃər/</span><span class="tl">We've already bought new furniture.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚇</div><div class="word tl">commute</div><button class="say" data-text="commute">🔊</button><div class="hint">noun + verb</div></div>
+        <div class="back"><div class="word">التنقّل اليومي للعمل</div><span class="ipa">/kə<b>ˈmjuːt</b>/</span><span class="tl">My commute takes an hour.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🎓</div><div class="word tl">graduate</div><button class="say" data-text="graduate">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يتخرّج</div><span class="ipa">/<b>ˈɡrædʒ</b>.u.eɪt/</span><span class="tl">I've worked here since I graduated.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📈</div><div class="word tl">promotion</div><button class="say" data-text="promotion">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">ترقية</div><span class="ipa">/prə<b>ˈmoʊ</b>.ʃən/</span><span class="tl">She has just got a promotion!</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👴</div><div class="word tl">retire</div><button class="say" data-text="retire">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">يتقاعد</div><span class="ipa">/rɪ<b>ˈtaɪər</b>/</span><span class="tl">My father has already retired.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💍</div><div class="word tl">get married</div><button class="say" data-text="get married">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">يتزوّج</div><span class="ipa">/ɡet <b>ˈmær</b>.id/</span><span class="tl">They've just got married.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📦</div><div class="word tl">move house</div><button class="say" data-text="move house">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">ينتقل إلى بيت جديد</div><span class="ipa">/muːv <b>ˈhaʊs</b>/</span><span class="tl">Have you moved house yet?</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🏡</div><div class="word tl">settle down</div><button class="say" data-text="settle down">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يستقرّ (في مكان أو حياة)</div><span class="ipa">/ˌset.əl <b>ˈdaʊn</b>/</span><span class="tl">He wants to settle down in Alexandria.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧒</div><div class="word tl">grow up</div><button class="say" data-text="grow up">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يكبر / ينشأ</div><span class="ipa">/ɡroʊ <b>ˈʌp</b>/</span><span class="tl">I grew up in a small village.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🎸</div><div class="word tl">take up</div><button class="say" data-text="take up">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يبدأ هواية جديدة</div><span class="ipa">/teɪk <b>ˈʌp</b>/</span><span class="tl">I've taken up swimming this year.</span></div>
+      </div></div>
+    </div>
+    <div class="callout warning">⚠️ <b>انتبه:</b> كلمة <span class="tl">furniture</span> غير معدودة، مثل <span class="tl">luggage</span> في الدرس 1. لا تقل <span class="tl">furnitures ❌</span>. قل <span class="tl">a piece of furniture ✅</span>.</div>
+  </section>
+
+  <section id="grammar">
+    <h2>🎨 القاعدة بالألوان <span class="tl">— Grammar 1: for &amp; since</span></h2>
+    <p class="instr">Look at these sentences. Is the action finished?<span class="instr-ar">انظر إلى الجمل. هل انتهى الفعل؟</span></p>
+    <div class="sent tl"><span class="w s">I<small>أنا</small></span><span class="w v">have lived<small>أسكن (حتى الآن)</small></span><span class="w o">here<small>هنا</small></span><span class="w x">for five years<small>منذ خمس سنوات (مدة)</small></span><button class="say" data-text="I have lived here for five years.">🔊</button></div>
+    <div class="sent tl"><span class="w s">She<small>هي</small></span><span class="w v">has worked<small>تعمل (حتى الآن)</small></span><span class="w o">at the bank<small>في البنك</small></span><span class="w x">since 2020<small>منذ 2020 (بداية)</small></span><button class="say" data-text="She has worked at the bank since 2020.">🔊</button></div>
+    <div class="sent tl"><span class="w x">How long<small>منذ متى</small></span><span class="w v">have<small>مساعد</small></span><span class="w s">you<small>أنت</small></span><span class="w v">known<small>عرفت</small></span><span class="w o">Ahmed?<small>أحمد</small></span><button class="say" data-text="How long have you known Ahmed?">🔊</button></div>
+    <p>لا! الفعل <b>لم ينتهِ</b>. بدأ في الماضي و<b>ما زال مستمرًا الآن</b>. لذلك نستخدم <span class="tl">have / has + past participle</span>.</p>
+
+    <div class="timeline-viz">
+      <div class="tl-line"></div>
+      <div class="tl-event" style="left:25%"><span>since 2020 — البداية</span></div>
+      <div class="tl-range" style="left:25%;width:45%"><span>for 6 years — المدة</span></div>
+      <div class="tl-now" style="left:70%"><span>NOW 2026 — الآن</span></div>
+      <div class="tl-labels"><span>⬅ Past الماضي</span><span>Future المستقبل ➡</span></div>
+    </div>
+    <p>النقطة الخضراء = <span class="tl"><b>since</b></span> (متى بدأ؟). الشريط البنفسجي = <span class="tl"><b>for</b></span> (كم من الوقت؟).</p>
+
+    <table>
+      <tr><th class="tl">for + مدة (كم؟)</th><th class="tl">since + نقطة بداية (متى بدأ؟)</th></tr>
+      <tr><td class="tl">for ten minutes · for two weeks · for six years · for a long time · for ages</td><td class="tl">since 9 o'clock · since Monday · since 2020 · since last summer · since I was a child</td></tr>
+    </table>
+
+    <div class="diagram mermaid">
+flowchart TD
+  A["What comes after the word? / ماذا يأتي بعد الكلمة؟"] -->|"A period: 5 years, 2 months, a long time"| B["for / مدة: I've lived here for 5 years."]
+  A -->|"A starting point: 2020, Monday, last summer"| C["since / بداية: I've lived here since 2020."]
+  C --> D["since + sentence in past simple: since I graduated"]
+    </div>
+
+    <div class="callout tip">💡 <b>Question:</b> <span class="tl"><b>How long have you</b> + past participle?</span> = منذ متى...؟ <button class="say" data-text="How long have you lived in this neighbourhood?">🔊</button><br><span class="tl">How long have you lived in this neighbourhood? — For three years. / Since 2023.</span></div>
+
+    <h3>📰 <span class="tl">Grammar 2: just, already, yet</span> — أخبار جديدة</h3>
+    <p>نستخدم المضارع التام أيضًا للأخبار الجديدة التي تهمّنا <b>الآن</b>.</p>
+    <table>
+      <tr><th>Word</th><th>المعنى</th><th>المكان في الجملة</th><th>Example</th></tr>
+      <tr><td class="tl"><b>just</b></td><td>للتو / منذ لحظات</td><td>بين <span class="tl">have</span> والفعل</td><td class="tl">I've <mark>just</mark> finished. <button class="say" data-text="I've just finished.">🔊</button></td></tr>
+      <tr><td class="tl"><b>already</b></td><td>بالفعل / أسرع من المتوقع</td><td>بين <span class="tl">have</span> والفعل</td><td class="tl">We've <mark>already</mark> paid the rent. <button class="say" data-text="We've already paid the rent.">🔊</button></td></tr>
+      <tr><td class="tl"><b>yet</b> ❌</td><td>لم ... بعد</td><td>في <b>آخر</b> الجملة المنفية</td><td class="tl">I haven't moved <mark>yet</mark>. <button class="say" data-text="I haven't moved yet.">🔊</button></td></tr>
+      <tr><td class="tl"><b>yet</b> ❓</td><td>هل ... بعد؟</td><td>في <b>آخر</b> السؤال</td><td class="tl">Have you found a flat <mark>yet</mark>? <button class="say" data-text="Have you found a flat yet?">🔊</button></td></tr>
+    </table>
+    <div class="callout note">📝 <b>Remember:</b> <span class="tl">just</span> و <span class="tl">already</span> في <b>الوسط</b>. <span class="tl">yet</span> في <b>النهاية</b>، ومعظم استخدامها مع النفي والسؤال.</div>
+  </section>
+
+  <section id="compare">
+    <h2>🔁 العربية مقابل الإنجليزية <span class="tl">— Arabic vs English</span></h2>
+    <div class="vs">
+      <div>
+        <h4>العربية</h4>
+        <div class="sent"><span class="w v">أسكنُ<small>live (مضارع!)</small></span><span class="w o">هنا<small>here</small></span><span class="w x">منذ<small>for / since</small></span><span class="w x">خمس سنوات<small>five years</small></span></div>
+        <div class="sent"><span class="w v">أسكنُ<small>live</small></span><span class="w o">هنا<small>here</small></span><span class="w x">منذ<small>for / since</small></span><span class="w x">2020<small>2020</small></span></div>
+        <p>العربية تستخدم <b>المضارع</b>، وكلمة واحدة فقط: <b>منذ</b>.</p>
+      </div>
+      <div>
+        <h4 class="tl">English</h4>
+        <div class="sent tl"><span class="w s">I</span><span class="w gap">have lived<small>ليس live!</small></span><span class="w o">here</span><span class="w x">for five years</span></div>
+        <div class="sent tl"><span class="w s">I</span><span class="w gap">have lived<small>ليس live!</small></span><span class="w o">here</span><span class="w x">since 2020</span></div>
+        <p>الإنجليزية تستخدم <b>المضارع التام</b>، وكلمتين: <span class="tl">for</span> للمدة و <span class="tl">since</span> للبداية.</p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>سهل عليك:</b> العربية فيها نفس فكرة <span class="tl">yet</span> و <span class="tl">just</span> تمامًا:<br>«لم أنتقل <b>بعد</b>» = <span class="tl">I haven't moved <b>yet</b>.</span> · «وصلتُ <b>للتو</b>» = <span class="tl">I've <b>just</b> arrived.</span><br>وكما في العربية، كلمة «بعد» تأتي في آخر الجملة.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (1):</b> الترجمة الحرفية من العربية تعطي <span class="tl">I live here since five years ❌</span>. هذا أشهر خطأ عند العرب! الصحيح: <span class="tl">I <b>have lived</b> here <b>for</b> five years ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (2):</b> «منذ» تعني <span class="tl">for</span> <b>و</b> <span class="tl">since</span>. اسأل نفسك دائمًا: هل بعدها <b>مدة</b> أم <b>نقطة بداية</b>؟</div>
+  </section>
+
+  <section id="pron">
+    <h2>👄 النطق: نهاية <span class="tl">-ed</span> في الأفعال</h2>
+    <p>المضارع التام فيه أفعال كثيرة تنتهي بـ <span class="tl">-ed</span>: <span class="tl">lived, worked, started</span>. كثير من العرب ينطقون كل الحروف: <span class="tl">"work-ed" ❌</span>. لكن لهذه النهاية <b>ثلاثة أصوات</b> فقط، و<b>معظمها بدون مقطع إضافي</b>.</p>
+    <table>
+      <tr><th><span class="ipa">/t/</span> — بعد أصوات بدون اهتزاز<br><span class="tl">p, k, s, sh, ch, f</span></th><th><span class="ipa">/d/</span> — بعد أصوات مع اهتزاز<br>(أغلب الأصوات الأخرى)</th><th><span class="ipa">/ɪd/</span> — مقطع إضافي<br>بعد <span class="tl">t</span> أو <span class="tl">d</span> فقط</th></tr>
+      <tr><td><span class="tl">worked</span> <button class="say" data-text="worked">🔊</button> <span class="ipa">/wɜːrkt/</span></td><td><span class="tl">lived</span> <button class="say" data-text="lived">🔊</button> <span class="ipa">/lɪvd/</span></td><td><span class="tl">started</span> <button class="say" data-text="started">🔊</button> <span class="ipa">/ˈstɑːr.tɪd/</span></td></tr>
+      <tr><td><span class="tl">finished</span> <button class="say" data-text="finished">🔊</button> <span class="ipa">/ˈfɪn.ɪʃt/</span></td><td><span class="tl">moved</span> <button class="say" data-text="moved">🔊</button> <span class="ipa">/muːvd/</span></td><td><span class="tl">rented</span> <button class="say" data-text="rented">🔊</button> <span class="ipa">/ˈren.tɪd/</span></td></tr>
+      <tr><td><span class="tl">stopped</span> <button class="say" data-text="stopped">🔊</button> <span class="ipa">/stɑːpt/</span></td><td><span class="tl">changed</span> <button class="say" data-text="changed">🔊</button> <span class="ipa">/tʃeɪndʒd/</span></td><td><span class="tl">decided</span> <button class="say" data-text="decided">🔊</button> <span class="ipa">/dɪˈsaɪ.dɪd/</span></td></tr>
+      <tr><td><span class="tl">watched</span> <button class="say" data-text="watched">🔊</button> <span class="ipa">/wɑːtʃt/</span></td><td><span class="tl">stayed</span> <button class="say" data-text="stayed">🔊</button> <span class="ipa">/steɪd/</span></td><td><span class="tl">needed</span> <button class="say" data-text="needed">🔊</button> <span class="ipa">/ˈniː.dɪd/</span></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>نصيحة:</b> <span class="tl">worked</span> كلمة واحدة <b>بمقطع واحد</b>: «وِرْكْت». <span class="tl">moved</span> = «مُووڤْد» (تذكّر صوت <span class="tl">/v/</span> من الدرس 1!). استخدم زر 🐢 في الأعلى لتسمع ببطء.</div>
+    <div class="ex quiz" data-explain="rent تنتهي بصوت t → نضيف مقطعًا: /ˈren.tɪd/.">
+      <div class="q">🎧 <span class="tl">How many syllables in "rented"?</span> — كم مقطعًا في الكلمة؟</div>
+      <button class="option tl">1 — rent'd</button>
+      <button class="option tl" data-correct="true">2 — ren-tid</button>
+      <button class="option tl">3 — ren-ted-ed</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="work تنتهي بصوت k (بدون اهتزاز) → /t/ بدون مقطع إضافي: /wɜːrkt/.">
+      <div class="q">🎧 <span class="tl">How do you say "worked"?</span></div>
+      <button class="option tl" data-correct="true">/wɜːrkt/ — one syllable</button>
+      <button class="option tl">/ˈwɜːr.kɪd/ — two syllables</button>
+      <button class="option tl">/ˈwɜːr.ked/ — "work-ed"</button>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section id="dialogue">
+    <h2>💬 حوار من الحياة <span class="tl">— Old friends meet at the supermarket</span></h2>
+    <p class="instr">Listen to Sarah and Omar. Find all the examples of for, since, just, already and yet.<span class="instr-ar">استمع إلى سارة وعمر. ابحث عن كل أمثلة for و since و just و already و yet.</span></p>
+    <button class="btn" id="playDialogue">▶️ استمع للحوار كاملًا</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Sarah</div><div class="tl line">Omar! I haven't seen you for ages! How are you?</div></div>
+      <div class="bubble b"><div class="who">Omar</div><div class="tl line">Sarah! I'm great, thanks. I've just finished work. What about you? Do you still live in Nasr City?</div></div>
+      <div class="bubble a"><div class="who">Sarah</div><div class="tl line">Yes, I do. I've lived in the same flat for ten years! And you?</div></div>
+      <div class="bubble b"><div class="who">Omar</div><div class="tl line">I moved to New Cairo three years ago. So I've lived there since 2023.</div></div>
+      <div class="bubble a"><div class="who">Sarah</div><div class="tl line">Do you like your new neighbourhood?</div></div>
+      <div class="bubble b"><div class="who">Omar</div><div class="tl line">Yes, it's quiet and green. But my commute is really long now.</div></div>
+      <div class="bubble a"><div class="who">Sarah</div><div class="tl line">Well, we want to move house too. Our landlord has just increased the rent again.</div></div>
+      <div class="bubble b"><div class="who">Omar</div><div class="tl line">Oh no! Have you found a new place yet?</div></div>
+      <div class="bubble a"><div class="who">Sarah</div><div class="tl line">Not yet. We've already seen five flats, but we haven't decided yet.</div></div>
+      <div class="bubble b"><div class="who">Omar</div><div class="tl line">Good luck! Oh, and have you heard the news? Karim has got married!</div></div>
+      <div class="bubble a"><div class="who">Sarah</div><div class="tl line">Really? When?</div></div>
+      <div class="bubble b"><div class="who">Omar</div><div class="tl line">Last month. And he's taken up cooking since then!</div></div>
+      <div class="bubble a"><div class="who">Sarah</div><div class="tl line">Ha! Things have changed a lot since we graduated.</div></div>
+      <div class="bubble b"><div class="who">Omar</div><div class="tl line">They really have!</div></div>
+    </div>
+    <details><summary>👀 Answers</summary>
+      <table class="tl">
+        <tr><th>Word</th><th>Sentence</th></tr>
+        <tr><td>for</td><td>I haven't seen you for ages. · I've lived in the same flat for ten years.</td></tr>
+        <tr><td>since</td><td>I've lived there since 2023. · He's taken up cooking since then. · Things have changed a lot since we graduated.</td></tr>
+        <tr><td>just</td><td>I've just finished work. · Our landlord has just increased the rent.</td></tr>
+        <tr><td>already</td><td>We've already seen five flats.</td></tr>
+        <tr><td>yet</td><td>Have you found a new place yet? · Not yet. · We haven't decided yet.</td></tr>
+      </table>
+      <p>لاحظ: <span class="tl">I moved to New Cairo <b>three years ago</b></span> و <span class="tl"><b>Last month</b></span> بالماضي البسيط، لأن الوقت محدد ومنتهٍ. وبعد <span class="tl">since</span> نستخدم الماضي البسيط: <span class="tl">since we <b>graduated</b></span>.</p>
+    </details>
+  </section>
+
+  <section id="practice">
+    <h2>🏋️ تدريب <span class="tl">— Practice</span></h2>
+
+    <h3 class="instr">A. Choose the correct answer.<span class="instr-ar">اختر الإجابة الصحيحة.</span></h3>
+
+    <div class="ex quiz" data-explain="2015 نقطة بداية → since.">
+      <div class="q">1. <span class="tl">I've lived in Alexandria ___ 2015.</span></div>
+      <button class="option tl">for</button>
+      <button class="option tl" data-correct="true">since</button>
+      <button class="option tl">from</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="six years مدة → for.">
+      <div class="q">2. <span class="tl">She has worked at the bank ___ six years.</span></div>
+      <button class="option tl" data-correct="true">for</button>
+      <button class="option tl">since</button>
+      <button class="option tl">ago</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="It's still hot = حدث منذ لحظات → just.">
+      <div class="q">3. <span class="tl">"Is the tea ready?" — "Yes, I've ___ made it. It's still hot!"</span></div>
+      <button class="option tl" data-correct="true">just</button>
+      <button class="option tl">yet</button>
+      <button class="option tl">since</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="في آخر السؤال نستخدم yet = هل ... بعد؟">
+      <div class="q">4. <span class="tl">Have you paid the rent ___?</span></div>
+      <button class="option tl">just</button>
+      <button class="option tl">since</button>
+      <button class="option tl" data-correct="true">yet</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="فعل مستمر حتى الآن → present perfect. five years مدة → for.">
+      <div class="q">5. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">I know him since five years.</button>
+      <button class="option tl">I have known him since five years.</button>
+      <button class="option tl" data-correct="true">I have known him for five years.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="«منذ متى؟» عن شيء مستمر → How long have you + past participle?">
+      <div class="q">6. <span class="tl">How long ___ in this neighbourhood?</span></div>
+      <button class="option tl">do you live</button>
+      <button class="option tl" data-correct="true">have you lived</button>
+      <button class="option tl">did you live</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">B. Write for or since.<span class="instr-ar">اكتب for أو since.</span></h3>
+    <div class="ex fill">
+      <p class="tl">7. <input class="blank" data-answer="since"> Monday &nbsp;·&nbsp; 8. <input class="blank" data-answer="for"> two weeks &nbsp;·&nbsp; 9. <input class="blank" data-answer="since"> I was a child</p>
+      <p class="tl">10. <input class="blank" data-answer="for"> a long time &nbsp;·&nbsp; 11. <input class="blank" data-answer="since"> 9 o'clock &nbsp;·&nbsp; 12. <input class="blank" data-answer="for"> three months</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">C. Rewrite the sentences. Use the present perfect.<span class="instr-ar">أعد كتابة الجمل بالمضارع التام.</span></h3>
+    <div class="ex fill">
+      <p class="tl">13. I moved to this flat in 2020. I still live here.<br>→ I <input class="blank" data-answer="have lived|'ve lived"> in this flat <input class="blank" data-answer="since"> 2020.</p>
+      <p class="tl">14. Mona started teaching ten years ago. She still teaches.<br>→ Mona <input class="blank wide" data-answer="has taught|has been teaching"> <input class="blank" data-answer="for"> ten years.</p>
+      <p class="tl">15. I finished my report one minute ago. (just)<br>→ I <input class="blank wide" data-answer="have just finished|'ve just finished"> my report.</p>
+      <p class="tl">16. They didn't sell their old house. They're still trying. (yet)<br>→ They <input class="blank wide" data-answer="haven't sold|have not sold"> their old house <input class="blank" data-answer="yet">.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">D. Put the words in order.<span class="instr-ar">رتّب الكلمات لتكوّن جملة.</span></h3>
+    <div class="ex builder" data-answer="How long have you lived in this neighbourhood">
+      <div class="q">17. ❓</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex builder" data-answer="We have already bought new furniture">
+      <div class="q">18. 🛋️</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">E. Say it! 🎤<span class="instr-ar">قل الجملة بصوتك. انتبه لنطق lived /lɪvd/.</span></h3>
+    <div class="ex speak-check" data-text="I have lived here for five years|I've lived here for five years|I have lived here for 5 years|I've lived here for 5 years">
+      <div class="q">19. <span class="tl">I've lived here for five years.</span> <button class="say" data-text="I've lived here for five years.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+    <div class="ex speak-check" data-text="Have you moved house yet">
+      <div class="q">20. <span class="tl">Have you moved house yet?</span> <button class="say" data-text="Have you moved house yet?">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+  </section>
+
+  <section id="task">
+    <h2>✍️ مهمة الكتابة <span class="tl">— Writing task (50–80 words)</span></h2>
+    <p class="instr">Write a message to an old friend. Tell them how your life has changed.<span class="instr-ar">اكتب رسالة إلى صديق قديم لم تره منذ مدة. أخبره كيف تغيّرت حياتك. أرسلها لي في المحادثة وسأصححها.</span></p>
+    <ul class="tl">
+      <li>Where you live and <b>how long</b> (for / since).</li>
+      <li>Your job or studies: <b>how long</b>?</li>
+      <li>One thing you have <b>just</b> or <b>already</b> done.</li>
+      <li>One thing you <b>haven't</b> done <b>yet</b>.</li>
+    </ul>
+    <details><summary>👀 Model answer (76 words)</summary>
+      <p class="tl">Hi Nour! I haven't seen you for ages. A lot has changed since we graduated. I moved to Giza in 2022, so I've lived here for four years now. I love my neighbourhood, but the rent is high. I've worked at a software company since 2023, and I've just got a promotion! I've already bought a car, but I haven't learned to drive yet. How about you? Have you settled down yet? Write soon!</p>
+    </details>
+  </section>
+
+  <section id="mistakes">
+    <h2>🚫 الأخطاء الشائعة عند العرب <span class="tl">— Common mistakes</span></h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>لماذا؟</th></tr>
+      <tr><td class="tl">I live here since five years.</td><td class="tl">I have lived here for five years.</td><td>فعل مستمر حتى الآن → مضارع تام. و«خمس سنوات» مدة → <span class="tl">for</span>.</td></tr>
+      <tr><td class="tl">I have worked here since three years.</td><td class="tl">I have worked here for three years.</td><td><span class="tl">since</span> للبداية فقط، لا للمدة.</td></tr>
+      <tr><td class="tl">How long do you know her?</td><td class="tl">How long have you known her?</td><td>«منذ متى» تحتاج <span class="tl">have + past participle</span>.</td></tr>
+      <tr><td class="tl">I have finished just.</td><td class="tl">I have just finished.</td><td><span class="tl">just</span> تأتي بين <span class="tl">have</span> والفعل.</td></tr>
+      <tr><td class="tl">I haven't yet finished it. / I didn't finish yet.</td><td class="tl">I haven't finished it yet.</td><td><span class="tl">yet</span> في آخر الجملة، مع المضارع التام.</td></tr>
+      <tr><td class="tl">I have lived here since I have graduated.</td><td class="tl">I have lived here since I graduated.</td><td>بعد <span class="tl">since</span> نستخدم الماضي البسيط.</td></tr>
+      <tr><td class="tl">We bought new furnitures.</td><td class="tl">We bought new furniture.</td><td><span class="tl">furniture</span> غير معدودة.</td></tr>
+      <tr><td class="tl">"work-ed" / "liv-ed"</td><td class="tl">worked /wɜːrkt/ · lived /lɪvd/</td><td>مقطع إضافي <span class="ipa">/ɪd/</span> فقط بعد <span class="tl">t</span> أو <span class="tl">d</span>.</td></tr>
+    </table>
+  </section>
+
+  <section id="summary">
+    <h2>📌 الخلاصة <span class="tl">— Summary</span></h2>
+    <ul>
+      <li>شيء بدأ في الماضي وما زال مستمرًا → <span class="tl"><b>have / has + past participle</b></span>، وليس المضارع البسيط.</li>
+      <li><span class="tl"><b>for</b></span> + مدة <span class="tl">(for 5 years)</span> · <span class="tl"><b>since</b></span> + نقطة بداية <span class="tl">(since 2020, since I graduated)</span>.</li>
+      <li><span class="tl">How long have you...?</span> = منذ متى...؟</li>
+      <li><span class="tl"><b>just</b></span> = للتو · <span class="tl"><b>already</b></span> = بالفعل (كلاهما في الوسط).</li>
+      <li><span class="tl"><b>yet</b></span> = بعد (في آخر النفي والسؤال): <span class="tl">I haven't moved yet. / Have you moved yet?</span></li>
+      <li>نهاية <span class="tl">-ed</span>: <span class="ipa">/t/</span> أو <span class="ipa">/d/</span> بدون مقطع إضافي، و <span class="ipa">/ɪd/</span> بعد <span class="tl">t / d</span> فقط.</li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <h2>🔄 مراجعة سريعة <span class="tl">— Quick review (Lesson 1)</span></h2>
+    <p>هل تتذكر الفرق بين التجربة والوقت المحدد؟ وبين <span class="tl">been to</span> و <span class="tl">gone to</span>؟</p>
+    <div class="ex quiz" data-explain="تجربة في الحياة، بدون وقت محدد → present perfect + ever.">
+      <div class="q">R1. <span class="tl">___ to Aswan?</span></div>
+      <button class="option tl">Did you ever been</button>
+      <button class="option tl" data-correct="true">Have you ever been</button>
+      <button class="option tl">Have you ever went</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="in 2021 وقت محدد → past simple. ثم نعطي التفاصيل بالماضي البسيط.">
+      <div class="q">R2. <span class="tl">I've been to Turkey. I ___ there in 2021.</span></div>
+      <button class="option tl" data-correct="true">went</button>
+      <button class="option tl">have gone</button>
+      <button class="option tl">have been</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="أختي في دبي الآن ولم ترجع → gone to.">
+      <div class="q">R3. <span class="tl">My sister isn't home. She has ___ Dubai for work.</span></div>
+      <button class="option tl">been to</button>
+      <button class="option tl" data-correct="true">gone to</button>
+      <button class="option tl">went to</button>
+      <div class="feedback"></div>
+    </div>
+    <p class="tl">Review words: abroad · luggage · souvenir · set off · look around · experience</p>
+  </section>
+
+  <section id="next">
+    <h2>➡️ الدرس التالي <span class="tl">— Next lesson</span></h2>
+    <p>الدرس 3: <span class="tl">When I was a child...</span>: نتعلم فيه <span class="tl">used to / would</span> لنتحدث عن عادات الطفولة والذكريات. اكتب «التالي» لتبدأ.</p>
+  </section>
+
+</div>
+
+<footer>تعلّم خطوة بخطوة 🌍 · <span class="tl">English B1 · Lesson 2</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif" });
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("المتصفح لا يدعم الصوت. جرّب Chrome أو Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 السرعة: عادية" : "🐢 السرعة: بطيئة";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · ضع الفأرة على الخانة الحمراء لترى الإجابة." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition) — accepts alternatives separated by |
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "المتصفح لا يدعم التعرف على الصوت. جرّب Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ I'm listening... أستمع إليك...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var targets = box.getAttribute("data-text").split("|").map(norm);
+        var ok = targets.indexOf(norm(said)) !== -1;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again. حاول مرة أخرى.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ لم أسمع جيدًا. تأكد من إذن الميكروفون وحاول مرة أخرى."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>

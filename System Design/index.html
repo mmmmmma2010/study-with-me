@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درس 1: أساسيات تصميم الأنظمة وقابلية التوسع</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 700px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; align-items: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.db { border-color: var(--good); }
+  .box.cache { border-color: var(--warn); }
+  .box.bad { border-color: var(--bad); color: var(--bad); }
+  .arrow { font-size: 1.4rem; color: var(--muted); }
+  .stack { display: flex; flex-direction: column; gap: 6px; }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>أساسيات تصميم الأنظمة وقابلية التوسع <span class="en">(System Design Fundamentals &amp; Scalability)</span></h1>
+  <p>ستتعلم كيف ينمو نظام من خادم واحد إلى نظام يخدم ملايين المستخدمين بدون أن يتوقف.</p>
+  <div class="badges">
+    <span class="badge">الدرس 1 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 35 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>مستوى الدرس:</strong> هذا الدرس لمطوّر متوسط يعرف <span class="en">HTTP</span> وقواعد البيانات وأساسيات <span class="en">Python</span>. المثال المستخدم في كل الدرس: <strong>بوابة دفع إلكتروني</strong> (<span class="en">Payment Gateway</span>).</div>
+      <p>تصميم الأنظمة (<span class="en">System Design</span>) يعني أن تقرر كيف تتكون أجزاء النظام. وكيف تتواصل هذه الأجزاء. وكيف يبقى النظام سريعًا وشغالًا عندما يكبر.</p>
+      <p>كتابة كود صحيح لا تكفي. الكود الذي يعمل مع 10 مستخدمين قد ينهار مع 10 آلاف. لذلك تحتاج إلى التفكير في النظام كاملًا، وليس في دالة واحدة.</p>
+      <p>تخيّل بوابة دفع في يوم "الجمعة البيضاء". عدد عمليات الدفع يتضاعف 5 مرات. إذا توقف النظام دقيقة واحدة، يخسر التجار أموالًا حقيقية. هذا الدرس يعلّمك كيف تمنع ذلك.</p>
+      <p>في هذا الدرس ستتعلم:</p>
+      <ul>
+        <li>كيف تقيس النظام: زمن الاستجابة، والإنتاجية، والتوافرية.</li>
+        <li>الفرق بين التوسع الرأسي والتوسع الأفقي.</li>
+        <li>لماذا يجب أن تكون الخوادم بلا حالة (<span class="en">Stateless</span>).</li>
+        <li>كيف تحسب الأرقام بسرعة قبل أن تصمم (<span class="en">Back-of-the-envelope</span>).</li>
+      </ul>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">
+        🍽️ <strong>تخيّل مطعمًا صغيرًا.</strong>
+        <p>في البداية يوجد طبّاخ واحد. يستقبل الطلبات ويطبخ ويغسل الأطباق. هذا هو <strong>الخادم الواحد</strong>.</p>
+        <p>زاد عدد الزبائن. أحضرت طبّاخًا أقوى وأسرع. هذا هو <strong>التوسع الرأسي</strong>. لكن لا يوجد طبّاخ بسرعة لا نهائية.</p>
+        <p>فأحضرت 4 طبّاخين، ووضعت موظفًا عند الباب يوزّع الطلبات عليهم. الطبّاخون هم <strong>التوسع الأفقي</strong>. والموظف عند الباب هو <strong>موازن الأحمال</strong>.</p>
+        <p>كل الطبّاخين يأخذون المكونات من ثلاجة واحدة مشتركة. هذه هي <strong>قاعدة البيانات</strong>. والأطباق الجاهزة على الرف القريب هي <strong>الـ Cache</strong>.</p>
+        <p>ولو كتب كل طبّاخ طلبات الزبائن في دفتره الخاص، فسيضيع الطلب إذا ذهب الزبون إلى طبّاخ آخر. لذلك نكتب الطلبات على لوح مشترك. هذا هو مبدأ <strong>الخادم بلا حالة</strong>.</p>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>قابلية التوسع</td><td class="en">Scalability</td><td>قدرة النظام على خدمة حمل أكبر عندما تضيف موارد.</td></tr>
+        <tr><td>التوسع الرأسي</td><td class="en">Vertical Scaling</td><td>تجعل الخادم نفسه أقوى: معالج أسرع وذاكرة أكبر.</td></tr>
+        <tr><td>التوسع الأفقي</td><td class="en">Horizontal Scaling</td><td>تضيف خوادم أكثر تعمل معًا.</td></tr>
+        <tr><td>موازن الأحمال</td><td class="en">Load Balancer</td><td>يوزّع الطلبات على عدة خوادم.</td></tr>
+        <tr><td>زمن الاستجابة</td><td class="en">Latency</td><td>الوقت الذي يحتاجه طلب واحد حتى يكتمل.</td></tr>
+        <tr><td>الإنتاجية</td><td class="en">Throughput</td><td>عدد الطلبات التي ينجزها النظام في الثانية.</td></tr>
+        <tr><td>طلبات في الثانية</td><td class="en">QPS / RPS</td><td>طريقة شائعة لقياس الإنتاجية.</td></tr>
+        <tr><td>التوافرية</td><td class="en">Availability</td><td>نسبة الوقت الذي يعمل فيه النظام. مثل 99.9%.</td></tr>
+        <tr><td>المئين</td><td class="en">Percentile (p50, p99)</td><td>p99 = 99% من الطلبات أسرع من هذا الرقم.</td></tr>
+        <tr><td>بلا حالة</td><td class="en">Stateless</td><td>الخادم لا يحفظ بيانات المستخدم داخله بين الطلبات.</td></tr>
+        <tr><td>نقطة فشل واحدة</td><td class="en">Single Point of Failure (SPOF)</td><td>جزء واحد إذا توقف، يتوقف النظام كله.</td></tr>
+        <tr><td>النسخ المتماثل</td><td class="en">Replication</td><td>نحتفظ بنسخ من قاعدة البيانات على أكثر من خادم.</td></tr>
+        <tr><td>Cache</td><td class="en">Cache</td><td>ذاكرة سريعة تحفظ نتائج متكررة حتى لا نحسبها كل مرة.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>1. المتطلبات الوظيفية وغير الوظيفية</h3>
+      <p>المتطلبات الوظيفية (<span class="en">Functional Requirements</span>) تصف ماذا يفعل النظام. مثال: "التاجر يستقبل دفعة بالبطاقة".</p>
+      <p>المتطلبات غير الوظيفية (<span class="en">Non-Functional Requirements</span>) تصف كيف يعمل النظام. مثال: "الدفع يكتمل في أقل من 300ms لـ 99% من الطلبات". تصميم الأنظمة يركز غالبًا على هذا النوع الثاني.</p>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> ابدأ أي تصميم بسؤالين: كم عدد المستخدمين؟ وما الأهم: السرعة أم الدقة أم التوافرية؟</div>
+
+      <h3>2. زمن الاستجابة مقابل الإنتاجية</h3>
+      <p>زمن الاستجابة هو سرعة طلب واحد. الإنتاجية هي عدد الطلبات في الثانية. الاثنان مختلفان.</p>
+      <p>تخيّل طريقًا سريعًا. سرعة السيارة هي زمن الاستجابة. عدد السيارات التي تمر في الدقيقة هو الإنتاجية. إذا أضفت حارات، تزيد الإنتاجية، لكن سرعة السيارة لا تتغير.</p>
+
+      <h3>3. لماذا لا يكفي المتوسط؟</h3>
+      <p>المتوسط يخفي المشاكل. إذا كانت 98 طلبًا سريعة وطلبان بطيئان جدًا، فالمتوسط يبدو "مقبولًا". لكن المستخدم صاحب الطلب البطيء يرى نظامًا معطّلًا.</p>
+      <p>لذلك نستخدم المئين. <code>p50</code> هو الوسيط. <code>p99</code> يعني أن 99% من الطلبات أسرع منه. الشركات الكبيرة تراقب <code>p99</code> لأنه يمثّل أسوأ تجربة شائعة.</p>
+
+      <h3>4. التوافرية و"عدد التسعات"</h3>
+      <p>التوافرية تُكتب غالبًا كعدد من التسعات. كل تسعة إضافية تقلل وقت التوقف 10 مرات. وتجعل النظام أصعب وأغلى.</p>
+      <table>
+        <tr><th>التوافرية</th><th>الاسم</th><th>وقت التوقف في السنة</th><th>وقت التوقف في الشهر</th></tr>
+        <tr><td class="en">99%</td><td>تسعتان</td><td>3.65 يوم</td><td>7.3 ساعة</td></tr>
+        <tr><td class="en">99.9%</td><td>ثلاث تسعات</td><td>8.76 ساعة</td><td>43.8 دقيقة</td></tr>
+        <tr><td class="en">99.99%</td><td>أربع تسعات</td><td>52.6 دقيقة</td><td>4.4 دقيقة</td></tr>
+        <tr><td class="en">99.999%</td><td>خمس تسعات</td><td>5.26 دقيقة</td><td>26 ثانية</td></tr>
+      </table>
+
+      <h3>5. التوسع الرأسي مقابل التوسع الأفقي</h3>
+      <p><strong>التوسع الرأسي</strong> سهل. لا تغيّر الكود. فقط تشتري خادمًا أكبر. لكن له حد أقصى، والسعر يرتفع بسرعة. والخادم الواحد يبقى نقطة فشل واحدة.</p>
+      <p><strong>التوسع الأفقي</strong> ليس له حد عملي تقريبًا. إذا توقف خادم، تستمر البقية. لكنه يحتاج موازن أحمال، ويجب أن تكون الخوادم بلا حالة.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  subgraph V["التوسع الرأسي"]
+    S1["خادم صغير 4GB"] --> S2["خادم كبير 64GB"]
+  end
+  subgraph H["التوسع الأفقي"]
+    LB["موازن الأحمال"] --> A1["خادم 1"]
+    LB --> A2["خادم 2"]
+    LB --> A3["خادم 3"]
+  end
+      </div>
+
+      <h3>6. الخادم بلا حالة</h3>
+      <p>إذا حفظ الخادم جلسة المستخدم (<span class="en">Session</span>) في ذاكرته، فسيكون المستخدم "مربوطًا" به. إذا وصل طلبه التالي إلى خادم آخر، يضيع تسجيل الدخول.</p>
+      <p>الحل: انقل الحالة إلى مكان مشترك. مثل <span class="en">Redis</span> أو قاعدة البيانات. هكذا تستطيع إضافة خادم أو حذفه في أي وقت.</p>
+
+      <h3>7. نقطة الفشل الواحدة</h3>
+      <p>اسأل نفسك عن كل جزء: "ماذا يحدث لو توقف هذا الجزء الآن؟". إذا كان الجواب "يتوقف كل شيء"، فهذه نقطة فشل واحدة. الحل هو التكرار (<span class="en">Redundancy</span>): نسختان أو أكثر من كل جزء مهم.</p>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+      <p>هذا هو الشكل النموذجي لنظام قابل للتوسع. ستراه في أغلب الشركات الكبيرة، مع اختلافات بسيطة.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  U["المستخدم"] --> DNS["DNS"]
+  DNS --> LB["موازن الأحمال"]
+  LB --> A1["App Server 1"]
+  LB --> A2["App Server 2"]
+  LB --> A3["App Server 3"]
+  A1 --> C[("Cache - Redis")]
+  A2 --> C
+  A3 --> C
+  A1 --> P[("قاعدة البيانات الرئيسية")]
+  A2 --> P
+  A3 --> P
+  P -. "نسخ" .-> R1[("نسخة قراءة 1")]
+  P -. "نسخ" .-> R2[("نسخة قراءة 2")]
+      </div>
+
+      <h3>رحلة طلب دفع واحد</h3>
+      <p>انظر كيف يمر طلب واحد عبر الأجزاء. لاحظ أن الـ Cache يوفّر رحلة إلى قاعدة البيانات عند قراءة بيانات التاجر.</p>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant U as Client
+  participant LB as Load Balancer
+  participant A as App Server
+  participant C as Cache
+  participant DB as Database
+  U->>LB: POST /payments
+  LB->>A: forward to healthy server
+  A->>C: get merchant config
+  C-->>A: cache hit
+  A->>DB: INSERT payment
+  DB-->>A: OK
+  A-->>LB: 201 Created
+  LB-->>U: payment accepted
+      </div>
+
+      <h3>تطوّر النظام خطوة بخطوة</h3>
+      <p>اضغط "التالي" لترى كيف ينمو النظام مع زيادة المستخدمين.</p>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: خادم واحد لكل شيء (100 مستخدم)</h4>
+          <div class="mem"><div class="box">Users</div><span class="arrow">→</span><div class="box hl">App + DB</div></div>
+          <p>الكود وقاعدة البيانات على نفس الخادم. هذا بسيط ورخيص. وهو مناسب تمامًا في البداية. لكنه نقطة فشل واحدة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: فصل قاعدة البيانات (1,000 مستخدم)</h4>
+          <div class="mem"><div class="box">Users</div><span class="arrow">→</span><div class="box hl">App</div><span class="arrow">→</span><div class="box db">DB</div></div>
+          <p>الآن يأخذ كل جزء موارده الخاصة. قاعدة البيانات تحتاج ذاكرة وقرصًا سريعًا. والتطبيق يحتاج معالجًا. وتستطيع توسيع كل جزء وحده.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: توسع رأسي (10,000 مستخدم)</h4>
+          <div class="mem"><div class="box">Users</div><span class="arrow">→</span><div class="box hl">App 64GB / 16 CPU</div><span class="arrow">→</span><div class="box db">DB</div></div>
+          <p>تشتري خادمًا أكبر. هذا حل سريع بدون تغيير الكود. لكن تكلفته ترتفع بسرعة، وما زال خادمًا واحدًا.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: توسع أفقي مع موازن أحمال (100,000 مستخدم)</h4>
+          <div class="mem"><div class="box">Users</div><span class="arrow">→</span><div class="box hl">LB</div><span class="arrow">→</span><div class="stack"><div class="box">App 1</div><div class="box">App 2</div><div class="box">App 3</div></div><span class="arrow">→</span><div class="box db">DB</div></div>
+          <p>موازن الأحمال يوزّع الطلبات. إذا توقف خادم، يرسل الطلبات إلى الخوادم الأخرى. شرط مهم: الخوادم يجب أن تكون بلا حالة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: Cache ونسخ قاعدة البيانات (مليون مستخدم وأكثر)</h4>
+          <div class="mem"><div class="box">LB</div><span class="arrow">→</span><div class="stack"><div class="box">App 1</div><div class="box">App 2</div><div class="box">App 3</div></div><span class="arrow">→</span><div class="stack"><div class="box cache">Cache</div><div class="box db hl">DB Primary</div><div class="box db">Replica</div></div></div>
+          <p>الآن قاعدة البيانات هي عنق الزجاجة (<span class="en">Bottleneck</span>). الـ Cache يقلل القراءات المتكررة. ونسخ القراءة (<span class="en">Read Replicas</span>) توزّع حمل القراءة. والنسخة الاحتياطية تحل محل الرئيسية إذا توقفت.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> لا تقفز إلى الخطوة 5 من اليوم الأول. كل خطوة تضيف تعقيدًا وتكلفة. صمّم لحجمك الحالي مضروبًا في 10 تقريبًا.</div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: الحساب السريع (Back-of-the-envelope)</h3>
+      <p>قبل أي تصميم، احسب الأرقام. هل تحتاج 2 خادم أم 200؟ هذا الحساب يأخذ دقيقتين ويوفّر أسابيع.</p>
+<pre><code class="language-python">from dataclasses import dataclass
+
+SECONDS_PER_DAY = 86_400
+
+
+@dataclass
+class Estimate:
+    avg_qps: float
+    peak_qps: float
+    storage_per_day_gb: float
+    storage_5y_tb: float
+
+
+def estimate(
+    daily_users: int,
+    tx_per_user: float,
+    bytes_per_tx: int,
+    peak_factor: float = 5.0,
+) -> Estimate:
+    tx_per_day = daily_users * tx_per_user
+    avg_qps = tx_per_day / SECONDS_PER_DAY
+    peak_qps = avg_qps * peak_factor          # busy hours / sales days
+    per_day_gb = tx_per_day * bytes_per_tx / 1e9
+    five_years_tb = per_day_gb * 365 * 5 / 1000
+    return Estimate(avg_qps, peak_qps, per_day_gb, five_years_tb)
+
+
+e = estimate(daily_users=2_000_000, tx_per_user=3, bytes_per_tx=1_000)
+print(f"Average QPS : {e.avg_qps:,.0f}")
+print(f"Peak QPS    : {e.peak_qps:,.0f}")
+print(f"Storage/day : {e.storage_per_day_gb:,.1f} GB")
+print(f"Storage/5y  : {e.storage_5y_tb:,.2f} TB")</code></pre>
+      <div class="output">Average QPS : 69
+Peak QPS    : 347
+Storage/day : 6.0 GB
+Storage/5y  : 10.95 TB</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>SECONDS_PER_DAY = 86_400</code>: عدد الثواني في اليوم. احفظ هذا الرقم.</li>
+        <li><code>@dataclass class Estimate</code>: كائن بسيط يجمع النتائج في مكان واحد.</li>
+        <li><code>tx_per_day = daily_users * tx_per_user</code>: مليونا مستخدم × 3 عمليات = 6 ملايين عملية يوميًا.</li>
+        <li><code>avg_qps = tx_per_day / SECONDS_PER_DAY</code>: نقسم على ثواني اليوم فنحصل على 69 طلبًا في الثانية.</li>
+        <li><code>peak_qps = avg_qps * peak_factor</code>: الحمل ليس متساويًا. في ساعات الذروة يكون أعلى 5 مرات تقريبًا.</li>
+        <li><code>per_day_gb</code>: 6 ملايين × 1KB = 6GB يوميًا.</li>
+        <li><code>five_years_tb</code>: نضرب في أيام 5 سنوات. النتيجة 11TB تقريبًا. هذا يؤثر على اختيار قاعدة البيانات.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> صمّم دائمًا لحمل الذروة <span class="en">(Peak)</span>، وليس للمتوسط. النظام لا ينهار في اليوم العادي. ينهار في يوم العروض.</div>
+
+      <h3>مثال 2: لماذا نقيس p99 وليس المتوسط؟</h3>
+<pre><code class="language-python">import math
+
+
+def percentile(values: list[float], p: float) -> float:
+    """Nearest-rank percentile."""
+    if not values:
+        raise ValueError("values must not be empty")
+    ordered = sorted(values)
+    rank = math.ceil(p * len(ordered) / 100)
+    return ordered[max(rank, 1) - 1]
+
+
+latencies_ms = [12, 15, 11, 14, 13, 16, 12, 15, 14, 13,
+                12, 11, 14, 15, 13, 12, 16, 14, 480, 950]
+
+avg = sum(latencies_ms) / len(latencies_ms)
+print(f"avg = {avg:.1f} ms")
+for p in (50, 95, 99):
+    print(f"p{p} = {percentile(latencies_ms, p)} ms")</code></pre>
+      <div class="output">avg = 83.6 ms
+p50 = 14 ms
+p95 = 480 ms
+p99 = 950 ms</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>ordered = sorted(values)</code>: نرتب الأزمنة من الأسرع إلى الأبطأ.</li>
+        <li><code>rank = math.ceil(p * len(ordered) / 100)</code>: نحسب ترتيب العنصر المطلوب. للـ p95 مع 20 قيمة، الترتيب هو 19.</li>
+        <li><code>ordered[max(rank, 1) - 1]</code>: نطرح 1 لأن الفهرسة تبدأ من صفر.</li>
+        <li><code>latencies_ms</code>: 18 طلبًا سريعًا، وطلبان بطيئان جدًا.</li>
+        <li>المتوسط 83.6ms لا يمثّل أحدًا. الوسيط 14ms يمثّل الأغلبية. و p99 = 950ms يكشف المشكلة الحقيقية.</li>
+      </ol>
+      <div class="callout warning">⚠️ <strong>تحذير:</strong> في نظام فيه ملايين الطلبات، 1% يعني آلاف المستخدمين الغاضبين كل ساعة. لا تتجاهل الذيل <span class="en">(Tail Latency)</span>.</div>
+
+      <h3>مثال 3: موازن أحمال بسيط مع فحص الصحة</h3>
+      <p>هذا تبسيط لما يفعله <span class="en">Nginx</span> أو <span class="en">AWS ALB</span>. الخوارزمية اسمها التوزيع الدوري (<span class="en">Round Robin</span>). وفحص الصحة (<span class="en">Health Check</span>) يمنع إرسال الطلبات إلى خادم متوقف.</p>
+<pre><code class="language-python">class LoadBalancer:
+    def __init__(self, servers: list[str]) -> None:
+        self.servers = servers
+        self.healthy: set[str] = set(servers)
+        self._index = 0
+
+    def mark_down(self, server: str) -> None:
+        self.healthy.discard(server)
+
+    def mark_up(self, server: str) -> None:
+        self.healthy.add(server)
+
+    def next_server(self) -> str:
+        # Try each server at most once per call
+        for _ in range(len(self.servers)):
+            server = self.servers[self._index]
+            self._index = (self._index + 1) % len(self.servers)
+            if server in self.healthy:
+                return server
+        raise RuntimeError("No healthy servers")
+
+
+lb = LoadBalancer(["app-1", "app-2", "app-3"])
+print([lb.next_server() for _ in range(6)])
+
+lb.mark_down("app-2")  # health check failed
+print([lb.next_server() for _ in range(4)])</code></pre>
+      <div class="output">['app-1', 'app-2', 'app-3', 'app-1', 'app-2', 'app-3']
+['app-1', 'app-3', 'app-1', 'app-3']</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>self.healthy: set[str]</code>: مجموعة الخوادم السليمة. البحث في <code>set</code> سريع جدًا.</li>
+        <li><code>self._index</code>: مؤشر يحفظ دور الخادم التالي.</li>
+        <li><code>for _ in range(len(self.servers))</code>: نجرّب كل خادم مرة واحدة فقط. هذا يمنع الحلقة اللانهائية.</li>
+        <li><code>(self._index + 1) % len(self.servers)</code>: نرجع إلى أول خادم بعد آخر خادم.</li>
+        <li><code>if server in self.healthy</code>: نتخطى الخادم المتوقف.</li>
+        <li><code>raise RuntimeError</code>: إذا توقفت كل الخوادم، نعلن الخطأ بوضوح بدلًا من الانتظار.</li>
+        <li>بعد <code>mark_down("app-2")</code> لاحظ أن الطلبات تذهب إلى <code>app-1</code> و <code>app-3</code> فقط.</li>
+      </ol>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>1. حفظ الجلسة داخل ذاكرة الخادم</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة: خادم له حالة</h4>
+<pre><code class="language-python">class AppServer:
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.sessions: dict[str, str] = {}
+
+    def login(self, user: str) -> None:
+        self.sessions[user] = "logged_in"
+
+    def checkout(self, user: str) -> str:
+        if user in self.sessions:
+            return f"{self.name}: OK"
+        return f"{self.name}: 401 Please log in"
+
+
+s1, s2 = AppServer("app-1"), AppServer("app-2")
+s1.login("sara")          # request 1 -> app-1
+print(s2.checkout("sara"))  # request 2 -> app-2</code></pre>
+          <div class="output">app-2: 401 Please log in</div>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة: حالة في مخزن مشترك</h4>
+<pre><code class="language-python">class SessionStore:
+    """Stands in for Redis or a database."""
+    def __init__(self) -> None:
+        self._data: dict[str, str] = {}
+
+    def set(self, key: str, value: str) -> None:
+        self._data[key] = value
+
+    def exists(self, key: str) -> bool:
+        return key in self._data
+
+
+class AppServer:
+    def __init__(self, name: str, store: SessionStore) -> None:
+        self.name = name
+        self.store = store
+
+    def login(self, user: str) -> None:
+        self.store.set(user, "logged_in")
+
+    def checkout(self, user: str) -> str:
+        if self.store.exists(user):
+            return f"{self.name}: OK"
+        return f"{self.name}: 401 Please log in"
+
+
+store = SessionStore()
+s1, s2 = AppServer("app-1", store), AppServer("app-2", store)
+s1.login("sara")
+print(s2.checkout("sara"))</code></pre>
+          <div class="output">app-2: OK</div>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الطريقة الأولى خاطئة؟</strong> موازن الأحمال قد يرسل كل طلب إلى خادم مختلف. الجلسة موجودة في <span class="en">app-1</span> فقط. لذلك يرفض <span class="en">app-2</span> المستخدم. وإذا أعيد تشغيل <span class="en">app-1</span>، تضيع كل الجلسات.</div>
+      <p>بعض الفرق تحل المشكلة بـ "الجلسات اللاصقة" (<span class="en">Sticky Sessions</span>). أي ربط المستخدم بخادم واحد. هذا حل مؤقت. لأنه يوزّع الحمل بشكل غير متساوٍ، ويضيّع الجلسات عند توقف الخادم.</p>
+
+      <h3>2. أخطاء تصميم أخرى شائعة</h3>
+      <ul>
+        <li><strong>❌ التصميم للمتوسط:</strong> النظام يعمل يوميًا ثم ينهار في يوم العروض. <strong>✅</strong> صمّم للذروة مع هامش أمان.</li>
+        <li><strong>❌ موازن أحمال واحد:</strong> أضفت 10 خوادم، لكن الموازن نفسه نقطة فشل واحدة. <strong>✅</strong> استخدم موازنَين، أو خدمة سحابية مُدارة.</li>
+        <li><strong>❌ تكبير الخوادم وتجاهل قاعدة البيانات:</strong> إضافة خوادم لا تفيد إذا كانت قاعدة البيانات هي عنق الزجاجة. <strong>✅</strong> قِس أولًا لتعرف أين البطء.</li>
+        <li><strong>❌ التعقيد المبكر:</strong> تبدأ بـ 20 خدمة مصغرة <span class="en">(Microservices)</span> لمشروع فيه 100 مستخدم. <strong>✅</strong> ابدأ بسيطًا، ثم وسّع عندما تظهر الحاجة.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>اجعل خوادم التطبيق بلا حالة.</strong> ضع الجلسات في <span class="en">Redis</span>، والملفات في تخزين الكائنات <span class="en">(Object Storage)</span> مثل <span class="en">S3</span>.</li>
+        <li><strong>احسب قبل أن تصمم.</strong> الحساب السريع يكشف إن كانت المشكلة في القراءة أو الكتابة أو التخزين.</li>
+        <li><strong>راقب المئين، لا المتوسط.</strong> ضع تنبيهًا <span class="en">(Alert)</span> على <code>p99</code>.</li>
+        <li><strong>اترك هامشًا.</strong> لا تشغّل الخوادم فوق 60–70% من طاقتها. الهامش يمتص الذروة المفاجئة.</li>
+        <li><strong>استخدم قاعدة N+1.</strong> إذا احتجت N خادمًا، شغّل N+1. هكذا يبقى النظام سليمًا إذا توقف خادم.</li>
+        <li><strong>ابحث عن نقاط الفشل الواحدة</strong> في كل مراجعة تصميم.</li>
+        <li><strong>فحص الصحة يجب أن يكون حقيقيًا.</strong> لا تكتفِ بـ "الخادم يرد". تأكد أنه يستطيع الوصول إلى قاعدة البيانات.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> في أنظمة الدفع، الدقة أهم من السرعة. عملية دفع مكررة أسوأ من عملية بطيئة. سنتعلم مفهوم <span class="en">Idempotency</span> في الدرس 7.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+
+      <h3>التوسع الأفقي ليس خطيًا تمامًا</h3>
+      <p>نظريًا، 8 خوادم تعطي 8 أضعاف الإنتاجية. عمليًا، تتشارك كل الخوادم قاعدة بيانات واحدة. لذلك يتوقف النمو عند حد معيّن. هذا هو عنق الزجاجة.</p>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>مقارنة سريعة</h3>
+      <table>
+        <tr><th>المعيار</th><th>التوسع الرأسي</th><th>التوسع الأفقي</th></tr>
+        <tr><td>السهولة</td><td>✅ سهل جدًا، بدون تغيير الكود</td><td>⚠️ يحتاج موازن أحمال وخوادم بلا حالة</td></tr>
+        <tr><td>الحد الأقصى</td><td>❌ محدود بأكبر خادم متوفر</td><td>✅ شبه غير محدود</td></tr>
+        <tr><td>التكلفة</td><td>❌ ترتفع بسرعة في الأحجام الكبيرة</td><td>✅ خوادم عادية رخيصة</td></tr>
+        <tr><td>التوافرية</td><td>❌ نقطة فشل واحدة</td><td>✅ يستمر إذا توقف خادم</td></tr>
+        <tr><td>الاتساق</td><td>✅ بسيط، كل البيانات في مكان واحد</td><td>⚠️ أصعب، البيانات موزّعة</td></tr>
+        <tr><td>متى تستخدمه؟</td><td>البداية، وقواعد البيانات غالبًا</td><td>خوادم التطبيق، والحمل الكبير</td></tr>
+      </table>
+
+      <h3>رياضيات التوافرية</h3>
+      <p>إذا كانت الأجزاء <strong>متتالية</strong> (كل جزء مطلوب)، نضرب توافريتها. النتيجة دائمًا أقل من أضعف جزء:</p>
+      <div dir="ltr">$$A_{\text{series}} = A_1 \times A_2 \times \cdots \times A_n$$</div>
+      <p>إذا كانت الأجزاء <strong>متوازية</strong> (نسخ متكررة، ويكفي أن تعمل واحدة)، يتوقف النظام فقط إذا توقفت كلها:</p>
+      <div dir="ltr">$$A_{\text{parallel}} = 1 - (1 - A)^n$$</div>
+      <p>مثال: خادم توافريته 99%. خادمان متوازيان: \(1 - 0.01^2 = 99.99\%\). نسخة إضافية واحدة أضافت تسعتين!</p>
+
+      <h3>قانون ليتل (Little's Law)</h3>
+      <p>هذا القانون يربط الإنتاجية بزمن الاستجابة. ويخبرك كم طلبًا يكون داخل النظام في نفس اللحظة:</p>
+      <div dir="ltr">$$L = \lambda \times W$$</div>
+      <p>\(L\) عدد الطلبات المتزامنة. \(\lambda\) الطلبات في الثانية. \(W\) زمن الاستجابة بالثواني. مثال: 347 طلبًا في الثانية × 0.2 ثانية = حوالي 70 طلبًا متزامنًا. إذا أبطأت قاعدة البيانات وصار \(W = 2\) ثانية، تحتاج إلى 694 اتصالًا متزامنًا! لهذا السبب يؤدي البطء غالبًا إلى انهيار كامل.</p>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: مخطِّط السعة (Capacity Planner)</h2>
+      <p>ستبني أداة صغيرة تجيب عن سؤالين مهمين: كم خادمًا تحتاج لبوابة الدفع؟ وما التوافرية المتوقعة؟ ثم ستكتشف أين الحلقة الأضعف.</p>
+      <p>المعطيات: حمل الذروة 347 طلبًا في الثانية (من المثال 1). كل خادم يتحمل 100 طلب في الثانية. توافرية موازن الأحمال 99.99%. توافرية كل خادم تطبيق 99%. توافرية قاعدة البيانات 99.9%.</p>
+<pre><code class="language-python">import math
+from dataclasses import dataclass
+
+HOURS_PER_YEAR = 365 * 24
+
+
+@dataclass
+class Plan:
+    app_servers: int
+    utilization: float
+    availability: float
+    downtime_hours: float
+
+
+def servers_needed(peak_qps: float, qps_per_server: float,
+                   target_util: float) -> int:
+    # Keep each server below the target utilization
+    return math.ceil(peak_qps / (qps_per_server * target_util))
+
+
+def parallel(single: float, n: int) -> float:
+    # Up if at least one copy is up
+    return 1 - (1 - single) ** n
+
+
+def series(*parts: float) -> float:
+    # Up only if every part is up
+    result = 1.0
+    for a in parts:
+        result *= a
+    return result
+
+
+def make_plan(peak_qps: float, qps_per_server: float, db_copies: int,
+              target_util: float = 0.6) -> Plan:
+    servers = servers_needed(peak_qps, qps_per_server, target_util) + 1  # N+1
+    util = peak_qps / (servers * qps_per_server)
+    app_tier = parallel(0.99, servers)
+    db_tier = parallel(0.999, db_copies)
+    total = series(0.9999, app_tier, db_tier)  # LB -> apps -> DB
+    return Plan(servers, util, total, (1 - total) * HOURS_PER_YEAR)
+
+
+for copies in (1, 2):
+    p = make_plan(peak_qps=347, qps_per_server=100, db_copies=copies)
+    print(f"DB copies={copies} | servers={p.app_servers} | "
+          f"util={p.utilization:.0%} | avail={p.availability:.3%} | "
+          f"downtime={p.downtime_hours:.1f} h/year")</code></pre>
+      <div class="output">DB copies=1 | servers=7 | util=50% | avail=99.890% | downtime=9.6 h/year
+DB copies=2 | servers=7 | util=50% | avail=99.990% | downtime=0.9 h/year</div>
+      <h4>الشرح</h4>
+      <ol>
+        <li><code>servers_needed</code>: نقسم الذروة على 60% فقط من طاقة الخادم. النتيجة <code>ceil(347 / 60) = 6</code>.</li>
+        <li><code>+ 1</code>: نطبّق قاعدة N+1، فيصبح العدد 7 خوادم.</li>
+        <li><code>util</code>: الاستخدام الفعلي 50%. هذا هامش جيد للذروة المفاجئة.</li>
+        <li><code>parallel(0.99, 7)</code>: طبقة التطبيق شبه مستحيلة التوقف، لأنها 7 نسخ.</li>
+        <li><code>series(...)</code>: الطلب يمر عبر الموازن ثم التطبيق ثم قاعدة البيانات. لذلك نضرب التوافريات.</li>
+        <li><strong>النتيجة المهمة:</strong> مع نسخة واحدة من قاعدة البيانات، يتوقف النظام 9.6 ساعة في السنة. قاعدة البيانات هي الحلقة الأضعف. مع نسختين، ينزل التوقف إلى أقل من ساعة.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> هذا نموذج مبسّط. في الواقع، الانتقال إلى النسخة الاحتياطية <span class="en">(Failover)</span> يأخذ ثواني أو دقائق. والأعطال قد تحدث معًا، مثل توقف مركز بيانات كامل. لكن النموذج يكفي لاتخاذ قرارات جيدة.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+
+      <div class="quiz" data-explain="التوسع الأفقي يضيف خوادم. إذا توقف خادم، تستمر البقية في العمل.">
+        <div class="q">1. أي نوع من التوسع يزيل نقطة الفشل الواحدة في خوادم التطبيق؟</div>
+        <button class="option">التوسع الرأسي</button>
+        <button class="option" data-correct="true">التوسع الأفقي</button>
+        <button class="option">زيادة ذاكرة الخادم</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="المتوسط يخفي الطلبات البطيئة جدًا. أما p99 فيكشف تجربة أسوأ 1% من المستخدمين.">
+        <div class="q">2. لماذا نراقب p99 بدلًا من المتوسط؟</div>
+        <button class="option">لأن حسابه أسهل</button>
+        <button class="option">لأنه دائمًا أصغر من المتوسط</button>
+        <button class="option" data-correct="true">لأنه يكشف الطلبات البطيئة التي يخفيها المتوسط</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الأجزاء المتتالية نضرب توافريتها: 0.99 × 0.99 = 0.9801، أي 98.01%.">
+        <div class="q">3. جزآن متتاليان، توافرية كل منهما 99%. ما توافرية النظام؟</div>
+        <button class="option">99.99%</button>
+        <button class="option">99%</button>
+        <button class="option" data-correct="true">98.01%</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الخادم بلا حالة لا يحفظ بيانات المستخدم داخله. لذلك يستطيع أي خادم خدمة أي طلب.">
+        <div class="q">4. ما الشرط الأساسي حتى يعمل التوسع الأفقي بسهولة؟</div>
+        <button class="option" data-correct="true">أن تكون الخوادم بلا حالة</button>
+        <button class="option">أن تكون كل الخوادم في نفس الغرفة</button>
+        <button class="option">أن نستخدم Python</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="حسب قانون ليتل: L = 500 × 0.1 = 50 طلبًا متزامنًا.">
+        <div class="q">5. نظام يستقبل 500 طلب في الثانية، وزمن الاستجابة 100ms. كم طلبًا متزامنًا داخله تقريبًا؟</div>
+        <button class="option">5</button>
+        <button class="option" data-correct="true">50</button>
+        <button class="option">5,000</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): احسب لخدمة اختصار الروابط</h3>
+      <p>خدمة مثل <span class="en">bit.ly</span> تنشئ 100 مليون رابط جديد شهريًا. نسبة القراءة إلى الكتابة 100:1. كل رابط يأخذ 500 بايت. احسب: طلبات الكتابة في الثانية، وطلبات القراءة في الثانية، والتخزين في 5 سنوات.</p>
+      <details><summary>💡 تلميح</summary><p>الشهر فيه 30 × 86,400 ثانية تقريبًا. القراءة = الكتابة × 100.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">writes_per_month = 100_000_000
+seconds_per_month = 30 * 86_400
+
+write_qps = writes_per_month / seconds_per_month
+read_qps = write_qps * 100
+storage_5y_tb = writes_per_month * 500 * 12 * 5 / 1e12
+
+print(f"Write QPS  : {write_qps:,.0f}")
+print(f"Read QPS   : {read_qps:,.0f}")
+print(f"Storage 5y : {storage_5y_tb:.1f} TB")</code></pre>
+        <div class="output">Write QPS  : 39
+Read QPS   : 3,858
+Storage 5y : 3.0 TB</div>
+        <p>النظام يقرأ أكثر بكثير مما يكتب. لذلك الـ Cache ونسخ القراءة سيكونان مفيدين جدًا هنا.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): موازن "أقل اتصالات"</h3>
+      <p>التوزيع الدوري لا يهتم بمدى انشغال الخادم. اكتب موازنًا يرسل الطلب إلى الخادم صاحب أقل عدد من الاتصالات النشطة (<span class="en">Least Connections</span>).</p>
+      <details><summary>💡 تلميح</summary><p>احفظ عدّادًا لكل خادم في <code>dict</code>. استخدم <code>min</code> مع <code>key</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">class LeastConnectionsBalancer:
+    def __init__(self, servers: list[str]) -> None:
+        self.active: dict[str, int] = {s: 0 for s in servers}
+
+    def acquire(self) -> str:
+        server = min(self.active, key=self.active.__getitem__)
+        self.active[server] += 1
+        return server
+
+    def release(self, server: str) -> None:
+        self.active[server] -= 1
+
+
+lb = LeastConnectionsBalancer(["a", "b", "c"])
+first, second, third = lb.acquire(), lb.acquire(), lb.acquire()
+lb.release(second)   # request on "b" finished
+print(lb.acquire())</code></pre>
+        <div class="output">b</div>
+        <p>بعد ثلاثة طلبات، كل خادم عنده اتصال واحد. انتهى طلب <code>b</code>، فأصبح عنده صفر. لذلك يذهب الطلب الجديد إليه. هذه الخوارزمية أفضل عندما تختلف مدة الطلبات كثيرًا.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): أين الحلقة الأضعف؟</h3>
+      <p>نظام فيه: موازن أحمال (99.99%)، ثم خادما تطبيق متوازيان (كل واحد 99.5%)، ثم قاعدة بيانات واحدة (99.9%). احسب التوافرية الكلية. ما الجزء الذي يجب أن تحسّنه أولًا؟</p>
+      <details><summary>💡 تلميح</summary><p>احسب طبقة التطبيق بمعادلة التوازي أولًا. ثم اضرب كل الطبقات معًا.</p></details>
+      <details><summary>✅ الحل</summary>
+        <p>طبقة التطبيق: \(1 - 0.005^2 = 0.999975\).</p>
+        <p>الكلي: \(0.9999 \times 0.999975 \times 0.999 \approx 0.99888\)، أي حوالي <strong>99.89%</strong>.</p>
+        <p>الحلقة الأضعف هي قاعدة البيانات (99.9%). إضافة خادم تطبيق ثالث لن تغيّر شيئًا تقريبًا. أضف نسخة احتياطية لقاعدة البيانات مع انتقال تلقائي <span class="en">(Automatic Failover)</span>.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): حوّل تطبيقًا إلى بلا حالة</h3>
+      <p>عندك تطبيق متجر يعمل على خادم واحد. يحفظ: جلسات المستخدمين في الذاكرة، وصور المنتجات على القرص المحلي، وسلة المشتريات في متغير عام <span class="en">(Global Variable)</span>. تريد تشغيله على 5 خوادم. ماذا تغيّر؟</p>
+      <details><summary>💡 تلميح</summary><p>اسأل عن كل نوع من البيانات: "ماذا يحدث لو وصل الطلب التالي إلى خادم آخر؟"</p></details>
+      <details><summary>✅ الحل</summary>
+        <ul>
+          <li><strong>الجلسات:</strong> انقلها إلى <span class="en">Redis</span>. أو استخدم توكن موقّع مثل <span class="en">JWT</span> يحمله المستخدم.</li>
+          <li><strong>الصور:</strong> انقلها إلى تخزين الكائنات مثل <span class="en">S3</span>، وقدّمها عبر شبكة توصيل المحتوى <span class="en">(CDN)</span>.</li>
+          <li><strong>سلة المشتريات:</strong> احفظها في <span class="en">Redis</span> مع مدة صلاحية، أو في قاعدة البيانات إذا أردت الاحتفاظ بها طويلًا.</li>
+          <li><strong>الإعدادات:</strong> اقرأها من متغيرات البيئة <span class="en">(Environment Variables)</span>، وليس من ملفات محلية تتغير.</li>
+          <li><strong>المهام المجدولة <span class="en">(Cron Jobs)</span>:</strong> تأكد أنها تعمل على خادم واحد فقط، وإلا ستعمل 5 مرات.</li>
+        </ul>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>تصميم الأنظمة يركز على المتطلبات غير الوظيفية: السرعة، والتوسع، والتوافرية.</li>
+        <li>زمن الاستجابة يقيس سرعة طلب واحد. الإنتاجية تقيس عدد الطلبات في الثانية.</li>
+        <li>راقب <code>p99</code>، لأن المتوسط يخفي المشاكل.</li>
+        <li>كل تسعة إضافية في التوافرية تقلل التوقف 10 مرات، وتزيد التكلفة.</li>
+        <li>التوسع الرأسي سهل لكنه محدود. التوسع الأفقي قوي لكنه يحتاج خوادم بلا حالة.</li>
+        <li>موازن الأحمال يوزّع الطلبات، ويتخطى الخوادم المتوقفة بفحص الصحة.</li>
+        <li>الأجزاء المتتالية تُضرب توافريتها. والنسخ المتوازية ترفع التوافرية بقوة.</li>
+        <li>احسب الأرقام قبل التصميم، وصمّم لحمل الذروة.</li>
+        <li>قاعدة البيانات غالبًا هي عنق الزجاجة والحلقة الأضعف.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <p>خطة سلسلة تصميم الأنظمة:</p>
+      <ol>
+        <li>✅ أساسيات التوسع والمكونات الأساسية (هذا الدرس)</li>
+        <li>موازنة الأحمال والـ Caching بعمق: الخوارزميات، واستراتيجيات الـ Cache، وإبطاله <span class="en">(Invalidation)</span></li>
+        <li>قواعد البيانات: النسخ المتماثل والتقسيم <span class="en">(Replication &amp; Sharding)</span></li>
+        <li>طوابير الرسائل <span class="en">(Message Queues)</span> والأنظمة غير المتزامنة</li>
+        <li>نظرية <span class="en">CAP</span> ونماذج الاتساق <span class="en">(Consistency)</span></li>
+        <li>الخدمات المصغرة و <span class="en">API Gateway</span></li>
+        <li>الموثوقية: <span class="en">Rate Limiting</span> و <span class="en">Idempotency</span> وإعادة المحاولة</li>
+        <li>مقابلة تصميم كاملة: صمّم بوابة دفع من الصفر</li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀 — سلسلة تصميم الأنظمة، الدرس 1</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    new Chart(perf, {
+      type: "line",
+      data: {
+        labels: ["1", "2", "3", "4", "5", "6", "7", "8"],
+        datasets: [
+          { label: "الإنتاجية المثالية (خطية)", data: [100, 200, 300, 400, 500, 600, 700, 800], borderColor: "#94a3b8", borderDash: [6, 6], fill: false, tension: 0 },
+          { label: "الإنتاجية الحقيقية (قاعدة بيانات واحدة)", data: [100, 195, 285, 370, 440, 490, 520, 530], borderColor: "#ef4444", backgroundColor: "rgba(239,68,68,.15)", fill: true, tension: 0.3 }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { rtl: true },
+          tooltip: { rtl: true },
+          title: { display: true, text: "الطلبات في الثانية مقابل عدد خوادم التطبيق" }
+        },
+        scales: {
+          x: { title: { display: true, text: "عدد الخوادم" } },
+          y: { title: { display: true, text: "QPS" }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

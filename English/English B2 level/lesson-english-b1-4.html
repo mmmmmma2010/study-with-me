@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 4: بينما كنت أنتظر... — English B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Cairo',Tahoma,'Segoe UI',sans-serif; font-size:18px; line-height:1.9; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .progress { max-width:420px; margin:14px auto 0; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; }
+  .progress div { height:100%; background:#fde68a; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:210px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); }
+  .emoji { font-size:2.6rem; line-height:1.2; }
+  .word { font-size:1.4rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.15rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  /* Timeline */
+  .timeline-viz { position:relative; height:140px; margin:20px 10px; direction:ltr; }
+  .tl-line { position:absolute; top:64px; left:0; right:0; height:4px; background:linear-gradient(90deg,#94a3b8,#4f46e5,#06b6d4); border-radius:4px; }
+  .tl-now { position:absolute; top:34px; height:64px; border-left:3px solid var(--v); }
+  .tl-now span, .tl-event span { position:absolute; top:-28px; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; background:var(--card); padding:0 6px; }
+  .tl-now span { color:var(--v); }
+  .tl-event { position:absolute; top:56px; width:20px; height:20px; margin-left:-10px; border-radius:50%; background:var(--o); border:3px solid #fff; box-shadow:0 0 0 2px var(--o); }
+  .tl-event span { top:28px; color:var(--o); }
+  .tl-range { position:absolute; top:60px; height:12px; background:rgba(79,70,229,.35); border-radius:6px; }
+  .tl-range span { position:absolute; top:-34px; left:50%; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; color:var(--primary); background:var(--card); padding:0 6px; }
+  .tl-labels { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; color:var(--muted); font-size:.85rem; font-weight:700; }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; }
+  .bubble { max-width:80%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:110px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:200px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>الدرس 4: بينما كنت أنتظر... <span class="tl">— While I was waiting...</span></h1>
+  <p>احكِ قصة قصيرة عن موقف أو حادث. <span class="tl">Tell a short story about an incident.</span></p>
+  <div class="badges">
+    <span class="badge">اللغة: الإنجليزية</span>
+    <span class="badge">المستوى: B1</span>
+    <span class="badge">الدرس 4 من 15</span>
+    <span class="badge">وقت الدراسة: 30 دقيقة</span>
+    <span class="badge tl">Past continuous · when · while</span>
+  </div>
+  <div class="progress"><div style="width:27%"></div></div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 السرعة: عادية</button>
+  <span>النتيجة: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ حفظ PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section id="goals">
+    <h2>🎯 أهداف الدرس <span class="tl">— Can-do goals</span></h2>
+    <div class="cando">
+      <label><input type="checkbox"><span class="tl">I can say what I was doing at a time in the past.</span> — أستطيع أن أقول ماذا كنت أفعل في وقت معيّن في الماضي.</label>
+      <label><input type="checkbox"><span class="tl">I can use when and while to connect a long action and a short action.</span> — أستطيع أن أربط فعلًا طويلًا بفعل قصير.</label>
+      <label><input type="checkbox"><span class="tl">I can tell a short story with background and events.</span> — أستطيع أن أحكي قصة قصيرة.</label>
+      <label><input type="checkbox"><span class="tl">I can use weak forms of was /wəz/ and were /wər/.</span> — أستطيع أن أنطق <span class="tl">was / were</span> بشكل طبيعي.</label>
+    </div>
+  </section>
+
+  <section id="warmup">
+    <h2>🌱 تمهيد <span class="tl">— Warm-up</span></h2>
+    <p>في العربية نقول: «<b>كنتُ أنتظرُ</b> الحافلة <b>عندما رأيتُ</b> الحادث».</p>
+    <p>في هذه الجملة فعلان: فعل <b>طويل</b> (كنتُ أنتظر) وفعل <b>قصير</b> قطعه (رأيتُ).</p>
+    <p>بالإنجليزية: <span class="tl"><b>I was waiting for the bus when I saw the accident.</b></span> <button class="say" data-text="I was waiting for the bus when I saw the accident.">🔊</button></p>
+    <div class="callout note">📝 <b>Think:</b> <span class="tl">What were you doing at 8 o'clock last night?</span><br>فكّر: ماذا كنت تفعل في الساعة الثامنة مساء أمس؟</div>
+  </section>
+
+  <section id="words">
+    <h2>📚 الكلمات الجديدة <span class="tl">— New words: Stories &amp; incidents</span></h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. — اضغط على البطاقة لتقلبها. المقطع المنبور باللون الأحمر.</p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💥</div><div class="word tl">accident</div><button class="say" data-text="accident">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">حادث</div><span class="ipa">/<b>ˈæk</b>.sɪ.dənt/</span><span class="tl">I saw an accident on my way home.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚗</div><div class="word tl">crash (into)</div><button class="say" data-text="crash into">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يصطدم بـ</div><span class="ipa">/<b>kræʃ</b>/</span><span class="tl">A bus crashed into a taxi.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🫠</div><div class="word tl">slip</div><button class="say" data-text="slip">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">ينزلق</div><span class="ipa">/<b>slɪp</b>/</span><span class="tl">I slipped on the wet floor.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📱</div><div class="word tl">drop</div><button class="say" data-text="drop">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يُوقِع (شيئًا من يده)</div><span class="ipa">/<b>drɑːp</b>/</span><span class="tl">She dropped her phone.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤕</div><div class="word tl">injured</div><button class="say" data-text="injured">🔊</button><div class="hint">adjective</div></div>
+        <div class="back"><div class="word">مُصاب</div><span class="ipa">/<b>ˈɪn</b>.dʒərd/</span><span class="tl">Luckily, nobody was injured.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚑</div><div class="word tl">ambulance</div><button class="say" data-text="ambulance">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">سيارة إسعاف</div><span class="ipa">/<b>ˈæm</b>.bjə.ləns/</span><span class="tl">We waited until the ambulance arrived.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👁️</div><div class="word tl">witness</div><button class="say" data-text="witness">🔊</button><div class="hint">noun + verb</div></div>
+        <div class="back"><div class="word">شاهد / يشهد</div><span class="ipa">/<b>ˈwɪt</b>.nəs/</span><span class="tl">The police talked to the witnesses.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚦</div><div class="word tl">traffic jam</div><button class="say" data-text="traffic jam">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">زحمة مرور</div><span class="ipa">/<b>ˈtræf</b>.ɪk ˌdʒæm/</span><span class="tl">We were sitting in a traffic jam for an hour.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">⚡</div><div class="word tl">suddenly</div><button class="say" data-text="suddenly">🔊</button><div class="hint">adverb</div></div>
+        <div class="back"><div class="word">فجأة</div><span class="ipa">/<b>ˈsʌd</b>.ən.li/</span><span class="tl">Suddenly, the lights went out.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🍀</div><div class="word tl">luckily</div><button class="say" data-text="luckily">🔊</button><div class="hint">adverb</div></div>
+        <div class="back"><div class="word">لحسن الحظ</div><span class="ipa">/<b>ˈlʌk</b>.ɪ.li/</span><span class="tl">Luckily, I had an umbrella.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">😞</div><div class="word tl">unfortunately</div><button class="say" data-text="unfortunately">🔊</button><div class="hint">adverb</div></div>
+        <div class="back"><div class="word">للأسف / لسوء الحظ</div><span class="ipa">/ʌn<b>ˈfɔːr</b>.tʃən.ət.li/</span><span class="tl">Unfortunately, I missed the train.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🛠️</div><div class="word tl">break down</div><button class="say" data-text="break down">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يتعطّل (سيارة / جهاز)</div><span class="ipa">/breɪk <b>ˈdaʊn</b>/</span><span class="tl">My car broke down on the Ring Road.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">⛽</div><div class="word tl">run out of</div><button class="say" data-text="run out of">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">ينفد منه (شيء)</div><span class="ipa">/rʌn <b>ˈaʊt</b> əv/</span><span class="tl">We ran out of petrol in the desert.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚙</div><div class="word tl">pick up</div><button class="say" data-text="pick up">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يُقِلّ شخصًا بالسيارة / يلتقط</div><span class="ipa">/pɪk <b>ˈʌp</b>/</span><span class="tl">A kind man picked me up.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤸</div><div class="word tl">fall over</div><button class="say" data-text="fall over">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يقع على الأرض</div><span class="ipa">/fɔːl <b>ˈoʊ</b>.vər/</span><span class="tl">He fell over while he was running.</span></div>
+      </div></div>
+    </div>
+    <div class="callout warning">⚠️ <b>انتبه:</b> نقول <span class="tl">crash <b>into</b> something</span>، ولا نقول <span class="tl">crash with ❌</span> عندما نصف اصطدام سيارة بشيء.</div>
+  </section>
+
+  <section id="grammar">
+    <h2>🎨 القاعدة بالألوان <span class="tl">— Grammar 1: Past continuous</span></h2>
+    <p class="instr">Look at these sentences. Was the action short or long?<span class="instr-ar">انظر إلى الجمل. هل كان الفعل قصيرًا أم طويلًا؟</span></p>
+    <div class="sent tl"><span class="w s">I<small>أنا</small></span><span class="w v">was<small>كنتُ</small></span><span class="w v">waiting<small>أنتظر</small></span><span class="w o">for the bus<small>الحافلة</small></span><button class="say" data-text="I was waiting for the bus.">🔊</button></div>
+    <div class="sent tl"><span class="w s">They<small>هم</small></span><span class="w v">were<small>كانوا</small></span><span class="w v">watching<small>يشاهدون</small></span><span class="w o">the match<small>المباراة</small></span><span class="w x">at 9 p.m.<small>في التاسعة مساءً</small></span><button class="say" data-text="They were watching the match at 9 p.m.">🔊</button></div>
+    <div class="sent tl"><span class="w x">What<small>ماذا</small></span><span class="w v">were<small>كنتَ</small></span><span class="w s">you<small>أنت</small></span><span class="w v">doing?<small>تفعل</small></span><button class="say" data-text="What were you doing?">🔊</button></div>
+    <p>كلها أفعال <b>طويلة</b> كانت <b>في منتصف الحدوث</b> في لحظة معيّنة من الماضي. الشكل: <span class="tl"><b>was / were + verb-ing</b></span>.</p>
+
+    <table class="tl">
+      <tr><th>Form</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Positive ✅</td><td>I / he / she / it + <mark>was</mark> + -ing<br>you / we / they + <mark>were</mark> + -ing</td><td>She was driving. <button class="say" data-text="She was driving.">🔊</button></td></tr>
+      <tr><td>Negative ❌</td><td><mark>wasn't / weren't</mark> + -ing</td><td>We weren't listening. <button class="say" data-text="We weren't listening.">🔊</button></td></tr>
+      <tr><td>Question ❓</td><td><mark>Was / Were</mark> + subject + -ing?</td><td>Were you sleeping? <button class="say" data-text="Were you sleeping?">🔊</button></td></tr>
+      <tr><td>Short answers</td><td>Yes, I <mark>was</mark>. / No, they <mark>weren't</mark>.</td><td>No, I wasn't. <button class="say" data-text="No, I wasn't.">🔊</button></td></tr>
+    </table>
+
+    <h3>⏱️ <span class="tl">Long action + short action</span> — فعل طويل يقطعه فعل قصير</h3>
+    <div class="timeline-viz">
+      <div class="tl-line"></div>
+      <div class="tl-range" style="left:15%;width:40%"><span>was walking home — كنتُ أمشي (طويل)</span></div>
+      <div class="tl-event" style="left:40%"><span>⚡ it started to rain — بدأ المطر (قصير)</span></div>
+      <div class="tl-now" style="left:85%"><span>NOW — الآن</span></div>
+      <div class="tl-labels"><span>⬅ Past الماضي</span><span>Future ➡</span></div>
+    </div>
+    <p><span class="tl">I <b>was walking</b> home <b>when</b> it <b>started</b> to rain.</span> <button class="say" data-text="I was walking home when it started to rain.">🔊</button><br>الشريط البنفسجي = <span class="tl">past continuous</span>. النقطة الخضراء = <span class="tl">past simple</span>.</p>
+
+    <h3>🔗 <span class="tl">Grammar 2: when &amp; while</span></h3>
+    <table>
+      <tr><th class="tl">while + past continuous (الفعل الطويل)</th><th class="tl">when + past simple (الفعل القصير)</th></tr>
+      <tr><td class="tl"><mark>While</mark> I was cooking, I cut my finger. <button class="say" data-text="While I was cooking, I cut my finger.">🔊</button></td><td class="tl">I was cooking <mark>when</mark> I cut my finger. <button class="say" data-text="I was cooking when I cut my finger.">🔊</button></td></tr>
+    </table>
+    <ul>
+      <li>فعلان طويلان في نفس الوقت → كلاهما <span class="tl">past continuous</span>: <span class="tl">While I was cooking, my brother was watching TV.</span> <button class="say" data-text="While I was cooking, my brother was watching TV.">🔊</button></li>
+      <li>فعلان قصيران، واحد بعد الآخر → كلاهما <span class="tl">past simple</span>: <span class="tl">When the phone rang, I answered it.</span> <button class="say" data-text="When the phone rang, I answered it.">🔊</button></li>
+    </ul>
+    <div class="callout tip">💡 <b>Comma:</b> إذا بدأت الجملة بـ <span class="tl">When / While</span> نضع فاصلة: <span class="tl">While I was driving<b>,</b> I saw a camel.</span> وإذا جاءت في الوسط فلا فاصلة: <span class="tl">I saw a camel while I was driving.</span></div>
+
+    <h3>📖 <span class="tl">Grammar 3: Setting the scene in a story</span> — وصف خلفية القصة</h3>
+    <p>نبدأ القصة بالـ <span class="tl">past continuous</span> لنصف <b>المشهد</b>، ثم نحكي <b>الأحداث</b> بالـ <span class="tl">past simple</span>:</p>
+    <p class="tl">"It <b>was raining</b> and people <b>were running</b> to their cars. Suddenly, I <b>heard</b> a loud noise. A bus <b>crashed</b> into a taxi." <button class="say" data-text="It was raining and people were running to their cars. Suddenly, I heard a loud noise. A bus crashed into a taxi.">🔊</button></p>
+
+    <div class="diagram mermaid">
+flowchart TD
+  A["A past action / فعل في الماضي"] -->|"Long, in progress, background / طويل أو خلفية"| B["Past continuous: I was waiting. It was raining."]
+  A -->|"Short, complete, main event / قصير أو حدث رئيسي"| C["Past simple: I saw the accident."]
+  B --> D["while + long action"]
+  C --> E["when + short action"]
+    </div>
+    <div class="callout warning">⚠️ <b>Stative verbs:</b> أفعال الحالة <span class="tl">(know, like, want, need, believe, understand)</span> لا تأتي بصيغة <span class="tl">-ing</span>: <span class="tl">I was knowing ❌ → I knew ✅</span>.</div>
+  </section>
+
+  <section id="compare">
+    <h2>🔁 العربية مقابل الإنجليزية <span class="tl">— Arabic vs English</span></h2>
+    <div class="vs">
+      <div>
+        <h4>العربية</h4>
+        <div class="sent"><span class="w v">كنتُ أنتظرُ<small>was waiting</small></span><span class="w o">الحافلة<small>the bus</small></span><span class="w x">عندما<small>when</small></span><span class="w v">رأيتُ<small>saw</small></span><span class="w o">الحادث<small>the accident</small></span></div>
+        <div class="sent"><span class="w x">بينما<small>while</small></span><span class="w s">أنا<small>I</small></span><span class="w v">أمشي<small>walking</small></span><span class="w o">...</span></div>
+        <p>في الجملة الثانية لا يوجد فعل «كان»!</p>
+      </div>
+      <div>
+        <h4 class="tl">English</h4>
+        <div class="sent tl"><span class="w s">I</span><span class="w v">was waiting</span><span class="w o">for the bus</span><span class="w x">when</span><span class="w s">I</span><span class="w v">saw</span><span class="w o">the accident.</span></div>
+        <div class="sent tl"><span class="w x">While</span><span class="w s">I</span><span class="w gap">was<small>إجباري!</small></span><span class="w v">walking</span><span class="w o">...</span></div>
+        <p>الإنجليزية تحتاج دائمًا <span class="tl">was / were</span> قبل <span class="tl">-ing</span>.</p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>سهل عليك:</b> «كنتُ أفعل... عندما حدث...» = <span class="tl">I was doing... when... happened</span>. و«بينما» = <span class="tl">while</span>. الفكرة موجودة في العربية تمامًا.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (1):</b> «كنتُ + مضارع» في العربية لها <b>معنيان</b> في الإنجليزية:<br>
+      «كنتُ ألعب كرة القدم <b>كل يوم</b>» (عادة) → <span class="tl">I <b>used to</b> play</span> (الدرس 3)<br>
+      «كنتُ ألعب كرة القدم <b>عندما اتصلتَ</b>» (في منتصف الحدوث) → <span class="tl">I <b>was playing</b></span> (هذا الدرس)</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (2):</b> بسبب «بينما أنا أمشي» يقول العرب <span class="tl">While I walking ❌</span>. الصحيح: <span class="tl">While I <b>was</b> walking ✅</span>.</div>
+  </section>
+
+  <section id="pron">
+    <h2>👄 النطق: <span class="tl">was / were</span> القوية والضعيفة</h2>
+    <p>في الجملة العادية، <span class="tl">was</span> و <span class="tl">were</span> كلمتان <b>ضعيفتان وسريعتان</b>. لكنهما قويتان في الإجابات القصيرة والنفي.</p>
+    <table>
+      <tr><th>ضعيف (في وسط الجملة)</th><th>قوي (في آخر الجملة أو النفي)</th></tr>
+      <tr><td><span class="tl">I was waiting.</span> <span class="ipa">/wəz/</span> «وِز» <button class="say" data-text="I was waiting for the bus.">🔊</button></td><td><span class="tl">Yes, I was.</span> <span class="ipa">/wʌz/</span> «وَز» <button class="say" data-text="Yes, I was.">🔊</button></td></tr>
+      <tr><td><span class="tl">They were driving.</span> <span class="ipa">/wər/</span> «وَر» <button class="say" data-text="They were driving to Alexandria.">🔊</button></td><td><span class="tl">Yes, they were.</span> <span class="ipa">/wɜːr/</span> <button class="say" data-text="Yes, they were.">🔊</button></td></tr>
+      <tr><td><span class="tl">Was she sleeping?</span> <span class="ipa">/wəz/</span> <button class="say" data-text="Was she sleeping?">🔊</button></td><td><span class="tl">No, she wasn't.</span> <span class="ipa">/ˈwʌz.ənt/</span> <button class="say" data-text="No, she wasn't.">🔊</button></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>نصيحة عن <span class="tl">-ing</span>:</b> صوت <span class="ipa">/ŋ/</span> يخرج من الأنف، ولا يوجد بعده صوت <b>ج</b> أو <span class="tl">g</span> واضح. قل <span class="tl">walking</span> <span class="ipa">/ˈwɔː.kɪŋ/</span>، وليس «ووكينج». <button class="say" data-text="walking, waiting, driving">🔊</button></div>
+    <div class="ex quiz" data-explain="في وسط الجملة تكون was ضعيفة /wəz/. وتكون قوية /wʌz/ في الإجابة القصيرة فقط.">
+      <div class="q">🎧 <span class="tl">In "I was waiting for the bus", "was" sounds like...</span></div>
+      <button class="option tl" data-correct="true">/wəz/ — weak and quick</button>
+      <button class="option tl">/wʌz/ — strong</button>
+      <button class="option tl">/wɑːs/ — "waas"</button>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section id="dialogue">
+    <h2>💬 حوار من الحياة <span class="tl">— Why are you so late?</span></h2>
+    <p class="instr">Listen to Mariam and Youssef. Find 5 sentences in the past continuous.<span class="instr-ar">استمع إلى مريم ويوسف. ابحث عن 5 جمل بالماضي المستمر.</span></p>
+    <button class="btn" id="playDialogue">▶️ استمع للحوار كاملًا</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Mariam</div><div class="tl line">Youssef! You're two hours late. What happened?</div></div>
+      <div class="bubble b"><div class="who">Youssef</div><div class="tl line">You won't believe it. I was driving to work on the Ring Road when my car broke down.</div></div>
+      <div class="bubble a"><div class="who">Mariam</div><div class="tl line">Oh no! Where were you exactly?</div></div>
+      <div class="bubble b"><div class="who">Youssef</div><div class="tl line">Near the airport. It was raining, and everyone was driving slowly. I was trying to call a mechanic when my phone died.</div></div>
+      <div class="bubble a"><div class="who">Mariam</div><div class="tl line">What did you do?</div></div>
+      <div class="bubble b"><div class="who">Youssef</div><div class="tl line">Luckily, a man stopped his car. He was going to Nasr City too, so he picked me up.</div></div>
+      <div class="bubble a"><div class="who">Mariam</div><div class="tl line">That was kind of him!</div></div>
+      <div class="bubble b"><div class="who">Youssef</div><div class="tl line">Yes. But while we were driving, we saw an accident. A bus crashed into a taxi.</div></div>
+      <div class="bubble a"><div class="who">Mariam</div><div class="tl line">Was anyone injured?</div></div>
+      <div class="bubble b"><div class="who">Youssef</div><div class="tl line">The taxi driver was hurt, but not badly. We waited with him until the ambulance arrived.</div></div>
+      <div class="bubble a"><div class="who">Mariam</div><div class="tl line">You've had a really bad morning! And unfortunately, you've just missed the meeting. Everyone was asking about you.</div></div>
+      <div class="bubble b"><div class="who">Youssef</div><div class="tl line">Of course they were! You know, I used to take the metro. I think I'll start again!</div></div>
+    </div>
+    <details><summary>👀 Answers</summary>
+      <ul class="tl">
+        <li>I was driving to work when my car broke down.</li>
+        <li>It was raining, and everyone was driving slowly.</li>
+        <li>I was trying to call a mechanic when my phone died.</li>
+        <li>He was going to Nasr City too.</li>
+        <li>While we were driving, we saw an accident.</li>
+        <li>Everyone was asking about you. — Of course they were!</li>
+      </ul>
+      <p>لاحظ: الأحداث القصيرة بالماضي البسيط: <span class="tl">broke down, died, stopped, picked me up, crashed</span>. وانظر إلى المراجعة: <span class="tl">You've just missed the meeting</span> من الدرس 2، و <span class="tl">I used to take the metro</span> من الدرس 3.</p>
+    </details>
+  </section>
+
+  <section id="practice">
+    <h2>🏋️ تدريب <span class="tl">— Practice</span></h2>
+
+    <h3 class="instr">A. Choose the correct answer.<span class="instr-ar">اختر الإجابة الصحيحة.</span></h3>
+
+    <div class="ex quiz" data-explain="فعل في منتصف الحدوث في لحظة معيّنة → was + -ing.">
+      <div class="q">1. <span class="tl">At 9 p.m. last night, I ___ dinner.</span></div>
+      <button class="option tl" data-correct="true">was having</button>
+      <button class="option tl">had having</button>
+      <button class="option tl">am having</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="while + الفعل الطويل بالماضي المستمر. ومع she نستخدم was.">
+      <div class="q">2. <span class="tl">While she ___ the dishes, she dropped a glass.</span></div>
+      <button class="option tl">washed</button>
+      <button class="option tl" data-correct="true">was washing</button>
+      <button class="option tl">were washing</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="started to rain فعل قصير → when.">
+      <div class="q">3. <span class="tl">I was walking home ___ it started to rain.</span></div>
+      <button class="option tl">while</button>
+      <button class="option tl" data-correct="true">when</button>
+      <button class="option tl">during</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="مع you نستخدم Were.">
+      <div class="q">4. <span class="tl">___ you sleeping when I called?</span></div>
+      <button class="option tl">Was</button>
+      <button class="option tl" data-correct="true">Were</button>
+      <button class="option tl">Did</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="know فعل حالة → لا يأتي بصيغة -ing.">
+      <div class="q">5. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">I was knowing the answer.</button>
+      <button class="option tl" data-correct="true">I knew the answer.</button>
+      <button class="option tl">I was know the answer.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="فعلان قصيران واحد بعد الآخر → كلاهما past simple.">
+      <div class="q">6. <span class="tl">When the phone rang, I ___ it. (first it rang, then I answered)</span></div>
+      <button class="option tl" data-correct="true">answered</button>
+      <button class="option tl">was answering</button>
+      <button class="option tl">were answering</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">B. Past continuous or past simple? Complete with the verb.<span class="instr-ar">الماضي المستمر أم البسيط؟ أكمل بالشكل الصحيح.</span></h3>
+    <div class="ex fill">
+      <p class="tl">7. I <input class="blank wide" data-answer="was waiting"> (wait) for the bus when I <input class="blank" data-answer="saw"> (see) an old friend.</p>
+      <p class="tl">8. They <input class="blank wide" data-answer="weren't watching|were not watching"> (not / watch) TV when the lights went out.</p>
+      <p class="tl">9. What <input class="blank" data-answer="were"> you <input class="blank" data-answer="doing"> (do) at 10 o'clock yesterday?</p>
+      <p class="tl">10. While we <input class="blank wide" data-answer="were driving"> (drive) to Fayoum, the car <input class="blank" data-answer="broke"> (break) down.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">C. Join the sentences. Use the word in brackets.<span class="instr-ar">اربط الجملتين باستخدام الكلمة بين القوسين.</span></h3>
+    <div class="ex fill">
+      <p class="tl">11. I was crossing the street. I slipped. (while)<br>→ I slipped <input class="blank wide" data-answer="while I was crossing"> the street.</p>
+      <p class="tl">12. She was cooking. The fire alarm went off. (when)<br>→ She <input class="blank wide" data-answer="was cooking"> when the fire alarm <input class="blank" data-answer="went"> off.</p>
+      <p class="tl">13. My mum was reading. At the same time, my dad was sleeping. (while)<br>→ My mum was reading <input class="blank" data-answer="while"> my dad <input class="blank wide" data-answer="was sleeping">.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">D. Put the words in order.<span class="instr-ar">رتّب الكلمات لتكوّن جملة.</span></h3>
+    <div class="ex builder" data-answer="I was waiting for the bus when I saw the accident">
+      <div class="q">14. 🚌</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex builder" data-answer="What were you doing at eight o'clock">
+      <div class="q">15. ❓</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">E. Say it! 🎤<span class="instr-ar">قل الجملة بصوتك. انطق was ضعيفة «وِز».</span></h3>
+    <div class="ex speak-check" data-text="I was driving to work when my car broke down">
+      <div class="q">16. <span class="tl">I was driving to work when my car broke down.</span> <button class="say" data-text="I was driving to work when my car broke down.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+    <div class="ex speak-check" data-text="While I was walking home it started to rain">
+      <div class="q">17. <span class="tl">While I was walking home, it started to rain.</span> <button class="say" data-text="While I was walking home, it started to rain.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+  </section>
+
+  <section id="task">
+    <h2>✍️ مهمة الكتابة <span class="tl">— Writing task (50–80 words)</span></h2>
+    <p class="instr">Tell a short story: a bad day or a surprising moment.<span class="instr-ar">احكِ قصة قصيرة عن يوم سيئ أو موقف مفاجئ. أرسلها لي في المحادثة وسأصححها.</span></p>
+    <ul class="tl">
+      <li>Set the scene: the weather, what people <b>were doing</b> (past continuous).</li>
+      <li>The main event: what <b>happened</b> (past simple).</li>
+      <li>Use <b>when</b> or <b>while</b> at least once.</li>
+      <li>Use <b>suddenly</b>, <b>luckily</b>, <b>unfortunately</b> or <b>in the end</b>.</li>
+    </ul>
+    <details><summary>👀 Model answer (76 words)</summary>
+      <p class="tl">Last winter, I was walking home from work. It was raining heavily and people were running to find shelter. While I was crossing the street, I slipped and fell over. Unfortunately, I dropped my phone in a puddle! A kind woman was waiting at the bus stop. She saw me and helped me get up. Luckily, I wasn't injured, and my phone still worked. In the end, I got home safely, but I was very wet!</p>
+    </details>
+  </section>
+
+  <section id="mistakes">
+    <h2>🚫 الأخطاء الشائعة عند العرب <span class="tl">— Common mistakes</span></h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>لماذا؟</th></tr>
+      <tr><td class="tl">While I walking home...</td><td class="tl">While I was walking home...</td><td>لا بد من <span class="tl">was / were</span> قبل <span class="tl">-ing</span>.</td></tr>
+      <tr><td class="tl">I was wait for the bus.</td><td class="tl">I was waiting for the bus.</td><td>بعد <span class="tl">was</span> الفعل مع <span class="tl">-ing</span>.</td></tr>
+      <tr><td class="tl">They was playing.</td><td class="tl">They were playing.</td><td>مع <span class="tl">you / we / they</span> نستخدم <span class="tl">were</span>.</td></tr>
+      <tr><td class="tl">I was knowing him.</td><td class="tl">I knew him.</td><td>أفعال الحالة لا تأتي بصيغة <span class="tl">-ing</span>.</td></tr>
+      <tr><td class="tl">While I saw the accident, I was driving.</td><td class="tl">I was driving when I saw the accident.</td><td><span class="tl">while</span> للفعل الطويل، و <span class="tl">when</span> للقصير.</td></tr>
+      <tr><td class="tl">As a child, I was playing football every day.</td><td class="tl">As a child, I used to play football every day.</td><td>عادة قديمة → <span class="tl">used to</span>.</td></tr>
+      <tr><td class="tl">Yesterday I was going to the bank and I was paying the bill.</td><td class="tl">Yesterday I went to the bank and paid the bill.</td><td>أحداث متتالية مكتملة → الماضي البسيط.</td></tr>
+      <tr><td class="tl">"walkinG" (ووكينج)</td><td class="tl">walking /ˈwɔː.kɪŋ/</td><td>صوت <span class="ipa">/ŋ/</span> من الأنف، بدون <span class="tl">g</span> واضح.</td></tr>
+    </table>
+  </section>
+
+  <section id="summary">
+    <h2>📌 الخلاصة <span class="tl">— Summary</span></h2>
+    <ul>
+      <li><span class="tl"><b>was / were + verb-ing</b></span> = فعل طويل كان في منتصف الحدوث في الماضي.</li>
+      <li>فعل طويل + فعل قصير قطعه: <span class="tl">I was walking (long) when it started (short) to rain.</span></li>
+      <li><span class="tl"><b>while</b></span> + الفعل الطويل · <span class="tl"><b>when</b></span> + الفعل القصير.</li>
+      <li>في القصة: الخلفية بالـ <span class="tl">past continuous</span>، والأحداث بالـ <span class="tl">past simple</span>.</li>
+      <li>«كنتُ أفعل» = <span class="tl">used to</span> (عادة) أو <span class="tl">was doing</span> (في لحظة معيّنة).</li>
+      <li>لا تستخدم <span class="tl">-ing</span> مع أفعال الحالة <span class="tl">(know, like, want)</span>.</li>
+      <li>انطق <span class="tl">was / were</span> ضعيفتين في وسط الجملة: <span class="ipa">/wəz/ /wər/</span>.</li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <h2>🔄 مراجعة سريعة <span class="tl">— Quick review (Lesson 3)</span></h2>
+    <p>هل تتذكر <span class="tl">used to</span> و <span class="tl">would</span>؟</p>
+    <div class="ex quiz" data-explain="السؤال: Did + subject + use to (بدون d).">
+      <div class="q">R1. <span class="tl">___ get pocket money when you were a child?</span></div>
+      <button class="option tl">Used you to</button>
+      <button class="option tl" data-correct="true">Did you use to</button>
+      <button class="option tl">Did you used to</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="be حالة → used to فقط، لا would.">
+      <div class="q">R2. <span class="tl">My father ___ very strict.</span></div>
+      <button class="option tl">would be</button>
+      <button class="option tl" data-correct="true">used to be</button>
+      <button class="option tl">was being</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="عادة الآن → usually + present simple.">
+      <div class="q">R3. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">I use to drink tea every morning.</button>
+      <button class="option tl">I used to drinking tea every morning.</button>
+      <button class="option tl" data-correct="true">I usually drink tea every morning.</button>
+      <div class="feedback"></div>
+    </div>
+    <p class="tl">Review words: childhood · memory · naughty · strict · bring up · tell off · look after</p>
+  </section>
+
+  <section id="next">
+    <h2>➡️ الدرس التالي <span class="tl">— Next lesson</span></h2>
+    <p>الدرس 5: <span class="tl">If it rains, we'll stay home</span>: الجملة الشرطية الأولى مع <span class="tl">when / unless</span>، لتتحدث عن الطقس والخطط والاحتمالات الحقيقية. اكتب «التالي» لتبدأ.</p>
+  </section>
+
+</div>
+
+<footer>تعلّم خطوة بخطوة 🌍 · <span class="tl">English B1 · Lesson 4</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif" });
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("المتصفح لا يدعم الصوت. جرّب Chrome أو Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 السرعة: عادية" : "🐢 السرعة: بطيئة";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · ضع الفأرة على الخانة الحمراء لترى الإجابة." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition) — accepts alternatives separated by |
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "المتصفح لا يدعم التعرف على الصوت. جرّب Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ I'm listening... أستمع إليك...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var targets = box.getAttribute("data-text").split("|").map(norm);
+        var ok = targets.indexOf(norm(said)) !== -1;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again. حاول مرة أخرى.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ لم أسمع جيدًا. تأكد من إذن الميكروفون وحاول مرة أخرى."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>

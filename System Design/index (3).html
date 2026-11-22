@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درس 4: طوابير الرسائل والأنظمة غير المتزامنة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #06b6d4);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 760px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; align-items: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.db { border-color: var(--good); }
+  .box.warn { border-color: var(--warn); background: rgba(245,158,11,.15); }
+  .box.bad { border-color: var(--bad); color: var(--bad); }
+  .box.ghost { opacity: .4; border-style: dashed; }
+  .arrow { font-size: 1.4rem; color: var(--muted); }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>طوابير الرسائل والأنظمة غير المتزامنة <span class="en">(Message Queues &amp; Async Systems)</span></h1>
+  <p>ستتعلم كيف ينتهي الدفع في 50ms، بينما تُرسل الإشعارات للتجار في الخلفية بدون أن تضيع رسالة واحدة.</p>
+  <div class="badges">
+    <span class="badge">الدرس 4 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 45 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 1 تعلمنا أن الأجزاء المتتالية تُضرب توافريتها. وفي الدرس 3 جعلنا قاعدة البيانات قوية. الآن نحل مشكلة جديدة: الأعمال التي لا يجب أن ينتظرها العميل.</div>
+      <p>بعد كل عملية دفع ناجحة، يجب أن نفعل أشياء كثيرة. نرسل إشعارًا لخادم التاجر <span class="en">(Webhook)</span>. ونرسل بريدًا للعميل. ونسجّل العملية لفريق التحليل.</p>
+      <p>إذا فعلنا كل هذا داخل طلب الدفع نفسه، فالعميل ينتظر كل خطوة. الدفع يأخذ 50ms، والإشعار للتاجر 800ms، والبريد 300ms، والتحليل 200ms. المجموع <strong>1350ms</strong>، بدلًا من 50ms.</p>
+      <p>والأسوأ: إذا كان خادم التاجر متوقفًا، يفشل الدفع كله! رغم أن المال خُصم فعلًا. الحل هو <strong>طابور الرسائل</strong> <span class="en">(Message Queue)</span>: ننهي الدفع، ونضع رسالة في الطابور، ونرد على العميل فورًا. وعمّال <span class="en">(Workers)</span> في الخلفية ينفذون الباقي.</p>
+      <p>في هذا الدرس ستتعلم:</p>
+      <ul>
+        <li>الفرق بين الطابور العادي والنشر والاشتراك <span class="en">(Pub/Sub)</span>.</li>
+        <li>ضمانات التوصيل: مرة على الأكثر، ومرة على الأقل، و"مرة واحدة بالضبط".</li>
+        <li>الترتيب والأقسام <span class="en">(Partitions)</span> ومجموعات المستهلكين.</li>
+        <li>إعادة المحاولة بتأخير متزايد، وطابور الرسائل الميتة <span class="en">(DLQ)</span>.</li>
+        <li>نمط صندوق الصادر <span class="en">(Outbox Pattern)</span>: كيف لا تضيع رسالة بين قاعدة البيانات والطابور.</li>
+      </ul>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">
+        📮 <strong>تخيّل مكتب بريد.</strong>
+        <p>أنت لا تذهب بنفسك لتسلّم كل رسالة. تضعها في صندوق البريد وتمشي. هذا هو <strong>المنتج</strong> <span class="en">(Producer)</span>: يضع الرسالة ويكمل عمله.</p>
+        <p>مكتب البريد يحفظ الرسائل حتى يأخذها ساعي البريد. هذا هو <strong>الوسيط</strong> <span class="en">(Broker)</span>. وساعي البريد هو <strong>المستهلك</strong> <span class="en">(Consumer)</span>.</p>
+        <p>الرسائل المهمة تُرسل "بعلم الوصول". إذا لم يوقّع المستلم، يحاول الساعي مرة ثانية غدًا. هذا هو <strong>التأكيد</strong> <span class="en">(Ack)</span> و<strong>إعادة المحاولة</strong>.</p>
+        <p>أحيانًا يسلّم الساعي الرسالة، لكن ورقة التوقيع تضيع. فيرجع غدًا بنفس الرسالة! المستلم الذكي يقول: "وصلتني من قبل" ولا يدفع الفاتورة مرتين. هذا هو <strong>المستهلك المتكرر الآمن</strong> <span class="en">(Idempotent Consumer)</span>.</p>
+        <p>وإذا كان العنوان خاطئًا وفشل التسليم 5 مرات، توضع الرسالة في غرفة "الرسائل غير المسلَّمة" ليراجعها موظف. هذا هو <strong>طابور الرسائل الميتة</strong> <span class="en">(Dead Letter Queue)</span>.</p>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>المنتج</td><td class="en">Producer</td><td>الخدمة التي ترسل الرسالة إلى الطابور.</td></tr>
+        <tr><td>المستهلك</td><td class="en">Consumer / Worker</td><td>الخدمة التي تقرأ الرسالة وتنفذ العمل.</td></tr>
+        <tr><td>الوسيط</td><td class="en">Broker</td><td>النظام الذي يحفظ الرسائل. مثل RabbitMQ و Kafka و SQS.</td></tr>
+        <tr><td>الموضوع</td><td class="en">Topic</td><td>قناة باسم معيّن. كل مشترك فيها يستلم نسخة من كل رسالة.</td></tr>
+        <tr><td>النشر والاشتراك</td><td class="en">Pub/Sub</td><td>رسالة واحدة تصل إلى عدة خدمات مختلفة.</td></tr>
+        <tr><td>القسم</td><td class="en">Partition</td><td>جزء من الموضوع. الرسائل داخل القسم الواحد مرتبة.</td></tr>
+        <tr><td>مجموعة المستهلكين</td><td class="en">Consumer Group</td><td>مستهلكون يتقاسمون العمل. كل رسالة تذهب لواحد منهم فقط.</td></tr>
+        <tr><td>الموقع</td><td class="en">Offset</td><td>رقم الرسالة داخل القسم. المستهلك يحفظ آخر رقم قرأه.</td></tr>
+        <tr><td>التأكيد</td><td class="en">Ack</td><td>المستهلك يقول للوسيط: "انتهيت، احذف الرسالة".</td></tr>
+        <tr><td>مهلة الإخفاء</td><td class="en">Visibility Timeout</td><td>مدة تختفي فيها الرسالة بعد استلامها. إذا لم يصل تأكيد، تظهر مرة أخرى.</td></tr>
+        <tr><td>طابور الرسائل الميتة</td><td class="en">Dead Letter Queue (DLQ)</td><td>مكان للرسائل التي فشلت كثيرًا، لنراجعها يدويًا.</td></tr>
+        <tr><td>الرسالة المسمومة</td><td class="en">Poison Message</td><td>رسالة تفشل دائمًا مهما أعدنا المحاولة. مثل بيانات تالفة.</td></tr>
+        <tr><td>تأخر المستهلك</td><td class="en">Consumer Lag</td><td>عدد الرسائل التي تنتظر ولم يقرأها أحد بعد.</td></tr>
+        <tr><td>الضغط العكسي</td><td class="en">Backpressure</td><td>طريقة لإبطاء المنتج عندما لا يلحق المستهلك.</td></tr>
+        <tr><td>آمن عند التكرار</td><td class="en">Idempotent</td><td>تنفيذ نفس العملية مرتين يعطي نفس نتيجة تنفيذها مرة واحدة.</td></tr>
+        <tr><td>صندوق الصادر</td><td class="en">Outbox Pattern</td><td>نحفظ الرسالة في قاعدة البيانات مع البيانات نفسها، ثم ننشرها لاحقًا.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>1. لماذا غير متزامن؟</h3>
+      <p>السبب الأول هو <strong>السرعة</strong>. العميل ينتظر فقط العمل الضروري. والباقي يحدث في الخلفية.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  subgraph S["متزامن: 1350ms"]
+    A1["Payment 50ms"] --> B1["Webhook 800ms"] --> C1["Email 300ms"] --> D1["Analytics 200ms"]
+  end
+  subgraph AS["غير متزامن: حوالي 55ms"]
+    A2["Payment 50ms"] --> Q[("Queue")]
+    Q -.-> B2["Webhook worker"]
+    Q -.-> C2["Email worker"]
+    Q -.-> D2["Analytics worker"]
+  end
+      </div>
+      <p>السبب الثاني هو <strong>عزل الأعطال</strong>. في النسخة المتزامنة، الدفع يعتمد على خادم التاجر وخدمة البريد. تذكر رياضيات الدرس 1: \(0.9995 \times 0.99 \times 0.999 \approx 98.85\%\). خادم تاجر ضعيف جعل الدفع كله يتوقف 4 أيام في السنة! مع الطابور، توافرية الدفع تعتمد فقط على الدفع نفسه.</p>
+      <p>السبب الثالث هو <strong>امتصاص الذروة</strong>. في يوم العروض، يصل 500 إشعار في الثانية. العمّال يعالجون 400 فقط. الطابور يحفظ الفرق، والعمّال يلحقون بعد انتهاء الذروة. لا شيء ينهار.</p>
+
+      <h3>2. الطابور العادي مقابل النشر والاشتراك</h3>
+      <p><strong>الطابور العادي</strong> <span class="en">(Point-to-Point)</span>: كل رسالة يعالجها مستهلك واحد فقط. مناسب لتوزيع المهام: "أرسل هذا البريد".</p>
+      <p><strong>النشر والاشتراك</strong> <span class="en">(Pub/Sub)</span>: كل رسالة تصل إلى كل الخدمات المشتركة. خدمة الدفع تنشر حدثًا واحدًا: "تم الدفع". وأربع خدمات مختلفة تستلم نسخة كل منها. خدمة الدفع لا تعرف من يستمع، ولا تحتاج أن تعرف.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  P["Payment Service"] --> T[["Topic: payment-events"]]
+  T --> G1["Group: webhooks"]
+  T --> G2["Group: email"]
+  T --> G3["Group: analytics"]
+  T --> G4["Group: ledger"]
+      </div>
+      <p>إذا أردت إضافة خدمة جديدة غدًا، مثل نقاط الولاء، فهي تشترك فقط. لا تغيّر سطرًا واحدًا في خدمة الدفع. هذا هو <strong>فك الارتباط</strong> <span class="en">(Decoupling)</span>.</p>
+
+      <h3>3. نوعان من الوسطاء</h3>
+      <table>
+        <tr><th>المعيار</th><th>طابور تقليدي (RabbitMQ, SQS)</th><th>سجل موزّع (Kafka)</th></tr>
+        <tr><td>بعد المعالجة</td><td>الرسالة تُحذف بعد التأكيد.</td><td>الرسالة تبقى أيامًا. المستهلك يحفظ موقعه فقط.</td></tr>
+        <tr><td>إعادة القراءة</td><td>❌ غير ممكنة بعد الحذف.</td><td>✅ ترجع إلى أي موقع وتقرأ من جديد.</td></tr>
+        <tr><td>الترتيب</td><td>⚠️ محدود، خصوصًا مع عدة مستهلكين.</td><td>✅ مضمون داخل القسم الواحد.</td></tr>
+        <tr><td>الإنتاجية</td><td>عالية.</td><td>عالية جدًا، ملايين الرسائل في الثانية.</td></tr>
+        <tr><td>الأفضل لـ</td><td>توزيع المهام، وإعادة المحاولة لكل رسالة.</td><td>تدفق الأحداث، وعدة مستهلكين، وإعادة المعالجة.</td></tr>
+      </table>
+
+      <h3>4. ضمانات التوصيل: أهم مفهوم في الدرس</h3>
+      <p>الشبكة غير موثوقة، والخوادم تتوقف. لذلك يجب أن تختار ماذا تفضّل: أن تضيع رسالة، أم أن تتكرر؟</p>
+      <table>
+        <tr><th>الضمان</th><th>كيف يعمل</th><th>النتيجة عند العطل</th><th>متى نستخدمه</th></tr>
+        <tr><td>مرة على الأكثر <span class="en">(At-Most-Once)</span></td><td>نؤكد الرسالة <strong>قبل</strong> المعالجة.</td><td>❌ قد تضيع الرسالة.</td><td>المقاييس والسجلات غير المهمة.</td></tr>
+        <tr><td>مرة على الأقل <span class="en">(At-Least-Once)</span></td><td>نؤكد الرسالة <strong>بعد</strong> المعالجة.</td><td>⚠️ قد تتكرر الرسالة.</td><td>أغلب الأنظمة. الخيار الافتراضي.</td></tr>
+        <tr><td>مرة بالضبط <span class="en">(Exactly-Once)</span></td><td>مرة على الأقل + مستهلك آمن عند التكرار.</td><td>✅ الأثر يحدث مرة واحدة.</td><td>الأموال والأرصدة.</td></tr>
+      </table>
+      <div class="callout warning">⚠️ <strong>حقيقة مهمة:</strong> "التوصيل مرة واحدة بالضبط" عبر الشبكة مستحيل عمليًا. ما نبنيه فعلًا هو <strong>"الأثر مرة واحدة"</strong> <span class="en">(Effectively-Once)</span>. الرسالة قد تصل مرتين، لكن المستهلك يتجاهل النسخة الثانية. لذلك كل مستهلك يجب أن يكون آمنًا عند التكرار.</div>
+
+      <h3>5. الترتيب والأقسام</h3>
+      <p>عملية الدفع تمر بحالات: <code>created</code> ثم <code>authorized</code> ثم <code>captured</code>. إذا عالجنا <code>captured</code> قبل <code>authorized</code>، فالحالة تصبح خاطئة.</p>
+      <p>الترتيب الكامل لكل الرسائل يعني مستهلكًا واحدًا فقط. هذا بطيء جدًا. الحل: نحتاج الترتيب <strong>لنفس العملية فقط</strong>. لذلك نقسم الموضوع إلى أقسام. ونرسل كل أحداث نفس العملية إلى نفس القسم باستخدام مفتاح <span class="en">(Partition Key)</span> مثل <code>payment_id</code>.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  P["Producer"] -- "key = payment_id" --> T
+  subgraph T["Topic: payment-events"]
+    P0["Partition 0"]
+    P1["Partition 1"]
+    P2["Partition 2"]
+  end
+  P0 --> C1["Consumer 1"]
+  P1 --> C2["Consumer 2"]
+  P2 --> C2
+      </div>
+      <p>داخل مجموعة المستهلكين، كل قسم يقرؤه مستهلك واحد فقط. لذلك <strong>عدد الأقسام هو حد التوازي</strong>. إذا كان عندك 3 أقسام و 10 مستهلكين، فسبعة منهم بلا عمل. هل تتذكر مفتاح التقسيم في الدرس 3؟ نفس الفكرة بالضبط.</p>
+
+      <h3>6. إعادة المحاولة والرسائل الميتة</h3>
+      <p>خادم التاجر قد يتوقف دقائق. إذا أعدنا المحاولة فورًا كل ثانية، فنحن نضربه وهو ضعيف. لذلك نستخدم <strong>التأخير المتزايد</strong> <span class="en">(Exponential Backoff)</span>: ثانية، ثم 2، ثم 4، ثم 8...</p>
+      <p>ونضيف عشوائية <span class="en">(Jitter)</span>، كما في الدرس 2، حتى لا تعود آلاف الرسائل في نفس اللحظة.</p>
+      <p>بعض الرسائل لن تنجح أبدًا. مثل رابط تاجر خاطئ، أو بيانات تالفة. هذه <strong>رسائل مسمومة</strong>. إذا أعدناها للأبد، فهي تسد الطابور. لذلك بعد عدد محدد من المحاولات ننقلها إلى <span class="en">DLQ</span>.</p>
+
+      <h3>7. مشكلة الكتابة المزدوجة</h3>
+      <p>خدمة الدفع تفعل شيئين: تحفظ العملية في قاعدة البيانات، وتنشر رسالة في الطابور. هما نظامان مختلفان. لا توجد معاملة واحدة تشملهما.</p>
+      <ul>
+        <li><strong>احفظ ثم انشر:</strong> الخادم يتوقف بين الخطوتين. الدفع محفوظ، لكن التاجر لا يعرف أبدًا. سيُلغي الطلب رغم أن العميل دفع!</li>
+        <li><strong>انشر ثم احفظ:</strong> النشر نجح، والحفظ فشل. التاجر يشحن طلبًا لعملية غير موجودة!</li>
+      </ul>
+      <p>الحل هو <strong>نمط صندوق الصادر</strong>: نكتب الرسالة في جدول <code>outbox</code> داخل <strong>نفس المعاملة</strong> مع عملية الدفع. إما ينجح الاثنان، أو يفشل الاثنان. ثم عملية منفصلة تقرأ الجدول وتنشر الرسائل. سنبنيه في المشروع.</p>
+
+      <h3>8. متى لا نستخدم الطابور؟</h3>
+      <ul>
+        <li><strong>عندما يحتاج المستخدم الجواب الآن:</strong> قبول البطاقة أو رفضها يجب أن يكون متزامنًا. العميل لا يستطيع أن يقول "سأعرف لاحقًا هل دفعت".</li>
+        <li><strong>عندما يكون النظام صغيرًا:</strong> الوسيط خدمة إضافية تحتاج مراقبة وتشغيل.</li>
+        <li><strong>عندما لا تتحمل الاتساق المتأخر:</strong> مع الطابور، البيانات تصل "بعد قليل". بعض الشاشات ستعرض حالة قديمة لثوانٍ.</li>
+        <li><strong>التتبع أصعب:</strong> طلب واحد يمر بعدة خدمات في أوقات مختلفة. تحتاج معرّف تتبع <span class="en">(Correlation ID)</span> في كل رسالة.</li>
+      </ul>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>دورة حياة الرسالة</h3>
+      <div class="diagram mermaid">
+stateDiagram-v2
+  [*] --> Ready : publish
+  Ready --> InFlight : receive
+  InFlight --> Done : ack
+  InFlight --> Ready : timeout or nack
+  InFlight --> DLQ : max attempts reached
+  Done --> [*]
+      </div>
+      <p>عندما يستلم المستهلك رسالة، لا تُحذف. تختفي فقط مؤقتًا <span class="en">(InFlight)</span>. إذا أرسل المستهلك تأكيدًا، تُحذف للأبد. وإذا توقف المستهلك أو انتهت المهلة، تعود الرسالة جاهزة لمستهلك آخر. هكذا لا تضيع رسالة إذا توقف عامل.</p>
+
+      <h3>لماذا تتكرر الرسائل؟ خطوة بخطوة</h3>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: النشر</h4>
+          <div class="mem"><div class="box">Payment Service</div><span class="arrow">→</span><div class="box hl">evt_1: +100 EGP</div><span class="arrow">→</span><div class="box">Queue</div></div>
+          <p>خدمة الدفع تنشر حدثًا: "أضف 100 جنيه لرصيد التاجر m1". الرسالة الآن في الطابور، جاهزة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: الاستلام</h4>
+          <div class="mem"><div class="box ghost">Queue: evt_1 (hidden 30s)</div><span class="arrow">→</span><div class="box hl">Worker A</div></div>
+          <p>العامل <span class="en">A</span> يستلم الرسالة. الوسيط يخفيها 30 ثانية. لا يراها أي عامل آخر.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: المعالجة ثم التوقف</h4>
+          <div class="mem"><div class="box bad">Worker A 💥</div><span class="arrow">→</span><div class="box db">Balance m1: 100 ✓</div><span class="arrow">✗</span><div class="box ghost">ack</div></div>
+          <p>العامل أضاف 100 للرصيد بنجاح. ثم توقف الخادم قبل أن يرسل التأكيد. الوسيط لا يعرف أن العمل انتهى.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: انتهاء المهلة</h4>
+          <div class="mem"><div class="box warn">Queue: evt_1 (visible again)</div></div>
+          <p>مرت 30 ثانية بدون تأكيد. الوسيط يفترض أن العامل فشل. يعيد الرسالة إلى الطابور. هذا صحيح من وجهة نظره: هو يفضّل التكرار على الضياع.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: التسليم الثاني</h4>
+          <div class="mem"><div class="box hl">Worker B</div><span class="arrow">→</span><div class="box bad">❌ بدون حماية: 200</div><div class="box db">✅ مع حماية: 100</div></div>
+          <p>العامل <span class="en">B</span> يستلم <code>evt_1</code> مرة أخرى. بدون حماية، يضيف 100 مرة ثانية، فيصبح الرصيد 200. مع الحماية، يبحث عن <code>evt_1</code> في جدول "تمت معالجته"، يجده، ويتخطاه. الرصيد يبقى 100.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+
+      <h3>نمط صندوق الصادر</h3>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant API as Payment API
+  participant DB as Database
+  participant R as Outbox Relay
+  participant B as Broker
+  participant W as Webhook Worker
+  API->>DB: BEGIN
+  API->>DB: INSERT payment
+  API->>DB: INSERT outbox event
+  API->>DB: COMMIT
+  API-->>API: reply 201 to client
+  loop every 100ms
+    R->>DB: SELECT unpublished events
+    R->>B: publish event
+    R->>DB: mark as published
+  end
+  B->>W: deliver event
+  W->>W: skip if event_id seen before
+  W->>W: POST to merchant URL
+      </div>
+      <p>لاحظ: إذا توقف الناقل <span class="en">(Relay)</span> بعد النشر وقبل التعليم، فسينشر الرسالة مرة ثانية. هذا مقبول! لأن المستهلك آمن عند التكرار. صندوق الصادر يضمن "مرة على الأقل"، والمستهلك يحوّلها إلى "الأثر مرة واحدة".</p>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: وسيط بسيط مع تأكيد ومهلة إخفاء</h3>
+      <p>هذا تبسيط لما يفعله <span class="en">Amazon SQS</span>. نستخدم وقتًا ثابتًا حتى تكون النتائج مضمونة.</p>
+<pre><code class="language-python">from collections import deque
+from dataclasses import dataclass
+
+
+@dataclass
+class Message:
+    id: int
+    body: str
+    attempts: int = 0
+
+
+class Broker:
+    def __init__(self, visibility_timeout: float) -> None:
+        self.ready: deque[Message] = deque()
+        self.in_flight: dict[int, tuple[Message, float]] = {}
+        self.timeout = visibility_timeout
+        self._next_id = 1
+
+    def publish(self, body: str) -> int:
+        msg = Message(self._next_id, body)
+        self._next_id += 1
+        self.ready.append(msg)
+        return msg.id
+
+    def receive(self, now: float) -> Message | None:
+        self._requeue_expired(now)
+        if not self.ready:
+            return None
+        msg = self.ready.popleft()
+        msg.attempts += 1
+        self.in_flight[msg.id] = (msg, now + self.timeout)  # hidden
+        return msg
+
+    def ack(self, msg_id: int) -> None:
+        self.in_flight.pop(msg_id, None)                    # gone for good
+
+    def _requeue_expired(self, now: float) -> None:
+        expired = [mid for mid, (_, deadline) in self.in_flight.items()
+                   if now >= deadline]
+        for mid in expired:
+            msg, _ = self.in_flight.pop(mid)
+            self.ready.append(msg)                          # visible again
+
+
+def show(t: int, msg: Message | None) -> None:
+    text = f"{msg.body} (attempt {msg.attempts})" if msg else "nothing"
+    print(f"t={t:>2} -> {text}")
+
+
+broker = Broker(visibility_timeout=30)
+broker.publish("webhook pay_1")
+broker.publish("webhook pay_2")
+
+m = broker.receive(now=0)
+show(0, m)                     # worker crashes: no ack!
+m = broker.receive(now=1)
+show(1, m)
+broker.ack(m.id)
+show(10, broker.receive(now=10))
+m = broker.receive(now=31)
+show(31, m)
+broker.ack(m.id)
+show(32, broker.receive(now=32))</code></pre>
+      <div class="output">t= 0 -> webhook pay_1 (attempt 1)
+t= 1 -> webhook pay_2 (attempt 1)
+t=10 -> nothing
+t=31 -> webhook pay_1 (attempt 2)
+t=32 -> nothing</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>self.ready</code>: الرسائل الجاهزة. <code>deque</code> سريع في الإضافة والحذف من الطرفين.</li>
+        <li><code>self.in_flight</code>: الرسائل المستلمة التي لم تُؤكد. نحفظ معها وقت انتهاء المهلة.</li>
+        <li><code>msg.attempts += 1</code>: نعد كم مرة سلّمنا الرسالة. سنحتاج هذا الرقم لنقرر متى نرسلها إلى DLQ.</li>
+        <li><code>ack</code>: الحذف النهائي يحدث فقط هنا.</li>
+        <li><code>_requeue_expired</code>: قبل كل استلام، نعيد الرسائل التي انتهت مهلتها.</li>
+        <li><strong>التتبع:</strong> في <code>t=0</code> استلم العامل <code>pay_1</code> وتوقف. في <code>t=10</code> الرسالة ما زالت مخفية. في <code>t=31</code> انتهت المهلة، فعادت <code>pay_1</code> بمحاولة رقم 2. لم تضع الرسالة.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> اختر مهلة الإخفاء أطول من أبطأ معالجة متوقعة. إذا كانت المعالجة 40 ثانية والمهلة 30، فكل رسالة ستُسلَّم مرتين حتى بدون أعطال!</div>
+
+      <h3>مثال 2: إعادة المحاولة بتأخير متزايد و DLQ</h3>
+<pre><code class="language-python">from dataclasses import dataclass
+
+MAX_ATTEMPTS = 5
+
+
+def backoff_delay(attempt: int, base: float = 1.0,
+                  cap: float = 60.0) -> float:
+    return min(cap, base * 2 ** (attempt - 1))
+
+
+@dataclass
+class WebhookJob:
+    event_id: str
+    failures_before_success: int   # simulates a flaky merchant endpoint
+
+
+dead_letter: list[str] = []
+
+
+def deliver(job: WebhookJob) -> None:
+    waited = 0.0
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        if attempt > job.failures_before_success:
+            print(f"{job.event_id}: delivered on attempt {attempt}, "
+                  f"waited {waited:.0f}s")
+            return
+        if attempt &lt; MAX_ATTEMPTS:
+            waited += backoff_delay(attempt)
+    dead_letter.append(job.event_id)
+    print(f"{job.event_id}: moved to DLQ after {MAX_ATTEMPTS} attempts, "
+          f"waited {waited:.0f}s")
+
+
+print("schedule:", [backoff_delay(a) for a in range(1, 9)])
+deliver(WebhookJob("evt_A", failures_before_success=2))
+deliver(WebhookJob("evt_B", failures_before_success=99))
+print("DLQ:", dead_letter)</code></pre>
+      <div class="output">schedule: [1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 60.0, 60.0]
+evt_A: delivered on attempt 3, waited 3s
+evt_B: moved to DLQ after 5 attempts, waited 15s
+DLQ: ['evt_B']</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>base * 2 ** (attempt - 1)</code>: التأخير يتضاعف مع كل محاولة: 1، 2، 4، 8...</li>
+        <li><code>min(cap, ...)</code>: نضع حدًا أقصى. بدونه، المحاولة رقم 20 تنتظر 6 أيام!</li>
+        <li><code>failures_before_success</code>: نحاكي خادم تاجر يفشل عددًا محددًا من المرات ثم يعود.</li>
+        <li><code>if attempt &lt; MAX_ATTEMPTS</code>: لا ننتظر بعد آخر محاولة، لأنه لا توجد محاولة بعدها.</li>
+        <li><strong>evt_A:</strong> فشل مرتين. انتظرنا 1 + 2 = 3 ثوانٍ، ثم نجح في المحاولة الثالثة.</li>
+        <li><strong>evt_B:</strong> رسالة مسمومة. بعد 5 محاولات (1+2+4+8 = 15 ثانية) نقلناها إلى DLQ، ولم تسد الطابور.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> في الإنتاج، لا ننام داخل العامل أثناء الانتظار. هذا يحجز العامل بلا فائدة. بدلًا من ذلك نعيد الرسالة إلى الطابور مع تأخير <span class="en">(Delayed Message)</span>، والعامل يكمل الرسائل الأخرى. شركات الدفع الكبيرة تعيد محاولة الإشعارات لمدة تصل إلى 3 أيام.</div>
+
+      <h3>مثال 3: الترتيب يحتاج مفتاح القسم</h3>
+      <p>خمسة أحداث لعمليتي دفع. نوزّعها على 3 أقسام مرة بالدور، ومرة حسب <code>payment_id</code>. ثم نعالجها بترتيب ممكن: القسم 0 كاملًا، ثم 1، ثم 2. الأقسام تعمل بالتوازي، فلا يوجد ترتيب مضمون بينها.</p>
+<pre><code class="language-python">from collections import defaultdict
+
+PARTITIONS = 3
+events = [("pay_1", "created"), ("pay_2", "created"),
+          ("pay_1", "authorized"), ("pay_2", "failed"),
+          ("pay_1", "captured")]
+
+VALID = {None: {"created"}, "created": {"authorized", "failed"},
+         "authorized": {"captured"}}
+
+
+def toy_hash(key: str) -> int:
+    return sum(key.encode())        # demo only; Kafka uses murmur2
+
+
+def assign(strategy: str) -> dict[int, list[tuple[str, str]]]:
+    parts: dict[int, list[tuple[str, str]]] = defaultdict(list)
+    for i, (key, event) in enumerate(events):
+        if strategy == "round-robin":
+            p = i % PARTITIONS
+        else:
+            p = toy_hash(key) % PARTITIONS
+        parts[p].append((key, event))
+    return parts
+
+
+def replay(parts: dict[int, list[tuple[str, str]]]) -> list[str]:
+    # One possible order: partitions run in parallel, no order between them
+    state: dict[str, str | None] = {}
+    errors = []
+    for p in sorted(parts):
+        for key, event in parts[p]:
+            current = state.get(key)
+            if event in VALID.get(current, set()):
+                state[key] = event
+            else:
+                errors.append(f"{key}: {current} -> {event}")
+    return errors
+
+
+for strategy in ("round-robin", "keyed"):
+    parts = assign(strategy)
+    print(strategy)
+    for p in sorted(parts):
+        print(f"  P{p}: {[f'{k}:{e}' for k, e in parts[p]]}")
+    print(f"  errors: {replay(parts)}")</code></pre>
+      <div class="output">round-robin
+  P0: ['pay_1:created', 'pay_2:failed']
+  P1: ['pay_2:created', 'pay_1:captured']
+  P2: ['pay_1:authorized']
+  errors: ['pay_2: None -> failed', 'pay_1: created -> captured']
+keyed
+  P0: ['pay_1:created', 'pay_1:authorized', 'pay_1:captured']
+  P1: ['pay_2:created', 'pay_2:failed']
+  errors: []</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>VALID</code>: آلة حالات <span class="en">(State Machine)</span>. من <code>created</code> يمكن الانتقال إلى <code>authorized</code> أو <code>failed</code> فقط.</li>
+        <li><code>toy_hash</code>: تجزئة بسيطة للتوضيح. مجموع حروف <code>pay_1</code> هو 474، و \(474 \bmod 3 = 0\). و <code>pay_2</code> يعطي 475، أي القسم 1.</li>
+        <li><code>i % PARTITIONS</code>: التوزيع بالدور يتجاهل المفتاح. أحداث <code>pay_1</code> انتشرت في الأقسام الثلاثة.</li>
+        <li><code>replay</code>: نعالج الأقسام واحدًا بعد الآخر، ونتحقق من كل انتقال.</li>
+        <li><strong>بالدور:</strong> خطآن. <code>failed</code> وصل قبل <code>created</code>، و <code>captured</code> وصل قبل <code>authorized</code>.</li>
+        <li><strong>بالمفتاح:</strong> كل أحداث العملية في قسم واحد، فهي مرتبة دائمًا. صفر أخطاء.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> حتى مع المفتاح، أضف آلة الحالات في المستهلك. إعادة المحاولة قد تغيّر الترتيب أحيانًا. وآلة الحالات تكشف ذلك بدلًا من أن تكتب حالة خاطئة بصمت.</div>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>1. مستهلك غير آمن عند التكرار</h3>
+      <p>الحدث <code>evt_1</code> وصل مرتين، لأن التأكيد ضاع كما رأينا في الخطوات السابقة.</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">balance = {"m1": 0}
+
+
+def handle(event_id: str, merchant: str, amount: int) -> None:
+    balance[merchant] += amount
+
+
+deliveries = [("evt_1", "m1", 100),
+              ("evt_1", "m1", 100),   # redelivered
+              ("evt_2", "m1", 50)]
+for event in deliveries:
+    handle(*event)
+print("balance:", balance["m1"])</code></pre>
+          <div class="output">balance: 250</div>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">balance = {"m1": 0}
+processed: set[str] = set()
+
+
+def handle(event_id: str, merchant: str, amount: int) -> None:
+    if event_id in processed:
+        return                        # seen before: skip
+    balance[merchant] += amount
+    processed.add(event_id)           # same DB transaction in production
+
+
+deliveries = [("evt_1", "m1", 100),
+              ("evt_1", "m1", 100),   # redelivered
+              ("evt_2", "m1", 50)]
+for event in deliveries:
+    handle(*event)
+print("balance:", balance["m1"])</code></pre>
+          <div class="output">balance: 150</div>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الطريقة الأولى خاطئة؟</strong> التاجر حصل على 100 جنيه إضافية لم يدفعها أحد. في نظام يعالج ملايين الرسائل، التكرار ليس حالة نادرة. يحدث كل يوم. <strong>مهم:</strong> في الإنتاج، احفظ <code>event_id</code> وتحديث الرصيد في <strong>نفس المعاملة</strong>. وإلا قد يتوقف الخادم بينهما، فتعود المشكلة.</div>
+
+      <h3>2. أخطاء أخرى شائعة</h3>
+      <ul>
+        <li><strong>❌ الكتابة المزدوجة:</strong> <code>db.save()</code> ثم <code>broker.publish()</code> في كود عادي. <strong>✅</strong> استخدم صندوق الصادر.</li>
+        <li><strong>❌ التأكيد قبل المعالجة:</strong> يجعل النظام "مرة على الأكثر" بدون أن تقصد. <strong>✅</strong> أكّد بعد أن ينجح العمل وتُحفظ نتيجته.</li>
+        <li><strong>❌ إعادة المحاولة للأبد:</strong> رسالة مسمومة تسد القسم كله، لأن الرسائل بعدها تنتظر. <strong>✅</strong> حد أقصى للمحاولات، ثم DLQ.</li>
+        <li><strong>❌ DLQ بدون مراقبة:</strong> رسائل تتراكم شهورًا ولا أحد يعرف. <strong>✅</strong> تنبيه عند أول رسالة، وأداة لإعادة إرسالها بعد الإصلاح.</li>
+        <li><strong>❌ رسائل ضخمة:</strong> وضع ملف PDF كامل داخل الرسالة. <strong>✅</strong> ضع الملف في التخزين، وأرسل رابطه أو معرّفه فقط.</li>
+        <li><strong>❌ عدم مراقبة التأخر:</strong> الطابور فيه مليون رسالة منذ ساعات، والتجار يشتكون. <strong>✅</strong> راقب عدد الرسائل المنتظرة وعمر أقدم رسالة.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>كل رسالة لها معرّف فريد</strong> <span class="en">(event_id)</span> يُنشأ عند المنتج. هو أساس الحماية من التكرار.</li>
+        <li><strong>كل مستهلك آمن عند التكرار.</strong> افترض دائمًا أن الرسالة ستصل مرتين.</li>
+        <li><strong>اختر مفتاح القسم حسب ما يحتاج ترتيبًا.</strong> لأحداث الدفع: <code>payment_id</code>. وإذا احتجت ترتيب أحداث التاجر كلها: <code>merchant_id</code>، لكن احذر التجار الضخام (الدرس 3).</li>
+        <li><strong>أضف إصدارًا للرسالة</strong> <span class="en">(Schema Version)</span>. المستهلكون القدامى والجدد يعملون معًا أثناء التحديث.</li>
+        <li><strong>أضف معرّف تتبع</strong> <span class="en">(Correlation ID)</span> لكل رسالة، حتى تتبع العملية عبر كل الخدمات.</li>
+        <li><strong>اجعل مهلة الإخفاء أطول من أبطأ معالجة.</strong> أو مددها أثناء المعالجة الطويلة.</li>
+        <li><strong>عدد الأقسام يحدد التوازي الأقصى.</strong> ابدأ بعدد أكبر من حاجتك الحالية، لأن زيادة الأقسام لاحقًا تغيّر توزيع المفاتيح.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة للإشعارات:</strong> وقّع كل إشعار بمفتاح سري <span class="en">(HMAC Signature)</span> وأضف الوقت. التاجر يتحقق من التوقيع، فيعرف أن الإشعار منك فعلًا ولم يُعدَّل. هذا هو التمرين 3.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+
+      <h3>متى يكبر الطابور؟</h3>
+      <p>إذا كان معدل الوصول \(\lambda\) أكبر من معدل المعالجة \(\mu\)، فالطابور يكبر بالفرق كل ثانية:</p>
+      <div dir="ltr">$$\frac{dB}{dt} = \lambda - \mu$$</div>
+      <p>بعد انتهاء الذروة، وقت تفريغ الطابور هو:</p>
+      <div dir="ltr">$$T_{\text{drain}} = \frac{B}{\mu - \lambda}$$</div>
+      <p>وحسب قانون ليتل من الدرس 1، الرسالة الجديدة تنتظر تقريبًا:</p>
+      <div dir="ltr">$$W \approx \frac{B}{\mu}$$</div>
+      <p><strong>مثال يوم العروض:</strong> 500 إشعار في الثانية لمدة 10 دقائق، والعمّال يعالجون 400. الطابور يكبر 100 كل ثانية، فيصل إلى <strong>60,000</strong> رسالة. الإشعار الجديد ينتظر \(60000 / 400 = 150\) ثانية. ثم ينزل الوصول إلى 200، فيفرغ الطابور في \(60000 / 200 = 300\) ثانية. تأخر الإشعارات دقيقتين ونصف، لكن <strong>لم تفشل عملية دفع واحدة</strong>.</p>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>كم عاملًا تحتاج؟</h3>
+      <p>إذا كان كل إشعار يأخذ \(t\) ثانية، وتريد استخدام \(U\) فقط من طاقة العمّال:</p>
+      <div dir="ltr">$$N_{\text{workers}} = \left\lceil \frac{\lambda \times t}{U} \right\rceil$$</div>
+      <p>مع \(\lambda = 350\) و \(t = 0.4\) و \(U = 0.5\): نحتاج 280 عاملًا متزامنًا. هذا رقم كبير إذا كان كل عامل خيطًا <span class="en">(Thread)</span>. لكن مع <code>asyncio</code>، عملية واحدة تنتظر مئات طلبات HTTP في نفس الوقت. لذلك الإشعارات مثال ممتاز للبرمجة غير المتزامنة.</p>
+
+      <h3>مقارنة: متزامن مقابل غير متزامن</h3>
+      <table>
+        <tr><th>المعيار</th><th>متزامن (استدعاء مباشر)</th><th>غير متزامن (طابور)</th></tr>
+        <tr><td>زمن الاستجابة للعميل</td><td>❌ مجموع كل الخطوات</td><td>✅ العمل الضروري فقط</td></tr>
+        <tr><td>عزل الأعطال</td><td>❌ أي خدمة تتوقف تُفشل الطلب</td><td>✅ الرسائل تنتظر حتى تعود الخدمة</td></tr>
+        <tr><td>امتصاص الذروة</td><td>❌ الحمل يصل كاملًا لكل خدمة</td><td>✅ الطابور يخزّن الفرق</td></tr>
+        <tr><td>الاتساق</td><td>✅ فوري</td><td>⚠️ متأخر قليلًا <span class="en">(Eventual)</span></td></tr>
+        <tr><td>التعقيد والتتبع</td><td>✅ بسيط</td><td>❌ تكرار، ترتيب، DLQ، مراقبة</td></tr>
+        <tr><td>متى تستخدمه؟</td><td>عندما يحتاج المستخدم الجواب الآن</td><td>الإشعارات، البريد، التقارير، المهام الثقيلة</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: صندوق الصادر مع مستهلك آمن</h2>
+      <p>ستبني نمط صندوق الصادر باستخدام <code>sqlite3</code> الموجود مع Python. معاملات حقيقية، بدون أي مكتبة خارجية. ثم نجرّب عطلين: توقف خادم الدفع أثناء المعاملة، وتوقف الناقل بعد النشر.</p>
+<pre><code class="language-python">import json
+import sqlite3
+
+
+def setup() -> sqlite3.Connection:
+    conn = sqlite3.connect(":memory:")
+    conn.executescript("""
+        CREATE TABLE payments (id TEXT PRIMARY KEY, amount INTEGER,
+                               status TEXT);
+        CREATE TABLE outbox (seq INTEGER PRIMARY KEY AUTOINCREMENT,
+                             event_id TEXT UNIQUE, payload TEXT,
+                             published INTEGER DEFAULT 0);
+        CREATE TABLE processed (event_id TEXT PRIMARY KEY);
+        CREATE TABLE balance (id INTEGER PRIMARY KEY, total INTEGER);
+        INSERT INTO balance VALUES (1, 0);
+    """)
+    return conn
+
+
+def create_payment(conn: sqlite3.Connection, payment_id: str,
+                   amount: int, crash: bool = False) -> None:
+    with conn:  # one transaction: commit on success, rollback on error
+        conn.execute("INSERT INTO payments VALUES (?, ?, 'succeeded')",
+                     (payment_id, amount))
+        if crash:
+            raise RuntimeError("server crashed")
+        payload = json.dumps({"payment_id": payment_id, "amount": amount})
+        conn.execute("INSERT INTO outbox (event_id, payload) VALUES (?, ?)",
+                     (f"evt_{payment_id}", payload))
+
+
+def relay(conn: sqlite3.Connection, queue: list[dict],
+          crash_before_mark: bool = False) -> None:
+    rows = conn.execute("SELECT seq, event_id, payload FROM outbox "
+                        "WHERE published = 0 ORDER BY seq").fetchall()
+    for seq, event_id, payload in rows:
+        queue.append({"event_id": event_id, **json.loads(payload)})
+        if crash_before_mark:
+            raise RuntimeError("relay crashed")
+        with conn:
+            conn.execute("UPDATE outbox SET published = 1 WHERE seq = ?",
+                         (seq,))
+
+
+def consume(conn: sqlite3.Connection, queue: list[dict]) -> None:
+    while queue:
+        event = queue.pop(0)
+        try:
+            with conn:  # dedupe + side effect in ONE transaction
+                conn.execute("INSERT INTO processed VALUES (?)",
+                             (event["event_id"],))
+                conn.execute("UPDATE balance SET total = total + ? "
+                             "WHERE id = 1", (event["amount"],))
+        except sqlite3.IntegrityError:
+            print(f"  skip duplicate {event['event_id']}")
+            continue
+        print(f"  credited {event['payment_id']} +{event['amount']}")
+
+
+def scalar(conn: sqlite3.Connection, sql: str) -> int:
+    return conn.execute(sql).fetchone()[0]
+
+
+conn = setup()
+queue: list[dict] = []
+
+create_payment(conn, "pay_1", 100)
+try:
+    create_payment(conn, "pay_2", 250, crash=True)
+except RuntimeError as err:
+    print("error:", err)
+create_payment(conn, "pay_3", 75)
+print("payments:", scalar(conn, "SELECT COUNT(*) FROM payments"),
+      "| outbox:", scalar(conn, "SELECT COUNT(*) FROM outbox"))
+
+try:
+    relay(conn, queue, crash_before_mark=True)
+except RuntimeError as err:
+    print("error:", err)
+print("queue after crash:", [e["event_id"] for e in queue])
+
+relay(conn, queue)  # relay restarts and publishes unpublished rows again
+print("queue after retry:", [e["event_id"] for e in queue])
+
+consume(conn, queue)
+print("balance:", scalar(conn, "SELECT total FROM balance"))</code></pre>
+      <div class="output">error: server crashed
+payments: 2 | outbox: 2
+error: relay crashed
+queue after crash: ['evt_pay_1']
+queue after retry: ['evt_pay_1', 'evt_pay_1', 'evt_pay_3']
+  credited pay_1 +100
+  skip duplicate evt_pay_1
+  credited pay_3 +75
+balance: 175</div>
+      <h4>تتبّع السيناريو</h4>
+      <ol>
+        <li><strong>pay_1:</strong> العملية ورسالتها حُفظتا معًا في معاملة واحدة.</li>
+        <li><strong>pay_2:</strong> الخادم توقف بعد حفظ العملية وقبل حفظ الرسالة. <code>with conn</code> ألغى المعاملة كلها. لا توجد عملية بلا رسالة، ولا رسالة بلا عملية. لذلك العدد 2 و 2.</li>
+        <li><strong>الناقل توقف:</strong> نشر <code>evt_pay_1</code> ثم توقف قبل أن يعلّمها "منشورة".</li>
+        <li><strong>الناقل عاد:</strong> وجد رسالتين غير منشورتين، فنشرهما. <code>evt_pay_1</code> صارت في الطابور مرتين. هذا هو "مرة على الأقل".</li>
+        <li><strong>المستهلك:</strong> أضاف <code>evt_pay_1</code> إلى جدول <code>processed</code>. في المرة الثانية، المفتاح الفريد رفض الإضافة، فألغيت المعاملة وتخطينا الرسالة.</li>
+        <li><strong>النتيجة:</strong> 100 + 75 = 175. صحيح تمامًا رغم عطلين.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> في هذا المثال، المنتج والمستهلك يشتركان في قاعدة بيانات واحدة للتبسيط. في الواقع، لكل خدمة قاعدتها الخاصة. وأدوات مثل <span class="en">Debezium</span> تقرأ جدول الصادر من سجل قاعدة البيانات مباشرة <span class="en">(Change Data Capture)</span>، بدلًا من الاستعلام كل 100ms.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+
+      <div class="quiz" data-explain="التأكيد بعد المعالجة يعني أن الرسالة لا تضيع، لكنها قد تتكرر إذا ضاع التأكيد. هذا هو At-Least-Once.">
+        <div class="q">1. المستهلك يؤكد الرسالة بعد المعالجة. إذا ضاع التأكيد، تُسلَّم الرسالة مرة أخرى. ما اسم هذا الضمان؟</div>
+        <button class="option">At-Most-Once</button>
+        <button class="option" data-correct="true">At-Least-Once</button>
+        <button class="option">Exactly-Once</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="كل الرسائل بنفس المفتاح تذهب إلى نفس القسم، والقسم الواحد مرتب دائمًا.">
+        <div class="q">2. كيف تضمن أن أحداث نفس عملية الدفع تُعالج بالترتيب في Kafka؟</div>
+        <button class="option">مستهلك واحد لكل الموضوع</button>
+        <button class="option" data-correct="true">استخدام payment_id كمفتاح للقسم</button>
+        <button class="option">زيادة مهلة الإخفاء</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="صندوق الصادر يحفظ الرسالة في نفس معاملة قاعدة البيانات، فلا تضيع إذا توقف الخادم بين الحفظ والنشر.">
+        <div class="q">3. الخدمة تحفظ الدفع ثم تنشر الرسالة. الخادم توقف بين الخطوتين، فضاعت الرسالة. ما الحل؟</div>
+        <button class="option">إعادة المحاولة بتأخير متزايد</button>
+        <button class="option">زيادة عدد الأقسام</button>
+        <button class="option" data-correct="true">نمط صندوق الصادر (Outbox)</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الرسالة المسمومة تفشل دائمًا. بعد حد أقصى من المحاولات، تُنقل إلى DLQ حتى لا تسد الطابور.">
+        <div class="q">4. رسالة فيها بيانات تالفة تفشل في كل محاولة. ماذا تفعل بها؟</div>
+        <button class="option">نعيد المحاولة للأبد</button>
+        <button class="option" data-correct="true">ننقلها إلى DLQ بعد عدد محدد من المحاولات</button>
+        <button class="option">نحذفها بصمت</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الطابور يكبر (500 − 400) = 100 رسالة كل ثانية × 600 ثانية = 60,000.">
+        <div class="q">5. يصل 500 رسالة في الثانية لمدة 10 دقائق، والعمّال يعالجون 400. كم رسالة في الطابور بعد 10 دقائق؟</div>
+        <button class="option">6,000</button>
+        <button class="option" data-correct="true">60,000</button>
+        <button class="option">300,000</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): خطط سعة العمّال</h3>
+      <p>الذروة 350 إشعارًا في الثانية. كل إشعار يأخذ 400ms في المتوسط. تريد استخدام 50% فقط من طاقة العمّال، حتى يبقى مكان لإعادة المحاولات. كم عاملًا متزامنًا تحتاج؟ وإذا وصل الطابور إلى 60,000 رسالة بعد الذروة، والوصول 200 في الثانية، كم يأخذ التفريغ مع 400 رسالة في الثانية؟</p>
+      <details><summary>💡 تلميح</summary><p>كل عامل يعالج 1000 / 400 رسالة في الثانية. واستخدم معادلة \(T_{\text{drain}}\).</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">import math
+
+peak_qps = 350
+task_ms = 400
+target_util = 0.5
+
+per_worker = 1000 / task_ms
+workers = math.ceil(peak_qps / (per_worker * target_util))
+print("per worker:", per_worker, "msg/s")
+print("workers needed:", workers)
+
+backlog, arrival, service = 60_000, 200, 400
+print("drain time:", backlog / (service - arrival), "s")</code></pre>
+        <div class="output">per worker: 2.5 msg/s
+workers needed: 280
+drain time: 300.0 s</div>
+        <p>280 عاملًا متزامنًا لا يعني 280 خادمًا. مع <code>asyncio</code> أو <code>httpx.AsyncClient</code>، خادمان أو ثلاثة تكفي غالبًا، لأن العامل يقضي أغلب وقته في انتظار الشبكة.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): تأخير متزايد مع عشوائية كاملة</h3>
+      <p>اكتب دالة <code>full_jitter(attempt)</code> ترجع رقمًا عشوائيًا بين 0 والتأخير المتزايد. هذه طريقة <span class="en">AWS</span> الموصى بها. ثم تأكد أن كل القيم للمحاولة الخامسة بين 0 و 16، وأنها ليست كلها متساوية.</p>
+      <details><summary>💡 تلميح</summary><p>استخدم <code>backoff_delay</code> من المثال 2، ثم <code>rng.uniform(0, delay)</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">import random
+
+
+def backoff_delay(attempt: int, base: float = 1.0,
+                  cap: float = 60.0) -> float:
+    return min(cap, base * 2 ** (attempt - 1))
+
+
+def full_jitter(attempt: int, rng: random.Random | None = None) -> float:
+    rng = rng or random.Random()
+    return rng.uniform(0, backoff_delay(attempt))
+
+
+rng = random.Random(7)
+delays = [full_jitter(5, rng) for _ in range(1000)]
+print(all(0 &lt;= d &lt;= 16 for d in delays), len(set(delays)) > 1)</code></pre>
+        <div class="output">True True</div>
+        <p>بدون عشوائية: إذا توقف خادم تاجر ثم عاد، تصل كل الرسائل المنتظرة في نفس اللحظة، فيتوقف مرة أخرى. مع العشوائية، تصل موزّعة على 16 ثانية.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): توقيع الإشعارات</h3>
+      <p>اكتب دالة <code>sign</code> توقّع جسم الإشعار مع الوقت باستخدام <span class="en">HMAC-SHA256</span>. ثم اكتب دالة <code>verify</code> يستخدمها التاجر. يجب أن ترفض الإشعار المعدَّل، والإشعار القديم أكثر من 5 دقائق (لمنع إعادة الإرسال من مهاجم <span class="en">(Replay Attack)</span>).</p>
+      <details><summary>💡 تلميح</summary><p>وقّع النص <code>"{timestamp}." + body</code>. وقارن بـ <code>hmac.compare_digest</code>، وليس بـ <code>==</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">import hashlib
+import hmac
+import json
+
+
+def sign(secret: bytes, body: bytes, timestamp: int) -> str:
+    message = f"{timestamp}.".encode() + body
+    return hmac.new(secret, message, hashlib.sha256).hexdigest()
+
+
+def verify(secret: bytes, body: bytes, timestamp: int, signature: str,
+           now: int, tolerance: int = 300) -> bool:
+    if abs(now - timestamp) > tolerance:
+        return False                      # too old: possible replay
+    expected = sign(secret, body, timestamp)
+    return hmac.compare_digest(expected, signature)
+
+
+secret = b"whsec_demo"
+body = json.dumps({"event_id": "evt_1", "amount": 100}).encode()
+signature = sign(secret, body, 1_000)
+
+print(verify(secret, body, 1_000, signature, now=1_010))
+print(verify(secret, body.replace(b"100", b"999"), 1_000, signature,
+             now=1_010))
+print(verify(secret, body, 1_000, signature, now=2_000))</code></pre>
+        <div class="output">True
+False
+False</div>
+        <p><code>compare_digest</code> يأخذ نفس الوقت دائمًا، مهما كان عدد الحروف المتطابقة. المقارنة العادية <code>==</code> تتوقف عند أول حرف مختلف. والمهاجم قد يقيس هذا الفرق الصغير في الوقت ليخمّن التوقيع <span class="en">(Timing Attack)</span>.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): صمّم نظام أحداث الدفع</h3>
+      <p>بعد كل دفعة، يجب: (1) إرسال إشعار للتاجر، (2) بريد للعميل، (3) تحديث دفتر الحسابات <span class="en">(Ledger)</span>، (4) تحليلات. صمّم النظام: كم موضوعًا؟ ما مفتاح القسم؟ أي مستهلك يحتاج حماية من التكرار؟ وماذا تفعل إذا توقف خادم تاجر يومًا كاملًا؟</p>
+      <details><summary>💡 تلميح</summary><p>فكّر في Pub/Sub مع مجموعة مستهلكين لكل خدمة. واسأل عن كل مستهلك: ما أسوأ شيء يحدث إذا عالج الرسالة مرتين؟</p></details>
+      <details><summary>✅ الحل</summary>
+        <ul>
+          <li><strong>موضوع واحد</strong> <code>payment-events</code>، منشور عبر صندوق الصادر. مفتاح القسم <code>payment_id</code> حتى تبقى أحداث العملية مرتبة.</li>
+          <li><strong>أربع مجموعات مستهلكين</strong>، واحدة لكل خدمة. كل خدمة تقرأ بسرعتها، وعطل خدمة لا يؤثر على الأخرى.</li>
+          <li><strong>دفتر الحسابات:</strong> حماية صارمة من التكرار، بجدول <code>processed</code> في نفس المعاملة. التكرار هنا يعني أموالًا خاطئة.</li>
+          <li><strong>البريد:</strong> حماية بسيطة. بريد مكرر مزعج لكنه ليس كارثة. احفظ <code>event_id</code> في Redis مع TTL يوم.</li>
+          <li><strong>الإشعارات:</strong> أرسل <code>event_id</code> في كل إشعار، واطلب من التاجر أن يتجاهل المكرر. أنت لا تتحكم في خادمه.</li>
+          <li><strong>التحليلات:</strong> تتحمل التكرار القليل. وتستفيد من Kafka لإعادة قراءة الأحداث القديمة عند تغيير التقرير.</li>
+          <li><strong>تاجر متوقف يومًا:</strong> لا تجعل رسائله تسد الآخرين. ضعها في طابور تأخير منفصل لكل تاجر، مع تأخير متزايد حتى 3 أيام. وبعدها DLQ وتنبيه للتاجر في لوحة التحكم، مع زر "أعد الإرسال".</li>
+        </ul>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>الطابور يجعل العميل ينتظر العمل الضروري فقط، ويعزل الأعطال، ويمتص الذروة.</li>
+        <li>الطابور العادي يوزّع المهام. والنشر والاشتراك يوصل نفس الحدث لعدة خدمات بدون ارتباط بينها.</li>
+        <li>الرسالة لا تُحذف إلا بعد التأكيد. وإذا انتهت مهلة الإخفاء، تعود للطابور.</li>
+        <li>أغلب الأنظمة "مرة على الأقل". و"مرة بالضبط" تعني عمليًا: مرة على الأقل + مستهلك آمن عند التكرار.</li>
+        <li>احفظ معرّف الحدث ونتيجة المعالجة في نفس المعاملة.</li>
+        <li>الترتيب مضمون داخل القسم فقط. استخدم مفتاحًا مثل <code>payment_id</code>. وعدد الأقسام هو حد التوازي.</li>
+        <li>أعد المحاولة بتأخير متزايد مع عشوائية وحد أقصى، ثم انقل الرسائل المسمومة إلى DLQ وراقبه.</li>
+        <li>لا تكتب في قاعدة البيانات والطابور بشكل منفصل. استخدم صندوق الصادر.</li>
+        <li>إذا كان \(\lambda > \mu\)، يكبر الطابور بالفرق كل ثانية. راقب عدد الرسائل وعمر أقدم رسالة.</li>
+        <li>لا تستخدم الطابور عندما يحتاج المستخدم الجواب فورًا، مثل قبول البطاقة.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <p>خطة سلسلة تصميم الأنظمة:</p>
+      <ol>
+        <li>✅ أساسيات التوسع والمكونات الأساسية</li>
+        <li>✅ موازنة الأحمال والـ Caching بعمق</li>
+        <li>✅ قواعد البيانات: النسخ المتماثل والتقسيم</li>
+        <li>✅ طوابير الرسائل والأنظمة غير المتزامنة (هذا الدرس)</li>
+        <li>نظرية <span class="en">CAP</span> ونماذج الاتساق: ماذا يحدث عندما تنقطع الشبكة بين مركزي بيانات؟ وكيف ننفذ معاملة تشمل عدة خدمات بنمط <span class="en">Saga</span>؟</li>
+        <li>الخدمات المصغرة و <span class="en">API Gateway</span></li>
+        <li>الموثوقية: <span class="en">Rate Limiting</span> و <span class="en">Idempotency</span> وإعادة المحاولة</li>
+        <li>مقابلة تصميم كاملة: صمّم بوابة دفع من الصفر</li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀 — سلسلة تصميم الأنظمة، الدرس 4</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    new Chart(perf, {
+      type: "line",
+      data: {
+        labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"],
+        datasets: [
+          { label: "الرسائل المنتظرة (بالآلاف)", data: [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 48, 36, 24, 12, 0, 0], borderColor: "#2563eb", backgroundColor: "rgba(37,99,235,.15)", fill: true, tension: 0.1, yAxisID: "y" },
+          { label: "معدل الوصول (رسالة/ثانية)", data: [500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 200, 200, 200, 200, 200, 200, 200], borderColor: "#ef4444", borderDash: [6, 6], fill: false, stepped: true, yAxisID: "y1" },
+          { label: "طاقة العمّال (رسالة/ثانية)", data: [400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400], borderColor: "#10b981", borderDash: [2, 4], fill: false, yAxisID: "y1" }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { rtl: true },
+          tooltip: { rtl: true },
+          title: { display: true, text: "يوم العروض: الطابور يمتص الذروة ثم يفرغ" }
+        },
+        scales: {
+          x: { title: { display: true, text: "الدقيقة" } },
+          y: { position: "left", title: { display: true, text: "آلاف الرسائل" }, beginAtZero: true },
+          y1: { position: "right", title: { display: true, text: "رسالة/ثانية" }, beginAtZero: true, grid: { drawOnChartArea: false } }
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

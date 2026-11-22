@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 5: إذا أمطرت، سنبقى في البيت — English B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Cairo',Tahoma,'Segoe UI',sans-serif; font-size:18px; line-height:1.9; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .progress { max-width:420px; margin:14px auto 0; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; }
+  .progress div { height:100%; background:#fde68a; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:210px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); }
+  .emoji { font-size:2.6rem; line-height:1.2; }
+  .word { font-size:1.4rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.15rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  /* Timeline */
+  .timeline-viz { position:relative; height:140px; margin:20px 10px; direction:ltr; }
+  .tl-line { position:absolute; top:64px; left:0; right:0; height:4px; background:linear-gradient(90deg,#94a3b8,#4f46e5,#06b6d4); border-radius:4px; }
+  .tl-now { position:absolute; top:34px; height:64px; border-left:3px solid var(--v); }
+  .tl-now span, .tl-event span { position:absolute; top:-28px; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; background:var(--card); padding:0 6px; }
+  .tl-now span { color:var(--v); }
+  .tl-event { position:absolute; top:56px; width:20px; height:20px; margin-left:-10px; border-radius:50%; background:var(--o); border:3px solid #fff; box-shadow:0 0 0 2px var(--o); }
+  .tl-event span { top:28px; color:var(--o); }
+  .tl-event.res { background:var(--primary); box-shadow:0 0 0 2px var(--primary); }
+  .tl-event.res span { color:var(--primary); }
+  .tl-arrow { position:absolute; top:40px; font-size:1.4rem; transform:translateX(-50%); color:var(--muted); }
+  .tl-labels { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; color:var(--muted); font-size:.85rem; font-weight:700; }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; }
+  .bubble { max-width:80%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:110px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:200px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>الدرس 5: إذا أمطرت، سنبقى في البيت <span class="tl">— If it rains, we'll stay home</span></h1>
+  <p>تحدّث عن الطقس والخطط والاحتمالات الحقيقية. <span class="tl">Talk about the weather, plans and real possibilities.</span></p>
+  <div class="badges">
+    <span class="badge">اللغة: الإنجليزية</span>
+    <span class="badge">المستوى: B1</span>
+    <span class="badge">الدرس 5 من 15</span>
+    <span class="badge">وقت الدراسة: 30 دقيقة</span>
+    <span class="badge tl">First conditional · when · unless</span>
+  </div>
+  <div class="progress"><div style="width:33%"></div></div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 السرعة: عادية</button>
+  <span>النتيجة: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ حفظ PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section id="goals">
+    <h2>🎯 أهداف الدرس <span class="tl">— Can-do goals</span></h2>
+    <div class="cando">
+      <label><input type="checkbox"><span class="tl">I can talk about real possibilities in the future with if + will.</span> — أستطيع أن أتحدث عن احتمالات حقيقية في المستقبل.</label>
+      <label><input type="checkbox"><span class="tl">I can choose between if and when.</span> — أستطيع أن أختار بين <span class="tl">if</span> و <span class="tl">when</span>.</label>
+      <label><input type="checkbox"><span class="tl">I can use unless to mean "if not".</span> — أستطيع أن أستخدم <span class="tl">unless</span> بمعنى «إلا إذا».</label>
+      <label><input type="checkbox"><span class="tl">I can pronounce I'll, it'll and won't clearly.</span> — أستطيع أن أنطق الاختصارات <span class="tl">'ll</span> و <span class="tl">won't</span>.</label>
+    </div>
+  </section>
+
+  <section id="warmup">
+    <h2>🌱 تمهيد <span class="tl">— Warm-up</span></h2>
+    <p>نخطط لرحلة يوم الجمعة. لكن هناك مشكلة: ربما تمطر! في العربية نقول: «<b>إذا أمطرتْ</b>، <b>سنبقى</b> في البيت».</p>
+    <p>بالإنجليزية: <span class="tl"><b>If it rains, we'll stay at home.</b></span> <button class="say" data-text="If it rains, we'll stay at home.">🔊</button></p>
+    <p>هذا احتمال <b>حقيقي</b>، ويمكن أن يحدث فعلًا.</p>
+    <div class="callout note">📝 <b>Think:</b> <span class="tl">What will you do this weekend if the weather is nice?</span><br>فكّر: ماذا ستفعل في عطلة نهاية الأسبوع إذا كان الطقس جميلًا؟</div>
+  </section>
+
+  <section id="words">
+    <h2>📚 الكلمات الجديدة <span class="tl">— New words: Weather &amp; plans</span></h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. — اضغط على البطاقة لتقلبها. المقطع المنبور باللون الأحمر.</p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📡</div><div class="word tl">forecast</div><button class="say" data-text="forecast">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">توقعات (الطقس)</div><span class="ipa">/<b>ˈfɔːr</b>.kæst/</span><span class="tl">The forecast says it will rain.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🔥</div><div class="word tl">heatwave</div><button class="say" data-text="heatwave">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">موجة حارة</div><span class="ipa">/<b>ˈhiːt</b>.weɪv/</span><span class="tl">There's a heatwave in Cairo this week.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💦</div><div class="word tl">humid</div><button class="say" data-text="humid">🔊</button><div class="hint">adjective</div></div>
+        <div class="back"><div class="word">رطب (الجو)</div><span class="ipa">/<b>ˈhjuː</b>.mɪd/</span><span class="tl">Alexandria is very humid in August.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌪️</div><div class="word tl">sandstorm</div><button class="say" data-text="sandstorm">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">عاصفة رملية</div><span class="ipa">/<b>ˈsænd</b>.stɔːrm/</span><span class="tl">If there's a sandstorm, close the windows.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌦️</div><div class="word tl">shower</div><button class="say" data-text="shower">🔊</button><div class="hint">weather noun</div></div>
+        <div class="back"><div class="word">زخّة مطر قصيرة</div><span class="ipa">/<b>ˈʃaʊ</b>.ər/</span><span class="tl">There may be showers in the afternoon.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">⛈️</div><div class="word tl">thunderstorm</div><button class="say" data-text="thunderstorm">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">عاصفة رعدية</div><span class="ipa">/<b>ˈθʌn</b>.dər.stɔːrm/</span><span class="tl">The thunderstorm woke me up.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌡️</div><div class="word tl">temperature</div><button class="say" data-text="temperature">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">درجة الحرارة</div><span class="ipa">/<b>ˈtem</b>.prə.tʃər/</span><span class="tl">The temperature will reach 40 degrees.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🎲</div><div class="word tl">chance (of)</div><button class="say" data-text="a chance of rain">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">احتمال</div><span class="ipa">/<b>tʃæns</b>/</span><span class="tl">There's a 70% chance of rain.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧺</div><div class="word tl">picnic</div><button class="say" data-text="picnic">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">نزهة (أكل في الهواء الطلق)</div><span class="ipa">/<b>ˈpɪk</b>.nɪk/</span><span class="tl">We'll have a picnic if it's sunny.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌳</div><div class="word tl">outdoors</div><button class="say" data-text="outdoors">🔊</button><div class="hint">adverb</div></div>
+        <div class="back"><div class="word">في الهواء الطلق / خارج المبنى</div><span class="ipa">/ˌaʊt<b>ˈdɔːrz</b>/</span><span class="tl">The kids love playing outdoors.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">☂️</div><div class="word tl">umbrella</div><button class="say" data-text="umbrella">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">مظلّة / شمسية</div><span class="ipa">/ʌm<b>ˈbrel</b>.ə/</span><span class="tl">Take an umbrella, or you'll get wet.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">❌</div><div class="word tl">cancel</div><button class="say" data-text="cancel">🔊</button><div class="hint">verb</div></div>
+        <div class="back"><div class="word">يُلغي</div><span class="ipa">/<b>ˈkæn</b>.səl/</span><span class="tl">They cancelled the flight because of the fog.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌤️</div><div class="word tl">clear up</div><button class="say" data-text="clear up">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يصفو (الجو)</div><span class="ipa">/klɪr <b>ˈʌp</b>/</span><span class="tl">If it clears up, we'll go to the beach.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📅</div><div class="word tl">put off</div><button class="say" data-text="put off">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يؤجّل</div><span class="ipa">/pʊt <b>ˈɔːf</b>/</span><span class="tl">Let's put off the trip until next week.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚫</div><div class="word tl">call off</div><button class="say" data-text="call off">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يُلغي (حدثًا أو خطة)</div><span class="ipa">/kɔːl <b>ˈɔːf</b>/</span><span class="tl">They called off the match because of the storm.</span></div>
+      </div></div>
+    </div>
+    <div class="callout warning">⚠️ <b>انتبه:</b> <span class="tl">put off</span> = نؤجل الخطة إلى وقت لاحق. <span class="tl">call off</span> = نلغيها تمامًا. وكلمة <span class="tl">shower</span> لها معنيان: «دُش» في الحمام، و«زخّة مطر» في نشرة الطقس.</div>
+  </section>
+
+  <section id="grammar">
+    <h2>🎨 القاعدة بالألوان <span class="tl">— Grammar 1: The first conditional</span></h2>
+    <p class="instr">Look at these sentences. Which tense comes after "if"?<span class="instr-ar">انظر إلى الجمل. ما الزمن الذي يأتي بعد if؟</span></p>
+    <div class="sent tl"><span class="w x">If<small>إذا</small></span><span class="w s">it<small>(الجو)</small></span><span class="w v">rains,<small>أمطرت (مضارع بسيط!)</small></span><span class="w s">we<small>نحن</small></span><span class="w v">'ll stay<small>سنبقى</small></span><span class="w o">at home<small>في البيت</small></span><button class="say" data-text="If it rains, we'll stay at home.">🔊</button></div>
+    <div class="sent tl"><span class="w x">If<small>إذا</small></span><span class="w s">you<small>أنت</small></span><span class="w v">don't hurry,<small>لم تستعجل</small></span><span class="w s">you<small>أنت</small></span><span class="w v">'ll miss<small>ستفوّت</small></span><span class="w o">the bus<small>الحافلة</small></span><button class="say" data-text="If you don't hurry, you'll miss the bus.">🔊</button></div>
+    <div class="sent tl"><span class="w x">What<small>ماذا</small></span><span class="w v">will<small>سـ</small></span><span class="w s">you<small>أنت</small></span><span class="w v">do<small>تفعل</small></span><span class="w x">if<small>إذا</small></span><span class="w s">the flight<small>الرحلة</small></span><span class="w v">is cancelled?<small>أُلغيت</small></span><button class="say" data-text="What will you do if the flight is cancelled?">🔊</button></div>
+    <p>هل لاحظت؟ بعد <span class="tl">if</span> نستخدم <b>المضارع البسيط</b> <span class="tl">(rains, don't hurry, is)</span>، حتى لو كان المعنى في المستقبل. والـ <span class="tl">will</span> تأتي في <b>النتيجة</b> فقط.</p>
+
+    <div class="timeline-viz">
+      <div class="tl-line"></div>
+      <div class="tl-now" style="left:15%"><span>NOW — الآن: we don't know</span></div>
+      <div class="tl-event" style="left:50%"><span>if it rains (condition) — الشرط</span></div>
+      <div class="tl-arrow" style="left:64%">➜</div>
+      <div class="tl-event res" style="left:80%"><span>we'll stay home (result) — النتيجة</span></div>
+      <div class="tl-labels"><span>⬅ Past</span><span>Future المستقبل ➡</span></div>
+    </div>
+    <p>النقطة الخضراء = الشرط <span class="tl">(if + present simple)</span>. النقطة البنفسجية = النتيجة <span class="tl">(will + base verb)</span>. كلاهما في المستقبل.</p>
+
+    <table class="tl">
+      <tr><th>Part</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Condition 🟢</td><td><mark>If</mark> + present simple</td><td>If it's sunny,</td></tr>
+      <tr><td>Result 🟣</td><td><mark>will / won't</mark> + base verb</td><td>we'll go to the beach. <button class="say" data-text="If it's sunny, we'll go to the beach.">🔊</button></td></tr>
+      <tr><td>Result first</td><td>will + verb + <mark>if</mark> + present (no comma)</td><td>We'll go to the beach if it's sunny. <button class="say" data-text="We'll go to the beach if it's sunny.">🔊</button></td></tr>
+      <tr><td>Negative ❌</td><td>If ... <mark>don't / doesn't</mark>, ... <mark>won't</mark></td><td>If it doesn't clear up, we won't go. <button class="say" data-text="If it doesn't clear up, we won't go.">🔊</button></td></tr>
+      <tr><td>Question ❓</td><td><mark>What will</mark> you do <mark>if</mark> ...?</td><td>What will you do if it rains? <button class="say" data-text="What will you do if it rains?">🔊</button></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>Rule:</b> إذا بدأت الجملة بـ <span class="tl">If</span> نضع <b>فاصلة</b> بعد الشرط: <span class="tl">If it rains<b>,</b> we'll stay home.</span> وإذا بدأت بالنتيجة فلا فاصلة.</div>
+    <div class="callout note">📝 <b>Less sure?</b> إذا لم تكن متأكدًا من النتيجة، استخدم <span class="tl">might</span> بدل <span class="tl">will</span>: <span class="tl">If it rains, we <b>might</b> stay home.</span> (ربما نبقى) <button class="say" data-text="If it rains, we might stay home.">🔊</button></div>
+
+    <h3>🔗 <span class="tl">Grammar 2: if vs when</span></h3>
+    <table>
+      <tr><th class="tl">if = ربما يحدث 🤔</th><th class="tl">when = متأكد أنه سيحدث ✅</th></tr>
+      <tr><td class="tl"><mark>If</mark> I see Ali, I'll tell him. <button class="say" data-text="If I see Ali, I'll tell him.">🔊</button><br>(لست متأكدًا أنني سأراه)</td><td class="tl">I'll call you <mark>when</mark> I get home. <button class="say" data-text="I'll call you when I get home.">🔊</button><br>(سأصل إلى البيت بالتأكيد)</td></tr>
+    </table>
+    <p>وبعد <span class="tl">when</span> أيضًا نستخدم المضارع البسيط: <span class="tl">when I <b>get</b> home</span>، وليس <span class="tl">when I will get ❌</span>.</p>
+
+    <h3>🚫 <span class="tl">Grammar 3: unless = if ... not</span></h3>
+    <div class="sent tl"><span class="w s">We<small>نحن</small></span><span class="w v">'ll go<small>سنذهب</small></span><span class="w o">to the beach<small>إلى الشاطئ</small></span><span class="w x">unless<small>إلا إذا</small></span><span class="w s">it<small>(الجو)</small></span><span class="w v">rains<small>أمطرت</small></span><button class="say" data-text="We'll go to the beach unless it rains.">🔊</button></div>
+    <p class="tl">= We'll go to the beach <b>if</b> it <b>doesn't</b> rain.</p>
+    <div class="callout warning">⚠️ <span class="tl">unless</span> معناها منفي من نفسها. لا تضع بعدها نفيًا آخر: <span class="tl">unless it doesn't rain ❌ → unless it rains ✅</span>.</div>
+
+    <div class="diagram mermaid">
+flowchart TD
+  A["A future situation / موقف في المستقبل"] -->|"Sure it will happen / متأكد"| B["when + present: I'll call you when I arrive."]
+  A -->|"Maybe it will happen / ربما"| C["if + present: If it rains, we'll stay home."]
+  A -->|"Maybe it will NOT happen / إلا إذا"| D["unless + present: We'll go unless it rains."]
+  B --> E["Result: will / won't / might + base verb"]
+  C --> E
+  D --> E
+    </div>
+  </section>
+
+  <section id="compare">
+    <h2>🔁 العربية مقابل الإنجليزية <span class="tl">— Arabic vs English</span></h2>
+    <div class="vs">
+      <div>
+        <h4>العربية</h4>
+        <div class="sent"><span class="w x">إذا<small>if</small></span><span class="w v">أمطرتْ<small>rains (ماضٍ!)</small></span><span class="w v">سنبقى<small>'ll stay</small></span><span class="w o">في البيت<small>at home</small></span></div>
+        <div class="sent"><span class="w v">سنذهب<small>'ll go</small></span><span class="w x">إلا إذا<small>unless</small></span><span class="w v">أمطرتْ<small>rains</small></span></div>
+        <p>العربية تستخدم <b>الماضي</b> بعد «إذا» (أمطرتْ، جاءَ)، مع أن المعنى في المستقبل.</p>
+      </div>
+      <div>
+        <h4 class="tl">English</h4>
+        <div class="sent tl"><span class="w x">If</span><span class="w s">it</span><span class="w gap">rains,<small>مضارع، لا ماضٍ ولا will</small></span><span class="w s">we</span><span class="w v">'ll stay</span><span class="w o">at home.</span></div>
+        <div class="sent tl"><span class="w s">We</span><span class="w v">'ll go</span><span class="w x">unless</span><span class="w s">it</span><span class="w v">rains.</span></div>
+        <p>الإنجليزية تستخدم <b>المضارع البسيط</b> بعد <span class="tl">if</span>.</p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>سهل عليك:</b> «سـ / سوف» في النتيجة = <span class="tl">will</span>: «<b>سـ</b>نبقى» = <span class="tl">we<b>'ll</b> stay</span>. و«إلا إذا» = <span class="tl">unless</span> تمامًا! وترتيب الجملة مرن كما في العربية: الشرط أولًا أو النتيجة أولًا.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (1):</b> لأن المعنى مستقبل، يضع كثيرون <span class="tl">will</span> بعد <span class="tl">if</span>: <span class="tl">If it will rain ❌</span>. القاعدة: <b>لا</b> نستخدم <span class="tl">will</span> بعد <span class="tl">if / when / unless</span>. الصحيح: <span class="tl">If it rains ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (2):</b> بسبب «إذا أمطرتْ» قد تقول <span class="tl">If it rained, we will stay ❌</span>. صيغة الماضي بعد <span class="tl">if</span> لها معنى آخر (خيالي)، وسنتعلمها في الدرس 6.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (3):</b> «عندما» في العربية لا تفرّق بين المتأكد وغير المتأكد. في الإنجليزية: <span class="tl">when</span> = متأكد، <span class="tl">if</span> = ربما. لا تقل <span class="tl">When I win the lottery...</span> إلا إذا كنت متأكدًا 😄</div>
+  </section>
+
+  <section id="pron">
+    <h2>👄 النطق: <span class="tl">'ll</span> و <span class="tl">won't</span></h2>
+    <p>في الكلام العادي، <span class="tl">will</span> تصبح <span class="tl">'ll</span>: صوت <span class="ipa">/l/</span> «غامق» في آخر الكلمة، واللسان يرتفع من الخلف قليلًا. لا تحذفه، لأن الجملة بدونه تصبح في المضارع!</p>
+    <table>
+      <tr><th>بدون <span class="tl">'ll</span> (مضارع)</th><th>مع <span class="tl">'ll</span> (مستقبل)</th></tr>
+      <tr><td><span class="tl">I call you.</span> <button class="say" data-text="I call you.">🔊</button></td><td><span class="tl">I'll call you.</span> <span class="ipa">/aɪl/</span> <button class="say" data-text="I'll call you.">🔊</button></td></tr>
+      <tr><td><span class="tl">We go.</span> <button class="say" data-text="We go.">🔊</button></td><td><span class="tl">We'll go.</span> <span class="ipa">/wiːl/</span> <button class="say" data-text="We'll go.">🔊</button></td></tr>
+      <tr><td><span class="tl">It rains.</span> <button class="say" data-text="It rains.">🔊</button></td><td><span class="tl">It'll rain.</span> <span class="ipa">/ˈɪt.əl/</span> <button class="say" data-text="It'll rain.">🔊</button></td></tr>
+    </table>
+    <h3><span class="tl">won't</span> vs <span class="tl">want</span> — انتبه!</h3>
+    <p>هاتان الكلمتان متشابهتان، لكن معناهما مختلف جدًا:</p>
+    <table>
+      <tr><th><span class="tl">won't</span> <span class="ipa">/woʊnt/</span> «وُونْت» = لن</th><th><span class="tl">want</span> <span class="ipa">/wɑːnt/</span> «وَانْت» = يريد</th></tr>
+      <tr><td><span class="tl">I won't go.</span> <button class="say" data-text="I won't go.">🔊</button> لن أذهب.</td><td><span class="tl">I want to go.</span> <button class="say" data-text="I want to go.">🔊</button> أريد أن أذهب.</td></tr>
+    </table>
+    <div class="callout tip">💡 <b>نصيحة:</b> في <span class="tl">won't</span> الشفتان <b>مستديرتان</b> كما في «أُو». وفي <span class="tl">want</span> الفم <b>مفتوح</b>. استخدم زر 🐢 لتسمع الفرق.</div>
+    <div class="ex quiz" data-explain="won't = لن، وتُنطق /woʊnt/ بشفتين مستديرتين.">
+      <div class="q">🎧 <span class="tl">"If it rains, I ___ go." Which word means "لن"?</span></div>
+      <button class="option tl">want /wɑːnt/</button>
+      <button class="option tl" data-correct="true">won't /woʊnt/</button>
+      <button class="option tl">went /went/</button>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section id="dialogue">
+    <h2>💬 حوار من الحياة <span class="tl">— Planning a weekend trip</span></h2>
+    <p class="instr">Listen to Nada and Tarek. Find 4 sentences with if, 1 with when and 1 with unless.<span class="instr-ar">استمع إلى ندى وطارق. ابحث عن 4 جمل فيها if، وجملة فيها when، وجملة فيها unless.</span></p>
+    <button class="btn" id="playDialogue">▶️ استمع للحوار كاملًا</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Nada</div><div class="tl line">Are we still going to Ain Sokhna on Friday?</div></div>
+      <div class="bubble b"><div class="who">Tarek</div><div class="tl line">I hope so. But I was watching the news last night when they showed the forecast. There's a chance of a sandstorm.</div></div>
+      <div class="bubble a"><div class="who">Nada</div><div class="tl line">Oh no! What will we do if there's a sandstorm?</div></div>
+      <div class="bubble b"><div class="who">Tarek</div><div class="tl line">If it's really bad, we'll put off the trip until next week.</div></div>
+      <div class="bubble a"><div class="who">Nada</div><div class="tl line">Fine. But I don't want to call it off completely. I've already booked the chalet.</div></div>
+      <div class="bubble b"><div class="who">Tarek</div><div class="tl line">Don't worry. The forecast says it'll clear up by Friday morning. If the weather is nice, we'll have a picnic on the beach.</div></div>
+      <div class="bubble a"><div class="who">Nada</div><div class="tl line">Great! And if it's too hot, we won't stay outdoors at noon.</div></div>
+      <div class="bubble b"><div class="who">Tarek</div><div class="tl line">Good idea. What time do we set off?</div></div>
+      <div class="bubble a"><div class="who">Nada</div><div class="tl line">Early. We'll get stuck in a traffic jam unless we leave before seven.</div></div>
+      <div class="bubble b"><div class="who">Tarek</div><div class="tl line">OK. I'll check the forecast again tonight, and I'll text you when I know more.</div></div>
+      <div class="bubble a"><div class="who">Nada</div><div class="tl line">Perfect. Don't forget the umbrella. We'll need it for the sun!</div></div>
+    </div>
+    <details><summary>👀 Answers</summary>
+      <table class="tl">
+        <tr><th>Word</th><th>Sentence</th></tr>
+        <tr><td>if</td><td>What will we do if there's a sandstorm? · If it's really bad, we'll put off the trip. · If the weather is nice, we'll have a picnic. · If it's too hot, we won't stay outdoors.</td></tr>
+        <tr><td>when</td><td>I'll text you when I know more.</td></tr>
+        <tr><td>unless</td><td>We'll get stuck in a traffic jam unless we leave before seven.</td></tr>
+      </table>
+      <p>لاحظ: بعد <span class="tl">if / when / unless</span> يأتي دائمًا المضارع البسيط: <span class="tl">there's, it's, is, know, leave</span>. وانظر إلى المراجعة: <span class="tl">I was watching the news when they showed the forecast</span> من الدرس 4، و <span class="tl">I've already booked</span> من الدرس 2، و <span class="tl">set off</span> من الدرس 1.</p>
+    </details>
+  </section>
+
+  <section id="practice">
+    <h2>🏋️ تدريب <span class="tl">— Practice</span></h2>
+
+    <h3 class="instr">A. Choose the correct answer.<span class="instr-ar">اختر الإجابة الصحيحة.</span></h3>
+
+    <div class="ex quiz" data-explain="بعد if نستخدم المضارع البسيط، لا will.">
+      <div class="q">1. <span class="tl">If it ___ tomorrow, we'll stay at home.</span></div>
+      <button class="option tl">will rain</button>
+      <button class="option tl" data-correct="true">rains</button>
+      <button class="option tl">rained</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="النتيجة: will + base verb.">
+      <div class="q">2. <span class="tl">If you don't take an umbrella, you ___ wet.</span></div>
+      <button class="option tl" data-correct="true">'ll get</button>
+      <button class="option tl">get</button>
+      <button class="option tl">will getting</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="سأصل إلى البيت بالتأكيد → when.">
+      <div class="q">3. <span class="tl">I'll call you ___ I get home. (I'm sure I'll get home.)</span></div>
+      <button class="option tl">if</button>
+      <button class="option tl" data-correct="true">when</button>
+      <button class="option tl">unless</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="unless = if not. ولا نضع بعدها نفيًا آخر.">
+      <div class="q">4. <span class="tl">We'll have the picnic ___ it rains.</span></div>
+      <button class="option tl">if</button>
+      <button class="option tl">when</button>
+      <button class="option tl" data-correct="true">unless</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="if + present، والنتيجة will. وعند البدء بـ If نضع فاصلة.">
+      <div class="q">5. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">If the match will be cancelled, I will stay home.</button>
+      <button class="option tl" data-correct="true">If the match is cancelled, I'll stay home.</button>
+      <button class="option tl">If the match is cancelled, I stay home tomorrow.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="put off = يؤجّل إلى وقت لاحق. call off = يلغي.">
+      <div class="q">6. <span class="tl">If there's a sandstorm, we'll ___ the trip until next week.</span></div>
+      <button class="option tl" data-correct="true">put off</button>
+      <button class="option tl">call off</button>
+      <button class="option tl">clear up</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">B. Complete with the correct form of the verb.<span class="instr-ar">أكمل بالشكل الصحيح للفعل بين القوسين.</span></h3>
+    <div class="ex fill">
+      <p class="tl">7. If it <input class="blank" data-answer="rains"> (rain) on Friday, we <input class="blank wide" data-answer="will stay|'ll stay"> (stay) at home.</p>
+      <p class="tl">8. If the temperature <input class="blank" data-answer="reaches"> (reach) 40 degrees, the kids <input class="blank wide" data-answer="won't play|will not play"> (not / play) outdoors.</p>
+      <p class="tl">9. What <input class="blank" data-answer="will"> you do if the flight <input class="blank" data-answer="is"> (be) cancelled?</p>
+      <p class="tl">10. I'll text you when I <input class="blank" data-answer="arrive"> (arrive).</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">C. Rewrite the sentences with unless or if.<span class="instr-ar">أعد كتابة الجمل بنفس المعنى.</span></h3>
+    <div class="ex fill">
+      <p class="tl">11. If you don't hurry, you'll miss the bus.<br>→ Unless you <input class="blank" data-answer="hurry">, you'll miss the bus.</p>
+      <p class="tl">12. We'll go to the beach if it doesn't rain.<br>→ We'll go to the beach unless it <input class="blank" data-answer="rains">.</p>
+      <p class="tl">13. I won't go out unless the sandstorm stops.<br>→ I won't go out if the sandstorm <input class="blank wide" data-answer="doesn't stop|does not stop">.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">D. Put the words in order.<span class="instr-ar">رتّب الكلمات لتكوّن جملة.</span></h3>
+    <div class="ex builder" data-answer="We will have a picnic if the weather is nice">
+      <div class="q">14. 🧺</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex builder" data-answer="What will you do if the flight is cancelled">
+      <div class="q">15. ❓</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">E. Say it! 🎤<span class="instr-ar">قل الجملة بصوتك. انطق 'll بوضوح.</span></h3>
+    <div class="ex speak-check" data-text="If it rains we'll stay at home|If it rains we will stay at home|If it rains we'll stay home|If it rains we will stay home">
+      <div class="q">16. <span class="tl">If it rains, we'll stay at home.</span> <button class="say" data-text="If it rains, we'll stay at home.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+    <div class="ex speak-check" data-text="I won't go unless the weather is nice|I will not go unless the weather is nice">
+      <div class="q">17. <span class="tl">I won't go unless the weather is nice.</span> <button class="say" data-text="I won't go unless the weather is nice.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+  </section>
+
+  <section id="task">
+    <h2>✍️ مهمة الكتابة <span class="tl">— Writing task (50–80 words)</span></h2>
+    <p class="instr">Write a message to a friend about your plans for next weekend.<span class="instr-ar">اكتب رسالة لصديق عن خططك لعطلة نهاية الأسبوع القادمة. أرسلها لي في المحادثة وسأصححها.</span></p>
+    <ul class="tl">
+      <li>Your plan and what the <b>forecast</b> says.</li>
+      <li>Two sentences with <b>if</b>: what will you do if the weather is good / bad?</li>
+      <li>One sentence with <b>unless</b>.</li>
+      <li>One sentence with <b>when</b> (something you're sure about).</li>
+    </ul>
+    <details><summary>👀 Model answer (75 words)</summary>
+      <p class="tl">Hi Salma! Are you free on Saturday? I'm planning a trip to Fayoum with my cousins. The forecast says it will be sunny, but a bit windy. If the weather is nice, we'll go to Wadi El Rayan and have a picnic. If there's a sandstorm, we'll put off the trip until next week. We'll leave at 6 a.m. unless my car breaks down again! I'll call you when I know the final plan. See you soon!</p>
+    </details>
+  </section>
+
+  <section id="mistakes">
+    <h2>🚫 الأخطاء الشائعة عند العرب <span class="tl">— Common mistakes</span></h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>لماذا؟</th></tr>
+      <tr><td class="tl">If it will rain, we will stay home.</td><td class="tl">If it rains, we'll stay home.</td><td>لا نستخدم <span class="tl">will</span> بعد <span class="tl">if</span>.</td></tr>
+      <tr><td class="tl">If it rained tomorrow, we will stay home.</td><td class="tl">If it rains tomorrow, we'll stay home.</td><td>الماضي بعد «إذا» في العربية، لكن المضارع في الإنجليزية.</td></tr>
+      <tr><td class="tl">If it rains, we stay home tomorrow.</td><td class="tl">If it rains, we'll stay home tomorrow.</td><td>النتيجة في المستقبل تحتاج <span class="tl">will</span>.</td></tr>
+      <tr><td class="tl">I'll call you when I will arrive.</td><td class="tl">I'll call you when I arrive.</td><td>بعد <span class="tl">when</span> المضارع البسيط.</td></tr>
+      <tr><td class="tl">We'll go unless it doesn't rain.</td><td class="tl">We'll go unless it rains.</td><td><span class="tl">unless</span> منفية من نفسها.</td></tr>
+      <tr><td class="tl">If she come, I will tell her.</td><td class="tl">If she comes, I'll tell her.</td><td>لا تنسَ <span class="tl">-s</span> مع <span class="tl">he / she / it</span>.</td></tr>
+      <tr><td class="tl">If it rains we will cancel the picnic. (بدون فاصلة)</td><td class="tl">If it rains, we will cancel the picnic.</td><td>عند البدء بـ <span class="tl">If</span> نضع فاصلة.</td></tr>
+      <tr><td class="tl">"I want go" (بمعنى لن)</td><td class="tl">I won't go /woʊnt/</td><td><span class="tl">won't</span> بشفتين مستديرتين، و <span class="tl">want</span> = يريد.</td></tr>
+    </table>
+  </section>
+
+  <section id="summary">
+    <h2>📌 الخلاصة <span class="tl">— Summary</span></h2>
+    <ul>
+      <li>احتمال حقيقي في المستقبل: <span class="tl"><b>If + present simple, will + base verb</b></span>.</li>
+      <li><b>لا</b> <span class="tl">will</span> بعد <span class="tl">if / when / unless</span>.</li>
+      <li><span class="tl"><b>when</b></span> = متأكد · <span class="tl"><b>if</b></span> = ربما · <span class="tl"><b>unless</b></span> = إلا إذا <span class="tl">(if ... not)</span>.</li>
+      <li>غير متأكد من النتيجة؟ استخدم <span class="tl">might</span>: <span class="tl">If it rains, we might stay home.</span></li>
+      <li>فاصلة بعد الشرط إذا بدأت الجملة بـ <span class="tl">If</span>.</li>
+      <li>انطق <span class="tl">'ll</span> بوضوح، وفرّق بين <span class="tl">won't</span> (لن) و <span class="tl">want</span> (يريد).</li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <h2>🔄 مراجعة سريعة <span class="tl">— Quick review (Lesson 4)</span></h2>
+    <p>هل تتذكر الماضي المستمر و <span class="tl">when / while</span>؟</p>
+    <div class="ex quiz" data-explain="فعل طويل يقطعه فعل قصير → was + -ing ... when + past simple.">
+      <div class="q">R1. <span class="tl">I ___ to work when my car broke down.</span></div>
+      <button class="option tl">drove</button>
+      <button class="option tl" data-correct="true">was driving</button>
+      <button class="option tl">were driving</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="لا بد من was قبل -ing.">
+      <div class="q">R2. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">While I walking home, I saw Ali.</button>
+      <button class="option tl" data-correct="true">While I was walking home, I saw Ali.</button>
+      <button class="option tl">While I was walk home, I saw Ali.</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="know فعل حالة → لا يأتي بصيغة -ing.">
+      <div class="q">R3. <span class="tl">I ___ the answer, but I didn't say anything.</span></div>
+      <button class="option tl">was knowing</button>
+      <button class="option tl" data-correct="true">knew</button>
+      <button class="option tl">was know</button>
+      <div class="feedback"></div>
+    </div>
+    <p class="tl">Review words: accident · injured · suddenly · luckily · break down · run out of · pick up</p>
+  </section>
+
+  <section id="next">
+    <h2>➡️ الدرس التالي <span class="tl">— Next lesson</span></h2>
+    <p>الدرس 6: <span class="tl">If I were rich...</span>: الجملة الشرطية الثانية، لتتحدث عن مواقف خيالية وأحلام. هناك ستفهم لماذا نقول <span class="tl">If I had a million dollars...</span> بالماضي. اكتب «التالي» لتبدأ.</p>
+  </section>
+
+</div>
+
+<footer>تعلّم خطوة بخطوة 🌍 · <span class="tl">English B1 · Lesson 5</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif" });
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("المتصفح لا يدعم الصوت. جرّب Chrome أو Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 السرعة: عادية" : "🐢 السرعة: بطيئة";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · ضع الفأرة على الخانة الحمراء لترى الإجابة." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition) — accepts alternatives separated by |
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "المتصفح لا يدعم التعرف على الصوت. جرّب Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ I'm listening... أستمع إليك...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var targets = box.getAttribute("data-text").split("|").map(norm);
+        var ok = targets.indexOf(norm(said)) !== -1;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again. حاول مرة أخرى.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ لم أسمع جيدًا. تأكد من إذن الميكروفون وحاول مرة أخرى."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درس 3: قواعد البيانات - النسخ المتماثل والتقسيم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #8b5cf6);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 760px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; align-items: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.db { border-color: var(--good); }
+  .box.warn { border-color: var(--warn); background: rgba(245,158,11,.15); }
+  .box.bad { border-color: var(--bad); color: var(--bad); text-decoration: line-through; }
+  .arrow { font-size: 1.4rem; color: var(--muted); }
+  .stack { display: flex; flex-direction: column; gap: 6px; }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>قواعد البيانات: النسخ المتماثل والتقسيم <span class="en">(Replication &amp; Sharding)</span></h1>
+  <p>ستتعلم كيف تجعل قاعدة البيانات تتحمل ملايين العمليات، وكيف لا تضيع عملية دفع واحدة إذا توقف خادم.</p>
+  <div class="badges">
+    <span class="badge">الدرس 3 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 45 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 1 عرفنا أن قاعدة البيانات هي الحلقة الأضعف. وفي الدرس 2 خففنا عنها القراءات بالـ Cache. لكن الـ Cache لا يساعد في الكتابة، ولا يحمي من توقف قاعدة البيانات.</div>
+      <p>بوابة الدفع عندنا تكتب كل عملية دفع في قاعدة البيانات. في الدرس 1 حسبنا أن البيانات ستصل إلى حوالي 11TB خلال 5 سنوات، وأن الذروة حوالي 350 عملية كتابة في الثانية.</p>
+      <p>عندنا مشكلتان. الأولى: إذا توقف خادم قاعدة البيانات، يتوقف الدفع كله. الثانية: البيانات ستكبر أكثر مما يتحمله خادم واحد.</p>
+      <p>الحل الأول هو <strong>النسخ المتماثل</strong>: نسخ من نفس البيانات على عدة خوادم. والحل الثاني هو <strong>التقسيم</strong>: نوزّع البيانات نفسها على عدة خوادم، كل خادم يحمل جزءًا منها.</p>
+      <p>في هذا الدرس ستتعلم:</p>
+      <ul>
+        <li>نموذج الخادم الرئيسي والنسخ التابعة <span class="en">(Primary / Replica)</span>.</li>
+        <li>النسخ المتزامن وغير المتزامن، ومشكلة تأخر النسخ <span class="en">(Replication Lag)</span>.</li>
+        <li>الانتقال التلقائي عند الفشل <span class="en">(Failover)</span>، وخطر "الدماغ المنقسم".</li>
+        <li>النِصاب <span class="en">(Quorum)</span> وقاعدة \(R + W > N\).</li>
+        <li>التقسيم: اختيار مفتاح التقسيم، والنقاط الساخنة، وتوليد المعرّفات.</li>
+      </ul>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">
+        🏦 <strong>تخيّل بنكًا قديمًا يعمل بالدفاتر الورقية.</strong>
+        <p>في المقر الرئيسي يوجد <strong>الدفتر الأصلي</strong>. كل إيداع أو سحب يُكتب فيه أولًا. هذا هو <strong>الخادم الرئيسي</strong> <span class="en">(Primary)</span>.</p>
+        <p>كل فرع عنده <strong>نسخة مصوّرة</strong> من الدفتر. الموظفون يقرؤون منها بدلًا من الاتصال بالمقر. هذه هي <strong>النسخ التابعة</strong> <span class="en">(Replicas)</span>.</p>
+        <p>النسخ تصل إلى الفروع بعد ساعة. إذا أودعت مالًا في المقر ثم ذهبت إلى الفرع فورًا، فلن يجد الموظف الإيداع. هذا هو <strong>تأخر النسخ</strong>.</p>
+        <p>إذا احترق المقر، يجب أن يصبح أحد الفروع هو المقر الجديد. هذا هو <strong>الانتقال عند الفشل</strong>. والإيداعات التي لم تصل نسختها بعد تضيع.</p>
+        <p>مع الوقت صار الدفتر ضخمًا جدًا. فقسّمه البنك: دفتر للعملاء من أ إلى ح، ودفتر من خ إلى ص، وهكذا. كل دفتر في غرفة مختلفة. هذا هو <strong>التقسيم</strong> <span class="en">(Sharding)</span>. وعند الباب فهرس يخبرك: "العميل سارة في الدفتر رقم 3". هذا هو <strong>دليل التوجيه</strong> <span class="en">(Directory)</span>.</p>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>الخادم الرئيسي</td><td class="en">Primary / Leader</td><td>الخادم الوحيد الذي يقبل الكتابة.</td></tr>
+        <tr><td>النسخة التابعة</td><td class="en">Replica / Follower</td><td>نسخة تستقبل التغييرات من الرئيسي. تُستخدم للقراءة.</td></tr>
+        <tr><td>سجل النسخ</td><td class="en">Replication Log (WAL / Binlog)</td><td>قائمة مرتبة بكل التغييرات. النسخ تطبّقها بنفس الترتيب.</td></tr>
+        <tr><td>النسخ المتزامن</td><td class="en">Synchronous Replication</td><td>الكتابة لا تنجح حتى تؤكدها النسخة.</td></tr>
+        <tr><td>النسخ غير المتزامن</td><td class="en">Asynchronous Replication</td><td>الكتابة تنجح فورًا، والنسخة تلحق لاحقًا.</td></tr>
+        <tr><td>تأخر النسخ</td><td class="en">Replication Lag</td><td>الفرق الزمني بين الرئيسي والنسخة.</td></tr>
+        <tr><td>قراءة ما كتبت</td><td class="en">Read-Your-Writes</td><td>المستخدم يرى دائمًا التغييرات التي عملها بنفسه.</td></tr>
+        <tr><td>الانتقال عند الفشل</td><td class="en">Failover</td><td>ترقية نسخة لتصبح رئيسية عندما يتوقف الرئيسي.</td></tr>
+        <tr><td>الدماغ المنقسم</td><td class="en">Split Brain</td><td>خادمان يظنان أن كل واحد منهما هو الرئيسي. يقبلان كتابات متعارضة.</td></tr>
+        <tr><td>النِصاب</td><td class="en">Quorum (N, W, R)</td><td>عدد النسخ التي يجب أن توافق على الكتابة أو القراءة.</td></tr>
+        <tr><td>التقسيم</td><td class="en">Sharding / Partitioning</td><td>توزيع البيانات على عدة خوادم. كل خادم يحمل جزءًا.</td></tr>
+        <tr><td>مفتاح التقسيم</td><td class="en">Shard Key</td><td>الحقل الذي نقرر به مكان كل صف. مثل <code>merchant_id</code>.</td></tr>
+        <tr><td>النقطة الساخنة</td><td class="en">Hot Spot / Hot Shard</td><td>جزء يستقبل حملًا أكبر بكثير من البقية.</td></tr>
+        <tr><td>نقطة الاستعادة / زمن الاستعادة</td><td class="en">RPO / RTO</td><td>RPO: كم بيانات يمكن أن نخسر. RTO: كم وقتًا نحتاج لنعود.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>0. قبل أن تبدأ: هل تحتاج هذا فعلًا؟</h3>
+      <p>التقسيم معقّد جدًا. قبله جرّب الحلول الأبسط بهذا الترتيب:</p>
+      <ol>
+        <li><strong>الفهارس</strong> <span class="en">(Indexes)</span>: استعلام بدون فهرس يقرأ الجدول كله \(O(n)\). مع الفهرس يصبح \(O(\log n)\). هذا وحده قد يجعل الاستعلام أسرع 1000 مرة.</li>
+        <li><strong>الـ Cache</strong>: كما تعلمنا في الدرس 2.</li>
+        <li><strong>التوسع الرأسي</strong>: خوادم قواعد البيانات الحديثة قوية جدًا. خادم واحد كبير يخدم آلاف الكتابات في الثانية.</li>
+        <li><strong>نسخ القراءة</strong>: لتوزيع القراءات.</li>
+        <li><strong>التقسيم الرأسي</strong>: جداول الدفع في قاعدة، وجداول المستخدمين في قاعدة أخرى.</li>
+        <li><strong>التقسيم الأفقي</strong> <span class="en">(Sharding)</span>: آخر خطوة.</li>
+      </ol>
+
+      <h3>1. نموذج الرئيسي والنسخ التابعة</h3>
+      <p>كل الكتابات تذهب إلى الرئيسي فقط. الرئيسي يكتب كل تغيير في سجل مرتب. النسخ تقرأ هذا السجل وتطبّقه بنفس الترتيب. هكذا تصبح كل النسخ متطابقة في النهاية.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  APP["App Servers"] -- "كتابة" --> P[("Primary")]
+  APP -- "قراءة" --> R1[("Replica 1")]
+  APP -- "قراءة" --> R2[("Replica 2")]
+  P -- "سجل النسخ" --> R1
+  P -- "سجل النسخ" --> R2
+      </div>
+      <p>هذا النموذج يحل مشكلتين: يوزّع <strong>القراءات</strong> على عدة خوادم، ويعطيك نسخة جاهزة إذا توقف الرئيسي. لكنه <strong>لا يوزّع الكتابات</strong>. كل نسخة تطبّق كل الكتابات.</p>
+
+      <h3>2. متزامن أم غير متزامن؟</h3>
+      <table>
+        <tr><th>النوع</th><th>كيف يعمل</th><th>الميزة</th><th>العيب</th></tr>
+        <tr><td>متزامن</td><td>الرئيسي ينتظر تأكيد النسخة قبل أن يرد بالنجاح.</td><td>✅ لا تضيع بيانات عند الفشل.</td><td>❌ الكتابة أبطأ. وإذا توقفت النسخة، تتوقف الكتابة.</td></tr>
+        <tr><td>غير متزامن</td><td>الرئيسي يرد فورًا. النسخة تلحق لاحقًا.</td><td>✅ كتابة سريعة.</td><td>❌ قد تضيع آخر الكتابات عند الفشل.</td></tr>
+        <tr><td>شبه متزامن</td><td>ينتظر نسخة واحدة فقط من عدة نسخ.</td><td>✅ توازن جيد: نسخة واحدة على الأقل فيها كل شيء.</td><td>⚠️ أبطأ قليلًا من غير المتزامن.</td></tr>
+      </table>
+      <div class="callout tip">💡 <strong>لأنظمة الدفع:</strong> استخدم النسخ شبه المتزامن، بحيث تؤكد نسخة واحدة على الأقل كل كتابة. هكذا يكون <span class="en">RPO = 0</span>: لا تضيع أي عملية دفع مؤكدة عند الفشل.</div>
+
+      <h3>3. مشكلة تأخر النسخ</h3>
+      <p>مع النسخ غير المتزامن، النسخة متأخرة دائمًا قليلًا. عادة أجزاء من الثانية. لكن تحت الحمل الكبير قد يصل التأخر إلى ثوانٍ أو دقائق.</p>
+      <p>مثال: العميل يدفع. الكتابة تذهب إلى الرئيسي. ثم تُعيد الصفحة تحميل نفسها وتقرأ حالة الدفع من نسخة متأخرة. النتيجة: "لا توجد عملية دفع"! فيضغط العميل "ادفع" مرة ثانية.</p>
+      <p>الحلول الشائعة:</p>
+      <ul>
+        <li><strong>قراءة ما كتبت:</strong> إذا كتب المستخدم خلال آخر بضع ثوانٍ، اقرأ له من الرئيسي.</li>
+        <li><strong>القراءة الحساسة من الرئيسي دائمًا:</strong> مثل الرصيد قبل السحب.</li>
+        <li><strong>تتبّع موقع السجل:</strong> احفظ رقم آخر كتابة للمستخدم. اقرأ من نسخة وصلت إلى هذا الرقم على الأقل.</li>
+      </ul>
+
+      <h3>4. النماذج الأخرى: متعدد الرئيسيين وبدون رئيسي</h3>
+      <p><strong>متعدد الرئيسيين</strong> <span class="en">(Multi-Leader)</span>: رئيسي في كل منطقة جغرافية. الكتابة سريعة في كل منطقة. لكن قد يعدّل رئيسيان نفس الصف في نفس الوقت، وتحتاج إلى حل التعارض <span class="en">(Conflict Resolution)</span>.</p>
+      <p><strong>بدون رئيسي</strong> <span class="en">(Leaderless)</span>: أي نسخة تقبل الكتابة. مثل <span class="en">Cassandra</span> و <span class="en">DynamoDB</span>. نكتب إلى \(W\) نسخ، ونقرأ من \(R\) نسخ. إذا كان \(R + W > N\)، فهناك نسخة واحدة على الأقل مشتركة بين القراءة والكتابة. هذه النسخة تحمل أحدث قيمة.</p>
+
+      <h3>5. التقسيم الأفقي (Sharding)</h3>
+      <p>النسخ المتماثل يضع <strong>كل</strong> البيانات على كل خادم. التقسيم يضع <strong>جزءًا</strong> من البيانات على كل خادم. لذلك التقسيم هو الطريقة الوحيدة لتوزيع الكتابات والتخزين.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  APP["App Server"] --> RT["Shard Router"]
+  RT -- "merchant A, D" --> S1[("Shard 1")]
+  RT -- "merchant B, E" --> S2[("Shard 2")]
+  RT -- "merchant C, F" --> S3[("Shard 3")]
+  S1 -.-> S1R[("Replica")]
+  S2 -.-> S2R[("Replica")]
+  S3 -.-> S3R[("Replica")]
+      </div>
+      <p>لاحظ أن كل جزء له نسخة تابعة. في الإنتاج نستخدم التقسيم والنسخ المتماثل معًا دائمًا.</p>
+
+      <h3>6. طرق التقسيم</h3>
+      <table>
+        <tr><th>الطريقة</th><th>كيف تعمل</th><th>الميزة</th><th>العيب</th></tr>
+        <tr><td>حسب النطاق <span class="en">(Range)</span></td><td>التاريخ من يناير إلى مارس في الجزء 1، وهكذا.</td><td>✅ استعلامات النطاق سريعة: "كل عمليات أكتوبر".</td><td>❌ كل الكتابات الجديدة تذهب إلى آخر جزء. نقطة ساخنة.</td></tr>
+        <tr><td>حسب التجزئة <span class="en">(Hash)</span></td><td><code>hash(key) % N</code> أو التجزئة المتسقة.</td><td>✅ توزيع متساوٍ تقريبًا.</td><td>❌ استعلامات النطاق تحتاج كل الأجزاء.</td></tr>
+        <tr><td>حسب الدليل <span class="en">(Directory)</span></td><td>جدول يحفظ: "التاجر A في الجزء 3".</td><td>✅ مرونة كاملة. تستطيع نقل تاجر واحد.</td><td>❌ الدليل نفسه خدمة إضافية يجب أن تكون سريعة وموثوقة.</td></tr>
+      </table>
+
+      <h3>7. اختيار مفتاح التقسيم: أهم قرار</h3>
+      <p>مفتاح التقسيم الجيد له ثلاث صفات:</p>
+      <ul>
+        <li><strong>قيم كثيرة</strong> <span class="en">(High Cardinality)</span>: <code>country</code> سيئ، لأن عندك 20 دولة فقط ومصر وحدها قد تأخذ 70% من الحمل.</li>
+        <li><strong>توزيع متساوٍ</strong>: لا قيمة واحدة تأخذ أغلب الحمل.</li>
+        <li><strong>يطابق الاستعلامات الشائعة</strong>: إذا كان أغلب الاستعلامات "عمليات التاجر X"، فـ <code>merchant_id</code> يجعل كل استعلام يذهب إلى جزء واحد.</li>
+      </ul>
+      <div class="callout warning">⚠️ <strong>تحذير:</strong> تغيير مفتاح التقسيم لاحقًا يعني نقل كل البيانات. فكّر جيدًا قبل أن تختار. واسأل: ما الاستعلامات التي ستحتاج إلى كل الأجزاء؟</div>
+
+      <h3>8. ثمن التقسيم</h3>
+      <ul>
+        <li><strong>الربط بين الجداول</strong> <span class="en">(JOIN)</span> عبر الأجزاء صعب أو مستحيل في قاعدة البيانات نفسها.</li>
+        <li><strong>المعاملات</strong> <span class="en">(Transactions)</span> عبر الأجزاء تحتاج بروتوكولات معقّدة. سنعود لها في الدرس 5.</li>
+        <li><strong>الاستعلامات الشاملة</strong> مثل "مجموع كل العمليات اليوم" تحتاج سؤال كل الأجزاء ثم جمع النتائج <span class="en">(Scatter-Gather)</span>.</li>
+        <li><strong>المعرّفات التلقائية</strong> <span class="en">(Auto-Increment)</span> لا تعمل. كل جزء سيعطي الرقم 1.</li>
+      </ul>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>النسخ المتزامن مقابل غير المتزامن</h3>
+      <div class="diagram mermaid">
+sequenceDiagram
+  participant A as App
+  participant P as Primary
+  participant R1 as Replica 1 (sync)
+  participant R2 as Replica 2 (async)
+  A->>P: INSERT payment
+  P->>P: write to log
+  P->>R1: send change
+  R1-->>P: ACK
+  P-->>A: OK (safe on 2 servers)
+  P--)R2: send change later
+  Note over R2: may lag behind
+      </div>
+      <p>هذا هو النسخ شبه المتزامن. الرئيسي ينتظر <span class="en">Replica 1</span> فقط. أما <span class="en">Replica 2</span> فتلحق في وقتها. إذا توقف الرئيسي، نرقّي <span class="en">Replica 1</span> لأنها تحمل كل الكتابات المؤكدة.</p>
+
+      <h3>الانتقال عند الفشل خطوة بخطوة</h3>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: الوضع الطبيعي</h4>
+          <div class="mem"><div class="box">App</div><span class="arrow">→</span><div class="box hl">Primary (term 1)</div><span class="arrow">→</span><div class="stack"><div class="box db">Replica 1</div><div class="box db">Replica 2</div></div></div>
+          <p>الرئيسي يقبل الكتابات، والنسخ تتبعه. كل الخوادم ترسل نبضات <span class="en">(Heartbeats)</span> كل ثانية لتقول: "أنا حي".</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: الرئيسي يتوقف</h4>
+          <div class="mem"><div class="box">App</div><span class="arrow">→</span><div class="box bad">Primary</div><span class="arrow">✗</span><div class="stack"><div class="box db">Replica 1</div><div class="box db">Replica 2</div></div></div>
+          <p>النبضات توقفت. الكتابات تفشل. لكن هل الرئيسي توقف فعلًا؟ أم أن الشبكة بطيئة فقط؟ لذلك ننتظر مهلة <span class="en">(Timeout)</span>، مثل 10 ثوانٍ، قبل أن نقرر.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: اختيار الرئيسي الجديد</h4>
+          <div class="mem"><div class="box bad">Primary</div><div class="box warn">Replica 1: log=1050</div><div class="box db">Replica 2: log=980</div></div>
+          <p>نختار النسخة صاحبة أحدث موقع في السجل. <span class="en">Replica 1</span> وصلت إلى 1050، و <span class="en">Replica 2</span> إلى 980 فقط. نختار <span class="en">Replica 1</span>. هذا الاختيار تقوم به أداة مثل <span class="en">Patroni</span> أو خدمة سحابية مُدارة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: الترقية وإعادة التوجيه</h4>
+          <div class="mem"><div class="box">App</div><span class="arrow">→</span><div class="box hl">New Primary (term 2)</div><span class="arrow">→</span><div class="box db">Replica 2</div></div>
+          <p><span class="en">Replica 1</span> صارت الرئيسي برقم دورة <span class="en">(Term)</span> جديد هو 2. التطبيق يكتب إليها. و <span class="en">Replica 2</span> تتبعها الآن. هذا هو زمن الاستعادة <span class="en">(RTO)</span>: غالبًا من 10 إلى 60 ثانية.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: الرئيسي القديم يعود</h4>
+          <div class="mem"><div class="box warn">Old Primary (term 1)</div><span class="arrow">→ ✗ رفض ←</span><div class="box hl">Primary (term 2)</div></div>
+          <p>الرئيسي القديم عاد ويظن أنه ما زال الرئيسي. هذا هو خطر <strong>الدماغ المنقسم</strong>. الحل هو <strong>الحماية برقم الدورة</strong> <span class="en">(Fencing)</span>: أي كتابة برقم دورة قديم (1) تُرفض. يجب أن يعود القديم كنسخة تابعة.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>تحذير:</strong> مع النسخ غير المتزامن، الكتابات التي وصلت إلى الرئيسي القديم ولم تصل إلى النسخة تضيع عند الترقية. في بوابة دفع، هذه عمليات قال لها النظام "نجحت" ثم اختفت. لهذا نستخدم النسخ شبه المتزامن.</div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: تأخر النسخ و"قراءة ما كتبت"</h3>
+      <p>نحاكي رئيسيًا ونسخة متأخرة ثانيتين. نستخدم وقتًا ثابتًا حتى تكون النتائج مضمونة.</p>
+<pre><code class="language-python">class Primary:
+    def __init__(self) -> None:
+        self.data: dict[str, str] = {}
+        self.log: list[tuple[float, str, str]] = []  # replication log
+
+    def write(self, key: str, value: str, now: float) -> None:
+        self.data[key] = value
+        self.log.append((now, key, value))
+
+
+class Replica:
+    def __init__(self, primary: Primary, lag: float) -> None:
+        self.primary = primary
+        self.lag = lag
+        self.data: dict[str, str] = {}
+        self.applied = 0  # position in the primary's log
+
+    def catch_up(self, now: float) -> None:
+        log = self.primary.log
+        while (self.applied &lt; len(log)
+               and log[self.applied][0] + self.lag &lt;= now):
+            _, key, value = log[self.applied]
+            self.data[key] = value
+            self.applied += 1
+
+    def read(self, key: str, now: float) -> str | None:
+        self.catch_up(now)
+        return self.data.get(key)
+
+
+class Router:
+    def __init__(self, primary: Primary, replica: Replica,
+                 window: float) -> None:
+        self.primary = primary
+        self.replica = replica
+        self.window = window               # seconds
+        self.last_write: dict[str, float] = {}
+
+    def write(self, user: str, key: str, value: str, now: float) -> None:
+        self.primary.write(key, value, now)
+        self.last_write[user] = now
+
+    def read(self, user: str, key: str, now: float,
+             read_your_writes: bool = True) -> tuple[str, str | None]:
+        since = now - self.last_write.get(user, float("-inf"))
+        if read_your_writes and since &lt; self.window:
+            return "primary", self.primary.data.get(key)
+        return "replica", self.replica.read(key, now)
+
+
+primary = Primary()
+router = Router(primary, Replica(primary, lag=2), window=5)
+router.write("sara", "pay:1", "pending", now=0)
+
+checks = [("sara naive", "sara", 1, False), ("sara ryw", "sara", 1, True),
+          ("ali  ryw", "ali", 1, True), ("ali  ryw", "ali", 3, True)]
+for label, user, t, ryw in checks:
+    source, value = router.read(user, "pay:1", t, ryw)
+    print(f"t={t} {label:&lt;10} -> {source}: {value}")</code></pre>
+      <div class="output">t=1 sara naive -> replica: None
+t=1 sara ryw   -> primary: pending
+t=1 ali  ryw   -> replica: None
+t=3 ali  ryw   -> replica: pending</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>self.log.append((now, key, value))</code>: الرئيسي يسجّل كل تغيير مع وقته. هذا يشبه <span class="en">WAL</span> في PostgreSQL.</li>
+        <li><code>self.applied</code>: النسخة تتذكر إلى أين وصلت في السجل.</li>
+        <li><code>log[self.applied][0] + self.lag &lt;= now</code>: التغيير يصل إلى النسخة فقط بعد مرور مدة التأخر.</li>
+        <li><code>since &lt; self.window</code>: إذا كتب المستخدم خلال آخر 5 ثوانٍ، نقرأ له من الرئيسي.</li>
+        <li><strong>sara naive:</strong> سارة دفعت للتو، لكن النسخة لا تعرف شيئًا: <code>None</code>. سارة تظن أن الدفع فشل!</li>
+        <li><strong>sara ryw:</strong> نفس اللحظة، لكن من الرئيسي. سارة ترى <code>pending</code>.</li>
+        <li><strong>ali:</strong> علي لم يكتب شيئًا، فيقرأ من النسخة. في <code>t=1</code> لا يرى الدفع، وفي <code>t=3</code> يراه. هذا مقبول لأنه ليس صاحب العملية.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> لو كانت لديك عدة خوادم تطبيق، فلا تحفظ <code>last_write</code> في ذاكرة الخادم. هذا خطأ الدرس 1! احفظه في الجلسة أو في Redis.</div>
+
+      <h3>مثال 2: النِصاب R + W > N</h3>
+      <p>ثلاث نسخ <span class="en">(N=3)</span>. كل قيمة تحمل رقم إصدار. نكتب إلى نسختين فقط <span class="en">(W=2)</span>، لأن الثالثة كانت مشغولة.</p>
+<pre><code class="language-python">from dataclasses import dataclass
+
+
+@dataclass
+class Versioned:
+    value: str
+    version: int
+
+
+class Node:
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.store: dict[str, Versioned] = {}
+
+
+nodes = [Node("n1"), Node("n2"), Node("n3")]
+for node in nodes:
+    node.store["fee:m1"] = Versioned("2.5", 1)
+
+
+def write(key: str, value: str, version: int, targets: list[Node]) -> None:
+    for node in targets:
+        node.store[key] = Versioned(value, version)
+
+
+def read(key: str, targets: list[Node]) -> Versioned:
+    replies = [node.store[key] for node in targets]
+    return max(replies, key=lambda v: v.version)   # newest wins
+
+
+N, W = 3, 2
+write("fee:m1", "2.0", version=2, targets=nodes[:W])  # n3 missed it
+
+for R, targets in [(1, [nodes[2]]), (2, nodes[1:3])]:
+    result = read("fee:m1", targets)
+    names = ",".join(node.name for node in targets)
+    print(f"R={R} W={W} N={N} R+W>N={R + W > N} "
+          f"read[{names}] -> {result.value}")</code></pre>
+      <div class="output">R=1 W=2 N=3 R+W>N=False read[n3] -> 2.5
+R=2 W=2 N=3 R+W>N=True read[n2,n3] -> 2.0</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>Versioned(value, version)</code>: كل قيمة معها رقم إصدار. هكذا نعرف أي قيمة أحدث.</li>
+        <li><code>targets=nodes[:W]</code>: الكتابة وصلت إلى <code>n1</code> و <code>n2</code> فقط. <code>n3</code> ما زالت تحمل العمولة القديمة.</li>
+        <li><code>max(..., key=lambda v: v.version)</code>: من بين الردود، نأخذ صاحب أعلى إصدار.</li>
+        <li><strong>R=1:</strong> قرأنا من <code>n3</code> وحدها، فحصلنا على <code>2.5</code> القديمة. \(1 + 2 = 3\) ليست أكبر من 3.</li>
+        <li><strong>R=2:</strong> قرأنا من <code>n2</code> و <code>n3</code>. <code>n2</code> مشتركة مع الكتابة، فحصلنا على <code>2.0</code> الصحيحة.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> بعد القراءة، يمكن للنظام أن يكتب القيمة الأحدث إلى <code>n3</code> المتأخرة. هذا اسمه <strong>إصلاح القراءة</strong> <span class="en">(Read Repair)</span>.</div>
+
+      <h3>مثال 3: النقطة الساخنة في التقسيم حسب النطاق</h3>
+      <p>نقسم جدول العمليات على 4 أجزاء. مرة حسب ربع السنة، ومرة حسب تجزئة معرّف العملية. ثم نرى أين تذهب عمليات اليوم.</p>
+<pre><code class="language-python">import hashlib
+from collections import Counter
+
+SHARDS = 4
+
+
+def stable_hash(value: str) -> int:
+    return int(hashlib.md5(value.encode()).hexdigest(), 16)
+
+
+def range_shard(created_at: str) -> int:
+    month = int(created_at[5:7])
+    return (month - 1) // 3          # Q1 -> 0 ... Q4 -> 3
+
+
+def hash_shard(payment_id: str) -> int:
+    return stable_hash(payment_id) % SHARDS
+
+
+today = "2026-11-21"
+new_payments = [f"pay_{i}" for i in range(10_000)]
+
+by_range = Counter(range_shard(today) for _ in new_payments)
+by_hash = Counter(hash_shard(p) for p in new_payments)
+
+
+def busiest(counter: Counter) -> float:
+    return max(counter.values()) / len(new_payments)
+
+
+print(f"range: busiest shard gets {busiest(by_range):.0%} of today's writes")
+print(f"hash : busiest shard gets ~{round(busiest(by_hash) * 20) / 20:.0%}")</code></pre>
+      <div class="output">range: busiest shard gets 100% of today's writes
+hash : busiest shard gets ~25%</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>(month - 1) // 3</code>: نوفمبر هو الشهر 11، فيذهب إلى الجزء 3 (الربع الرابع).</li>
+        <li><code>stable_hash(...) % SHARDS</code>: التجزئة تعطي أرقامًا عشوائية الشكل، فتتوزع العمليات بالتساوي.</li>
+        <li><code>Counter</code>: يعد كم عملية ذهبت إلى كل جزء.</li>
+        <li><code>round(... * 20) / 20</code>: نقرّب إلى أقرب 5%، لأن العدد الدقيق يتغير قليلًا.</li>
+        <li><strong>النتيجة:</strong> مع النطاق، جزء واحد يعمل والثلاثة الأخرى نائمة. دفعنا ثمن 4 خوادم وحصلنا على أداء خادم واحد.</li>
+      </ol>
+      <div class="callout note">📝 <strong>الموازنة:</strong> التجزئة توزّع الكتابة بعدل. لكن استعلام "كل عمليات أكتوبر" يحتاج الآن إلى الأجزاء الأربعة. مع النطاق كان يحتاج إلى جزء واحد. لا يوجد حل مثالي، فقط حل يناسب استعلاماتك.</div>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>1. المعرّفات التلقائية بعد التقسيم</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة: عدّاد لكل جزء</h4>
+<pre><code class="language-python">class Shard:
+    def __init__(self) -> None:
+        self.next_id = 1
+        self.rows: dict[int, str] = {}
+
+    def insert(self, data: str) -> int:
+        payment_id = self.next_id
+        self.next_id += 1
+        self.rows[payment_id] = data
+        return payment_id
+
+
+shards = [Shard(), Shard()]
+a = shards[0].insert("100 EGP")
+b = shards[1].insert("250 EGP")
+print(a, b, "duplicate!" if a == b else "unique")</code></pre>
+          <div class="output">1 1 duplicate!</div>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة: معرّف بنمط Snowflake</h4>
+<pre><code class="language-python">class IdGenerator:
+    EPOCH_MS = 1_704_067_200_000      # 2024-01-01 UTC
+
+    def __init__(self, shard_id: int, clock_ms) -> None:
+        self.shard_id = shard_id      # 10 bits: 0..1023
+        self.clock_ms = clock_ms
+        self.seq = 0                  # 12 bits: 0..4095
+        self.last_ms = -1
+
+    def next_id(self) -> int:
+        now = self.clock_ms()
+        if now == self.last_ms:
+            self.seq += 1
+            if self.seq > 0xFFF:
+                raise RuntimeError("wait for next ms")
+        else:
+            self.seq, self.last_ms = 0, now
+        return (((now - self.EPOCH_MS) &lt;&lt; 22)
+                | (self.shard_id &lt;&lt; 12) | self.seq)
+
+
+clock = lambda: IdGenerator.EPOCH_MS + 1000
+gen0, gen1 = IdGenerator(0, clock), IdGenerator(1, clock)
+a, b, c = gen0.next_id(), gen1.next_id(), gen0.next_id()
+print(a, b, c)
+print("unique:", len({a, b, c}) == 3)
+print("shard of b:", (b >> 12) & 0x3FF)</code></pre>
+          <div class="output">4194304000 4194308096 4194304001
+unique: True
+shard of b: 1</div>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الطريقة الأولى خاطئة؟</strong> كل جزء يبدأ العد من 1. الآن عندك عمليتا دفع برقم 1. إذا سأل التاجر عن "العملية 1"، أي واحدة نرجع؟ الحل: معرّف يجمع <strong>الوقت</strong> (41 بت) و<strong>رقم الجزء</strong> (10 بت) و<strong>تسلسل</strong> (12 بت). المعرّف فريد، ومرتب زمنيًا، ويخبرك أين تجد الصف. البديل الأبسط هو <span class="en">UUID</span>، لكنه أطول وغير مرتب.</div>
+
+      <h3>2. أخطاء أخرى شائعة</h3>
+      <ul>
+        <li><strong>❌ فحص الرصيد من نسخة تابعة:</strong> النسخة متأخرة، فترى رصيدًا قديمًا وتسمح بسحب مرتين. <strong>✅</strong> كل قراءة تسبق قرارًا ماليًا تكون من الرئيسي.</li>
+        <li><strong>❌ مفتاح تقسيم بقيم قليلة:</strong> مثل <code>country</code> أو <code>status</code>. <strong>✅</strong> استخدم مفتاحًا بقيم كثيرة مثل <code>merchant_id</code>.</li>
+        <li><strong>❌ التقسيم المبكر:</strong> قسّمت قاعدة فيها 50GB. الآن كل ميزة جديدة أصعب. <strong>✅</strong> جرّب الفهارس والتوسع الرأسي والنسخ أولًا.</li>
+        <li><strong>❌ انتقال عند الفشل بدون حماية:</strong> الرئيسي القديم يعود ويقبل الكتابات. <strong>✅</strong> استخدم أرقام الدورات <span class="en">(Fencing Tokens)</span> وأدوات مجرّبة، ولا تكتب أداة الانتقال بنفسك.</li>
+        <li><strong>❌ عدم مراقبة تأخر النسخ:</strong> النسخة متأخرة 10 دقائق ولا أحد يعرف. <strong>✅</strong> ضع تنبيهًا إذا تجاوز التأخر بضع ثوانٍ، وأخرج النسخة المتأخرة من القراءة.</li>
+        <li><strong>❌ النسخ المتماثل بدلًا من النسخ الاحتياطي:</strong> إذا حذف أحد جدولًا بالخطأ، يُنسخ الحذف إلى كل النسخ فورًا! <strong>✅</strong> احتفظ أيضًا بنسخ احتياطية <span class="en">(Backups)</span> مع استعادة إلى أي لحظة <span class="en">(Point-in-Time Recovery)</span>.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>صنّف كل قراءة.</strong> هل يمكن أن تكون قديمة بثانيتين؟ إذا نعم، اقرأ من نسخة. إذا لا، اقرأ من الرئيسي.</li>
+        <li><strong>نسخة متزامنة واحدة على الأقل</strong> لبيانات الأموال، حتى لا تضيع أي عملية مؤكدة.</li>
+        <li><strong>ضع النسخ في مناطق توفر مختلفة</strong> <span class="en">(Availability Zones)</span>. نسختان في نفس الغرفة تتوقفان معًا عند انقطاع الكهرباء.</li>
+        <li><strong>اختر مفتاح التقسيم حسب الاستعلامات.</strong> اكتب أهم 10 استعلامات أولًا، ثم اختر المفتاح.</li>
+        <li><strong>ابدأ بأجزاء منطقية كثيرة.</strong> مثلًا 256 جزءًا منطقيًا على 4 خوادم فقط. عندما تكبر، تنقل أجزاء كاملة إلى خوادم جديدة بدلًا من إعادة تقسيم كل صف.</li>
+        <li><strong>اعزل التجار الكبار.</strong> تاجر ضخم قد يحتاج جزءًا خاصًا به، حتى لا يبطئ التجار الآخرين.</li>
+        <li><strong>جرّب الانتقال عند الفشل بانتظام.</strong> إذا لم تجربه، فلا تعرف إن كان يعمل.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة عملية:</strong> كثير من الأنظمة تستخدم قاعدة بيانات مُدارة مثل <span class="en">Amazon Aurora</span> أو <span class="en">Cloud SQL</span>. الانتقال عند الفشل والنسخ يعملان تلقائيًا. افهم المبادئ، لكن لا تبنِ كل شيء بنفسك.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+
+      <h3>النسخ يوزّع القراءة فقط</h3>
+      <p>كل نسخة تضيف طاقة قراءة كاملة. لكن كل نسخة تطبّق أيضًا كل الكتابات. لذلك طاقة الكتابة لا تزيد، بل تقل قليلًا، لأن الرئيسي يرسل السجل إلى نسخ أكثر.</p>
+      <div dir="ltr">$$\text{Read capacity} \approx (1 + r) \times C_{\text{node}} \qquad \text{Write capacity} \approx C_{\text{primary}}$$</div>
+      <p>حيث \(r\) عدد النسخ. أما مع التقسيم إلى \(S\) أجزاء، فالكتابة أيضًا تتوزع:</p>
+      <div dir="ltr">$$\text{Write capacity} \approx S \times C_{\text{primary}}$$</div>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>كم عملية قد تضيع مع النسخ غير المتزامن؟</h3>
+      <p>إذا توقف الرئيسي، تضيع الكتابات التي لم تصل إلى النسخة بعد. عددها تقريبًا:</p>
+      <div dir="ltr">$$\text{Lost writes} \approx \lambda_w \times \text{lag}$$</div>
+      <p>مع 350 كتابة في الثانية وتأخر ثانيتين: حوالي <strong>700 عملية دفع</strong> قال النظام إنها نجحت ثم اختفت. هذا سبب كافٍ لاستخدام نسخة متزامنة.</p>
+
+      <h3>قاعدة النِصاب</h3>
+      <div dir="ltr">$$R + W > N$$</div>
+      <p>مع \(N = 3\)، الاختيار الشائع \(W = 2, R = 2\). هذا يتحمل توقف نسخة واحدة في القراءة والكتابة. إذا أردت كتابة سريعة جدًا، اختر \(W = 1, R = 3\). لكن القراءة تفشل إذا توقفت أي نسخة.</p>
+
+      <h3>مقارنة: النسخ المتماثل مقابل التقسيم</h3>
+      <table>
+        <tr><th>المعيار</th><th>النسخ المتماثل</th><th>التقسيم</th></tr>
+        <tr><td>ماذا يوزّع؟</td><td>القراءات</td><td>القراءات والكتابات والتخزين</td></tr>
+        <tr><td>التوافرية</td><td>✅ يرفعها كثيرًا</td><td>⚠️ لا يرفعها وحده. كل جزء يحتاج نسخًا</td></tr>
+        <tr><td>تغيير كود التطبيق</td><td>✅ قليل: توجيه القراءة والكتابة</td><td>❌ كبير: كل استعلام يحتاج مفتاح التقسيم</td></tr>
+        <tr><td>JOIN والمعاملات</td><td>✅ تعمل كالمعتاد</td><td>❌ صعبة عبر الأجزاء</td></tr>
+        <tr><td>المشكلة الرئيسية</td><td>تأخر النسخ</td><td>النقاط الساخنة وإعادة التقسيم</td></tr>
+        <tr><td>متى تستخدمه؟</td><td>مبكرًا، في كل نظام إنتاج تقريبًا</td><td>عندما لا يتحمل أكبر خادم الكتابات أو الحجم</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: مخزن عمليات مقسّم بدليل</h2>
+      <p>ستبني مخزنًا يقسّم العمليات حسب التاجر، باستخدام دليل توجيه. ثم تكتشف تاجرًا ضخمًا يُثقل جزءًا واحدًا، وتنقله إلى جزء خاص به بدون أن يلاحظ أحد.</p>
+<pre><code class="language-python">class ShardedPaymentStore:
+    def __init__(self, shard_names: list[str]) -> None:
+        self.shards: dict[str, list[tuple[str, int]]] = {
+            name: [] for name in shard_names
+        }
+        self.directory: dict[str, str] = {}   # merchant -> shard
+
+    def add_shard(self, name: str) -> None:
+        self.shards[name] = []
+
+    def _merchant_counts(self) -> dict[str, int]:
+        counts = {name: 0 for name in self.shards}
+        for shard in self.directory.values():
+            counts[shard] += 1
+        return counts
+
+    def shard_for(self, merchant: str) -> str:
+        if merchant not in self.directory:     # new merchant
+            counts = self._merchant_counts()
+            self.directory[merchant] = min(sorted(counts),
+                                           key=counts.__getitem__)
+        return self.directory[merchant]
+
+    def insert(self, merchant: str, amount: int) -> None:
+        self.shards[self.shard_for(merchant)].append((merchant, amount))
+
+    def payments_for(self, merchant: str) -> list[int]:
+        shard = self.directory.get(merchant)   # single-shard query
+        if shard is None:
+            return []
+        return [amt for m, amt in self.shards[shard] if m == merchant]
+
+    def total_volume(self) -> int:             # scatter-gather
+        return sum(amt for rows in self.shards.values() for _, amt in rows)
+
+    def move_merchant(self, merchant: str, target: str) -> int:
+        source = self.directory[merchant]
+        moving = [r for r in self.shards[source] if r[0] == merchant]
+        self.shards[target].extend(moving)                   # 1) copy
+        self.directory[merchant] = target                    # 2) switch
+        self.shards[source] = [r for r in self.shards[source]
+                               if r[0] != merchant]          # 3) clean up
+        return len(moving)
+
+    def rows_per_shard(self) -> dict[str, int]:
+        return {name: len(rows) for name, rows in self.shards.items()}
+
+
+store = ShardedPaymentStore(["s1", "s2", "s3"])
+for merchant, amount in [("A", 100), ("B", 50), ("C", 300), ("D", 75),
+                         ("A", 200), ("A", 150), ("A", 400), ("A", 250)]:
+    store.insert(merchant, amount)
+
+print("directory:", store.directory)
+print("rows     :", store.rows_per_shard())
+print("A        :", store.payments_for("A"))
+print("total    :", store.total_volume())
+
+store.add_shard("s4")
+print("moved    :", store.move_merchant("A", "s4"), "rows")
+print("rows     :", store.rows_per_shard())
+print("A        :", store.payments_for("A"))
+print("total    :", store.total_volume())</code></pre>
+      <div class="output">directory: {'A': 's1', 'B': 's2', 'C': 's3', 'D': 's1'}
+rows     : {'s1': 6, 's2': 1, 's3': 1}
+A        : [100, 200, 150, 400, 250]
+total    : 1525
+moved    : 5 rows
+rows     : {'s1': 1, 's2': 1, 's3': 1, 's4': 5}
+A        : [100, 200, 150, 400, 250]
+total    : 1525</div>
+      <h4>تتبّع السيناريو</h4>
+      <ol>
+        <li><strong>توزيع التجار:</strong> كل تاجر جديد يذهب إلى الجزء صاحب أقل عدد من التجار. <code>A</code> إلى <code>s1</code>، ثم <code>B</code> إلى <code>s2</code>، ثم <code>C</code> إلى <code>s3</code>. عند <code>D</code> كلها متساوية، فنختار أولها بالترتيب: <code>s1</code>.</li>
+        <li><strong>المشكلة:</strong> عدد التجار متوازن، لكن الحمل ليس متوازنًا. <code>A</code> تاجر ضخم، فصار في <code>s1</code> 6 صفوف مقابل صف واحد في كل جزء آخر.</li>
+        <li><strong>استعلام تاجر واحد:</strong> <code>payments_for("A")</code> يسأل جزءًا واحدًا فقط. هذه فائدة اختيار <code>merchant_id</code> كمفتاح.</li>
+        <li><strong>الاستعلام الشامل:</strong> <code>total_volume</code> يسأل كل الأجزاء ويجمع النتائج.</li>
+        <li><strong>النقل:</strong> أضفنا <code>s4</code> ونقلنا <code>A</code> إليه بثلاث خطوات: نسخ، ثم تحويل الدليل، ثم حذف القديم. المجموع بقي 1525، ولم تضع أي عملية.</li>
+      </ol>
+      <div class="callout note">📝 <strong>ملاحظة:</strong> في الواقع، الكتابات تستمر أثناء النقل. لذلك نكتب إلى المكانين معًا مؤقتًا <span class="en">(Dual Write)</span>، وننسخ البيانات القديمة في الخلفية، ونتحقق من التطابق، ثم نحوّل الدليل. هذا هو التمرين 4.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+
+      <div class="quiz" data-explain="الكتابة ذهبت إلى الرئيسي، والقراءة من نسخة غير متزامنة لم يصلها التغيير بعد. الحل: قراءة ما كتبت من الرئيسي.">
+        <div class="q">1. عميل دفع ثم أعاد تحميل الصفحة فورًا، فلم يجد العملية. ما السبب الأرجح؟</div>
+        <button class="option">الـ Cache ممتلئ</button>
+        <button class="option" data-correct="true">القراءة تمت من نسخة تابعة متأخرة</button>
+        <button class="option">موازن الأحمال معطّل</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="نحتاج R + W > N، أي R + 3 > 5، إذن R ≥ 3.">
+        <div class="q">2. عندك N = 5 نسخ، والكتابة تنتظر W = 3. ما أقل قيمة لـ R تضمن قراءة أحدث قيمة؟</div>
+        <button class="option">1</button>
+        <button class="option">2</button>
+        <button class="option" data-correct="true">3</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="merchant_id له قيم كثيرة، ويطابق الاستعلام الشائع، فيذهب كل استعلام إلى جزء واحد.">
+        <div class="q">3. أغلب الاستعلامات هي "عمليات التاجر X". ما أفضل مفتاح تقسيم؟</div>
+        <button class="option">country</button>
+        <button class="option" data-correct="true">merchant_id</button>
+        <button class="option">created_at</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="النسخ يضع كل البيانات على كل نسخة، وكل نسخة تطبّق كل الكتابات. لذلك لا يوزّع الكتابة.">
+        <div class="q">4. أضفت 5 نسخ تابعة. ماذا يحدث لطاقة الكتابة؟</div>
+        <button class="option">تتضاعف 6 مرات</button>
+        <button class="option" data-correct="true">تبقى تقريبًا كما هي</button>
+        <button class="option">تتضاعف مرتين</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الدماغ المنقسم: خادمان يقبلان الكتابة كأن كل واحد هو الرئيسي. الحل هو الحماية برقم الدورة.">
+        <div class="q">5. بعد الانتقال عند الفشل، عاد الرئيسي القديم وبدأ يقبل الكتابات. ما اسم المشكلة؟</div>
+        <button class="option">Replication Lag</button>
+        <button class="option">Hot Spot</button>
+        <button class="option" data-correct="true">Split Brain</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): كم جزءًا تحتاج؟</h3>
+      <p>من الدرس 1: البيانات ستصل إلى 10.95TB خلال 5 سنوات. كل خادم يحمل 2TB، ولا نريد أن نملأه فوق 70%. كم جزءًا تحتاج؟ وكم بيانات في كل جزء؟</p>
+      <details><summary>💡 تلميح</summary><p>السعة المفيدة لكل خادم = 2 × 0.7. ثم استخدم <code>math.ceil</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">import math
+
+total_tb = 10.95
+shard_capacity_tb = 2.0
+max_fill = 0.7
+
+shards = math.ceil(total_tb / (shard_capacity_tb * max_fill))
+print("shards needed:", shards)
+print(f"data per shard: {total_tb / shards:.2f} TB")</code></pre>
+        <div class="output">shards needed: 8
+data per shard: 1.37 TB</div>
+        <p>نصيحة: ابدأ بعدد أجزاء منطقية أكبر، مثل 64، موزّعة على 8 خوادم. عندما تكبر البيانات، تنقل أجزاء منطقية إلى خوادم جديدة.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): تاجر ضخم يُثقل جزءًا واحدًا</h3>
+      <p>التاجر <code>bigmart</code> يأخذ 40% من كل العمليات. اكتب دالة تضيف لاحقة <span class="en">(Salt)</span> للمفتاح، فتوزّع عملياته على 4 مفاتيح. التجار الصغار يبقون بدون لاحقة. ثم اكتب دالة ترجع كل المفاتيح التي يجب قراءتها لتاجر.</p>
+      <details><summary>💡 تلميح</summary><p>استخدم رقم تسلسل العملية مع <code>%</code>. واحفظ التجار الكبار في قاموس صغير.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">HOT_MERCHANTS = {"bigmart": 4}
+
+
+def buckets_for(merchant_id: str) -> int:
+    return HOT_MERCHANTS.get(merchant_id, 1)
+
+
+def salted_key(merchant_id: str, payment_seq: int) -> str:
+    buckets = buckets_for(merchant_id)
+    if buckets == 1:
+        return merchant_id
+    return f"{merchant_id}#{payment_seq % buckets}"
+
+
+def keys_to_read(merchant_id: str) -> list[str]:
+    buckets = buckets_for(merchant_id)
+    if buckets == 1:
+        return [merchant_id]
+    return [f"{merchant_id}#{b}" for b in range(buckets)]
+
+
+print([salted_key("bigmart", seq) for seq in range(6)])
+print(salted_key("small-shop", 7))
+print(keys_to_read("bigmart"))</code></pre>
+        <div class="output">['bigmart#0', 'bigmart#1', 'bigmart#2', 'bigmart#3', 'bigmart#0', 'bigmart#1']
+small-shop
+['bigmart#0', 'bigmart#1', 'bigmart#2', 'bigmart#3']</div>
+        <p>الكتابة الآن موزّعة على 4 أجزاء. والثمن: قراءة عمليات <code>bigmart</code> تحتاج 4 استعلامات. لذلك نطبّق اللاحقة فقط على التجار الكبار.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): من أين نقرأ؟</h3>
+      <p>لكل قراءة، قرّر: من الرئيسي أم من نسخة تابعة؟</p>
+      <ol>
+        <li>تقرير المبيعات الشهري في لوحة التاجر.</li>
+        <li>فحص الرصيد قبل تحويل الأرباح للتاجر.</li>
+        <li>صفحة الإيصال بعد الدفع مباشرة.</li>
+        <li>تصدير البيانات لفريق التحليل.</li>
+        <li>التحقق: هل عملية الدفع هذه مسجّلة من قبل؟ (لمنع التكرار)</li>
+      </ol>
+      <details><summary>💡 تلميح</summary><p>اسأل: ماذا يحدث لو كانت البيانات قديمة بخمس ثوانٍ؟</p></details>
+      <details><summary>✅ الحل</summary>
+        <table>
+          <tr><th>القراءة</th><th>المصدر</th><th>السبب</th></tr>
+          <tr><td>التقرير الشهري</td><td>نسخة تابعة</td><td>تأخر ثوانٍ لا يغيّر شيئًا. والتقرير ثقيل، فلا نريده على الرئيسي.</td></tr>
+          <tr><td>الرصيد قبل التحويل</td><td>الرئيسي، داخل معاملة</td><td>رصيد قديم قد يسبب تحويل أموال غير موجودة.</td></tr>
+          <tr><td>صفحة الإيصال</td><td>الرئيسي (قراءة ما كتبت)</td><td>العميل كتب للتو، ويجب أن يرى عمليته.</td></tr>
+          <tr><td>تصدير التحليل</td><td>نسخة مخصصة للتحليل</td><td>استعلامات طويلة جدًا. نسخة منفصلة تحمي باقي النظام.</td></tr>
+          <tr><td>فحص التكرار</td><td>الرئيسي، مع قيد فريد <span class="en">(Unique Constraint)</span></td><td>نسخة متأخرة قد لا ترى العملية الأولى، فنسجّل الدفع مرتين.</td></tr>
+        </table>
+      </details>
+
+      <h3>تمرين 4 (صعب): نقل تاجر بدون توقف</h3>
+      <p>في المشروع نقلنا التاجر <code>A</code> في لحظة واحدة. في الواقع، يصل إلى <code>A</code> مئة دفعة في الثانية أثناء النقل. صمّم خطوات النقل بحيث لا تضيع أي عملية ولا يتوقف الدفع.</p>
+      <details><summary>💡 تلميح</summary><p>فكّر في أربع مراحل: الكتابة إلى المكانين، ثم نسخ القديم، ثم التحقق، ثم التحويل.</p></details>
+      <details><summary>✅ الحل</summary>
+        <ol>
+          <li><strong>الكتابة المزدوجة:</strong> كل كتابة جديدة لـ <code>A</code> تذهب إلى <code>s1</code> و <code>s4</code> معًا. <code>s1</code> ما زال مصدر الحقيقة.</li>
+          <li><strong>النسخ في الخلفية</strong> <span class="en">(Backfill)</span>: انسخ العمليات القديمة من <code>s1</code> إلى <code>s4</code> على دفعات صغيرة، حتى لا تُثقل الجزء. استخدم معرّف العملية لتتجاهل الصفوف الموجودة مسبقًا.</li>
+          <li><strong>التحقق:</strong> قارن العدد والمجموع <span class="en">(Checksum)</span> بين المكانين.</li>
+          <li><strong>تحويل القراءة:</strong> حدّث الدليل ليقرأ من <code>s4</code>. راقب الأخطاء. إذا ظهرت مشكلة، ارجع إلى <code>s1</code> فورًا.</li>
+          <li><strong>إيقاف الكتابة المزدوجة:</strong> بعد فترة آمنة، اكتب إلى <code>s4</code> فقط.</li>
+          <li><strong>التنظيف:</strong> احذف بيانات <code>A</code> من <code>s1</code> بعد أيام، وليس فورًا.</li>
+        </ol>
+        <p>الفكرة المهمة: كل خطوة <strong>قابلة للتراجع</strong>. لا توجد لحظة واحدة "كل شيء أو لا شيء".</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>قبل التقسيم: الفهارس، ثم الـ Cache، ثم التوسع الرأسي، ثم نسخ القراءة.</li>
+        <li>نموذج الرئيسي والنسخ: الكتابة إلى الرئيسي فقط، والقراءة من النسخ. يوزّع القراءة ويرفع التوافرية، لكنه لا يوزّع الكتابة.</li>
+        <li>النسخ غير المتزامن سريع، لكن قد يضيع \(\lambda_w \times \text{lag}\) من الكتابات عند الفشل. لأنظمة الدفع استخدم نسخة متزامنة واحدة على الأقل.</li>
+        <li>حل مشكلة تأخر النسخ بـ "قراءة ما كتبت"، واقرأ القرارات المالية من الرئيسي دائمًا.</li>
+        <li>الانتقال عند الفشل يختار النسخة الأحدث، ويحمي من الدماغ المنقسم بأرقام الدورات.</li>
+        <li>في الأنظمة بدون رئيسي: \(R + W > N\) يضمن قراءة أحدث قيمة.</li>
+        <li>التقسيم يوزّع الكتابة والتخزين. ومفتاح التقسيم أهم قرار: قيم كثيرة، وتوزيع متساوٍ، ويطابق الاستعلامات.</li>
+        <li>التقسيم حسب النطاق يسبب نقاطًا ساخنة مع البيانات الزمنية. والتجزئة توزّع بعدل لكنها تُبطئ استعلامات النطاق.</li>
+        <li>بعد التقسيم: لا معرّفات تلقائية. استخدم معرّفات بنمط Snowflake أو UUID.</li>
+        <li>النسخ المتماثل ليس نسخًا احتياطيًا. الحذف بالخطأ يُنسخ أيضًا.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <p>خطة سلسلة تصميم الأنظمة:</p>
+      <ol>
+        <li>✅ أساسيات التوسع والمكونات الأساسية</li>
+        <li>✅ موازنة الأحمال والـ Caching بعمق</li>
+        <li>✅ قواعد البيانات: النسخ المتماثل والتقسيم (هذا الدرس)</li>
+        <li>طوابير الرسائل <span class="en">(Message Queues)</span> والأنظمة غير المتزامنة: كيف نرسل إشعارات الدفع للتجار بدون أن نُبطئ الدفع نفسه.</li>
+        <li>نظرية <span class="en">CAP</span> ونماذج الاتساق <span class="en">(Consistency)</span></li>
+        <li>الخدمات المصغرة و <span class="en">API Gateway</span></li>
+        <li>الموثوقية: <span class="en">Rate Limiting</span> و <span class="en">Idempotency</span> وإعادة المحاولة</li>
+        <li>مقابلة تصميم كاملة: صمّم بوابة دفع من الصفر</li>
+      </ol>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀 — سلسلة تصميم الأنظمة، الدرس 3</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    new Chart(perf, {
+      type: "line",
+      data: {
+        labels: ["0", "1", "2", "3", "4", "5"],
+        datasets: [
+          { label: "طاقة القراءة (QPS)", data: [5000, 10000, 15000, 20000, 25000, 30000], borderColor: "#10b981", backgroundColor: "rgba(16,185,129,.15)", fill: true, tension: 0.2 },
+          { label: "طاقة الكتابة (QPS)", data: [2000, 1950, 1900, 1850, 1800, 1750], borderColor: "#ef4444", borderDash: [6, 6], fill: false, tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { rtl: true },
+          tooltip: { rtl: true },
+          title: { display: true, text: "أثر إضافة نسخ تابعة (أرقام توضيحية)" }
+        },
+        scales: {
+          x: { title: { display: true, text: "عدد النسخ التابعة" } },
+          y: { title: { display: true, text: "QPS" }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

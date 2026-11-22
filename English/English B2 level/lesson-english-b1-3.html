@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 3: عندما كنت طفلًا... — English B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Cairo',Tahoma,'Segoe UI',sans-serif; font-size:18px; line-height:1.9; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .progress { max-width:420px; margin:14px auto 0; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; }
+  .progress div { height:100%; background:#fde68a; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:210px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); }
+  .emoji { font-size:2.6rem; line-height:1.2; }
+  .word { font-size:1.4rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.15rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  /* Timeline */
+  .timeline-viz { position:relative; height:140px; margin:20px 10px; direction:ltr; }
+  .tl-line { position:absolute; top:64px; left:0; right:0; height:4px; background:linear-gradient(90deg,#94a3b8,#4f46e5,#06b6d4); border-radius:4px; }
+  .tl-now { position:absolute; top:34px; height:64px; border-left:3px solid var(--v); }
+  .tl-now span, .tl-event span { position:absolute; top:-28px; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; background:var(--card); padding:0 6px; }
+  .tl-now span { color:var(--v); }
+  .tl-event { position:absolute; top:56px; width:20px; height:20px; margin-left:-10px; border-radius:50%; background:var(--o); border:3px solid #fff; box-shadow:0 0 0 2px var(--o); }
+  .tl-event span { top:28px; color:var(--o); }
+  .tl-range { position:absolute; top:60px; height:12px; background:rgba(79,70,229,.35); border-radius:6px; }
+  .tl-range span { position:absolute; top:-34px; left:50%; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.85rem; color:var(--primary); background:var(--card); padding:0 6px; }
+  .tl-stop { position:absolute; top:44px; font-size:1.6rem; transform:translateX(-50%); }
+  .tl-labels { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; color:var(--muted); font-size:.85rem; font-weight:700; }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; }
+  .bubble { max-width:80%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:110px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:200px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>الدرس 3: عندما كنت طفلًا... <span class="tl">— When I was a child...</span></h1>
+  <p>تحدّث عن عاداتك في الماضي وذكريات الطفولة. <span class="tl">Talk about past habits and childhood memories.</span></p>
+  <div class="badges">
+    <span class="badge">اللغة: الإنجليزية</span>
+    <span class="badge">المستوى: B1</span>
+    <span class="badge">الدرس 3 من 15</span>
+    <span class="badge">وقت الدراسة: 30 دقيقة</span>
+    <span class="badge tl">used to · would</span>
+  </div>
+  <div class="progress"><div style="width:20%"></div></div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 السرعة: عادية</button>
+  <span>النتيجة: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ حفظ PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section id="goals">
+    <h2>🎯 أهداف الدرس <span class="tl">— Can-do goals</span></h2>
+    <div class="cando">
+      <label><input type="checkbox"><span class="tl">I can describe past habits and states with used to.</span> — أستطيع أن أصف عادات وأحوالًا كانت في الماضي.</label>
+      <label><input type="checkbox"><span class="tl">I can make negatives and questions: didn't use to / Did you use to...?</span> — أستطيع أن أنفي وأسأل.</label>
+      <label><input type="checkbox"><span class="tl">I can use would for repeated actions in a story.</span> — أستطيع أن أستخدم <span class="tl">would</span> للأفعال المتكررة.</label>
+      <label><input type="checkbox"><span class="tl">I can pronounce "used to" as /ˈjuːs.tə/.</span> — أستطيع أن أنطق <span class="tl">used to</span> صحيحًا.</label>
+    </div>
+  </section>
+
+  <section id="warmup">
+    <h2>🌱 تمهيد <span class="tl">— Warm-up</span></h2>
+    <p>تذكّر طفولتك. في العربية نقول: «<b>كنتُ ألعبُ</b> في الشارع كل يوم». لكنك لا تلعب في الشارع الآن! هذه <b>عادة قديمة انتهت</b>.</p>
+    <p>بالإنجليزية: <span class="tl"><b>I used to play in the street every day.</b></span> <button class="say" data-text="I used to play in the street every day.">🔊</button></p>
+    <div class="callout note">📝 <b>Think:</b> <span class="tl">What games did you play as a child? What food did you hate?</span><br>فكّر: ما الألعاب التي كنت تلعبها وأنت طفل؟ وما الأكل الذي كنت تكرهه؟</div>
+  </section>
+
+  <section id="words">
+    <h2>📚 الكلمات الجديدة <span class="tl">— New words: Childhood &amp; memories</span></h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. — اضغط على البطاقة لتقلبها. المقطع المنبور باللون الأحمر.</p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧸</div><div class="word tl">childhood</div><button class="say" data-text="childhood">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">الطفولة</div><span class="ipa">/<b>ˈtʃaɪld</b>.hʊd/</span><span class="tl">I had a happy childhood.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💭</div><div class="word tl">memory</div><button class="say" data-text="memory">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">ذكرى / ذاكرة</div><span class="ipa">/<b>ˈmem</b>.ər.i/</span><span class="tl">I have great memories of that house.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🛝</div><div class="word tl">playground</div><button class="say" data-text="playground">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">ساحة اللعب</div><span class="ipa">/<b>ˈpleɪ</b>.ɡraʊnd/</span><span class="tl">We used to meet at the playground.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🙈</div><div class="word tl">hide-and-seek</div><button class="say" data-text="hide-and-seek">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">لعبة الاستغماية</div><span class="ipa">/ˌhaɪd.ən<b>ˈsiːk</b>/</span><span class="tl">We would play hide-and-seek for hours.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🔮</div><div class="word tl">marbles</div><button class="say" data-text="marbles">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">البِلْي / الكُلّة</div><span class="ipa">/<b>ˈmɑːr</b>.bəlz/</span><span class="tl">My brother used to win at marbles.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🪙</div><div class="word tl">pocket money</div><button class="say" data-text="pocket money">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">المصروف</div><span class="ipa">/<b>ˈpɑː</b>.kɪt ˌmʌn.i/</span><span class="tl">I didn't use to get much pocket money.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📺</div><div class="word tl">cartoons</div><button class="say" data-text="cartoons">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">أفلام كرتون</div><span class="ipa">/kɑːr<b>ˈtuːnz</b>/</span><span class="tl">Did you use to watch cartoons?</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">😈</div><div class="word tl">naughty</div><button class="say" data-text="naughty">🔊</button><div class="hint">adjective</div></div>
+        <div class="back"><div class="word">شقيّ / مشاغب</div><span class="ipa">/<b>ˈnɔː</b>.ti/</span><span class="tl">I was a naughty child.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧐</div><div class="word tl">strict</div><button class="say" data-text="strict">🔊</button><div class="hint">adjective</div></div>
+        <div class="back"><div class="word">صارم</div><span class="ipa">/<b>strɪkt</b>/</span><span class="tl">My teacher used to be very strict.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🙊</div><div class="word tl">shy</div><button class="say" data-text="shy">🔊</button><div class="hint">adjective</div></div>
+        <div class="back"><div class="word">خجول</div><span class="ipa">/<b>ʃaɪ</b>/</span><span class="tl">She used to be shy, but now she's confident.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👵</div><div class="word tl">grandparents</div><button class="say" data-text="grandparents">🔊</button><div class="hint">اضغط لترى المعنى</div></div>
+        <div class="back"><div class="word">الجدّ والجدّة</div><span class="ipa">/<b>ˈɡræn</b>.per.ənts/</span><span class="tl">I would visit my grandparents every Friday.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👨‍👩‍👧</div><div class="word tl">bring up</div><button class="say" data-text="bring up">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يربّي (طفلًا)</div><span class="ipa">/brɪŋ <b>ˈʌp</b>/</span><span class="tl">My grandmother brought me up.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">☝️</div><div class="word tl">tell off</div><button class="say" data-text="tell off">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يوبّخ</div><span class="ipa">/tel <b>ˈɔːf</b>/</span><span class="tl">My mum used to tell me off for being late.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤝</div><div class="word tl">get on with</div><button class="say" data-text="get on with">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">ينسجم مع / علاقته جيدة بـ</div><span class="ipa">/ɡet <b>ˈɑːn</b> wɪð/</span><span class="tl">I didn't use to get on with my sister.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🍼</div><div class="word tl">look after</div><button class="say" data-text="look after">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يعتني بـ</div><span class="ipa">/lʊk <b>ˈæf</b>.tər/</span><span class="tl">My aunt would look after us in the summer.</span></div>
+      </div></div>
+    </div>
+    <div class="callout warning">⚠️ <b>انتبه:</b> <span class="tl">grow up</span> (يكبر) من الدرس 2 تختلف عن <span class="tl">bring up</span> (يربّي): <span class="tl">I <b>grew up</b> in Tanta. My grandparents <b>brought</b> me <b>up</b>.</span></div>
+  </section>
+
+  <section id="grammar">
+    <h2>🎨 القاعدة بالألوان <span class="tl">— Grammar 1: used to</span></h2>
+    <p class="instr">Look at these sentences. Are they true now?<span class="instr-ar">انظر إلى الجمل. هل هي صحيحة الآن؟</span></p>
+    <div class="sent tl"><span class="w s">I<small>أنا</small></span><span class="w v">used to<small>كنتُ</small></span><span class="w v">play<small>ألعب (المصدر)</small></span><span class="w o">marbles<small>البلي</small></span><span class="w x">every day<small>كل يوم</small></span><button class="say" data-text="I used to play marbles every day.">🔊</button></div>
+    <div class="sent tl"><span class="w s">We<small>نحن</small></span><span class="w v">used to<small>كنّا</small></span><span class="w v">live<small>نسكن</small></span><span class="w o">in a village<small>في قرية</small></span><button class="say" data-text="We used to live in a village.">🔊</button></div>
+    <div class="sent tl"><span class="w s">She<small>هي</small></span><span class="w v">didn't use to<small>لم تكن</small></span><span class="w v">like<small>تحب</small></span><span class="w o">vegetables<small>الخضار</small></span><button class="say" data-text="She didn't use to like vegetables.">🔊</button></div>
+    <p>لا! هذه الأشياء كانت صحيحة <b>في الماضي</b>، لكنها <b>ليست صحيحة الآن</b>. بعد <span class="tl">used to</span> نستخدم <b>المصدر</b> <span class="tl">(base form)</span>: <span class="tl">play, live, like</span>.</p>
+
+    <div class="timeline-viz">
+      <div class="tl-line"></div>
+      <div class="tl-range" style="left:8%;width:40%"><span>used to — كنتُ (عادة متكررة)</span></div>
+      <div class="tl-event" style="left:14%"></div>
+      <div class="tl-event" style="left:24%"></div>
+      <div class="tl-event" style="left:34%"></div>
+      <div class="tl-event" style="left:44%"></div>
+      <div class="tl-stop" style="left:58%">🚫</div>
+      <div class="tl-now" style="left:78%"><span>NOW — الآن: not true</span></div>
+      <div class="tl-labels"><span>⬅ My childhood طفولتي</span><span>Future ➡</span></div>
+    </div>
+    <p>النقاط الخضراء = عادة تكررت كثيرًا. علامة 🚫 = العادة <b>توقفت</b>. الآن لم تعد صحيحة.</p>
+
+    <table class="tl">
+      <tr><th>Form</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Positive ✅</td><td>subject + <mark>used to</mark> + base verb</td><td>I used to walk to school. <button class="say" data-text="I used to walk to school.">🔊</button></td></tr>
+      <tr><td>Negative ❌</td><td>subject + <mark>didn't use to</mark> + base verb</td><td>I didn't use to eat fish. <button class="say" data-text="I didn't use to eat fish.">🔊</button></td></tr>
+      <tr><td>Question ❓</td><td><mark>Did</mark> + subject + <mark>use to</mark> + base verb?</td><td>Did you use to have long hair? <button class="say" data-text="Did you use to have long hair?">🔊</button></td></tr>
+      <tr><td>Short answers</td><td>Yes, I <mark>did</mark>. / No, I <mark>didn't</mark>.</td><td>No, I didn't. <button class="say" data-text="No, I didn't.">🔊</button></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>Rule:</b> مع <span class="tl">did / didn't</span> تختفي <span class="tl">-d</span>: <span class="tl">didn't use<b>d</b> to ❌ → didn't use to ✅</span>. هذه نفس قاعدة <span class="tl">didn't went ❌ → didn't go ✅</span>.</div>
+
+    <h3>📖 <span class="tl">Grammar 2: would for repeated actions</span> — would لحكاية الذكريات</h3>
+    <p>عندما نحكي ذكريات، نستخدم أيضًا <span class="tl"><b>would</b> + base verb</span> لنتكلم عن <b>أفعال متكررة</b>. هي شائعة في القصص والكتابة.</p>
+    <div class="sent tl"><span class="w x">Every summer,<small>كل صيف</small></span><span class="w s">we<small>نحن</small></span><span class="w v">would<small>كنّا</small></span><span class="w v">go<small>نذهب</small></span><span class="w o">to Alexandria<small>إلى الإسكندرية</small></span><button class="say" data-text="Every summer, we would go to Alexandria.">🔊</button></div>
+    <table>
+      <tr><th>✅ <span class="tl">used to + would</span>: أفعال متكررة <span class="tl">(actions)</span></th><th>✅ <span class="tl">used to</span> فقط: حالات <span class="tl">(states)</span></th></tr>
+      <tr><td class="tl">play, go, visit, cook, tell, watch, walk<br>My grandma <b>would</b> tell us stories. ✅<br>My grandma <b>used to</b> tell us stories. ✅</td><td class="tl">be, have, live, like, love, hate, know<br>I <b>used to</b> be shy. ✅<br>I <s>would be</s> shy. ❌</td></tr>
+    </table>
+
+    <div class="diagram mermaid">
+flowchart TD
+  A["Past, not true now? / في الماضي وليس الآن؟"] -->|"Only once, or a specific time / مرة واحدة"| B["Past simple: I went to Alexandria in 2005."]
+  A -->|"Many times or for a long period / عادة أو حالة"| C["Is it an action or a state? / فعل أم حالة؟"]
+  C -->|"Action: play, go, tell"| D["used to OR would: We used to / would play outside."]
+  C -->|"State: be, have, live, like"| E["used to ONLY: I used to be shy."]
+    </div>
+    <div class="callout note">📝 <b>Story pattern:</b> نبدأ بـ <span class="tl">used to</span>، ثم نكمل بـ <span class="tl">would</span> حتى لا نكرّر.<br><span class="tl">"When I was a child, I used to stay with my grandparents. My grandfather would wake me up early, and we would feed the chickens."</span> <button class="say" data-text="When I was a child, I used to stay with my grandparents. My grandfather would wake me up early, and we would feed the chickens.">🔊</button></div>
+  </section>
+
+  <section id="compare">
+    <h2>🔁 العربية مقابل الإنجليزية <span class="tl">— Arabic vs English</span></h2>
+    <div class="vs">
+      <div>
+        <h4>العربية</h4>
+        <div class="sent"><span class="w v">كنتُ<small>used to</small></span><span class="w v">ألعبُ<small>play</small></span><span class="w o">في الشارع<small>in the street</small></span></div>
+        <div class="sent"><span class="w v">لم أكن<small>didn't use to</small></span><span class="w v">أحبُّ<small>like</small></span><span class="w o">السمك<small>fish</small></span></div>
+        <p>العربية: <b>كان + فعل مضارع</b>.</p>
+      </div>
+      <div>
+        <h4 class="tl">English</h4>
+        <div class="sent tl"><span class="w s">I</span><span class="w v">used to</span><span class="w v">play</span><span class="w o">in the street.</span></div>
+        <div class="sent tl"><span class="w s">I</span><span class="w v">didn't use to</span><span class="w v">like</span><span class="w o">fish.</span></div>
+        <p>الإنجليزية: <span class="tl"><b>used to + base verb</b></span>.</p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>سهل عليك:</b> «كنتُ أفعل» = <span class="tl">I used to do</span>. هذه الفكرة موجودة في العربية تمامًا! كلما أردت أن تقول «كنتُ + فعل»، فكّر في <span class="tl">used to</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (1):</b> الترجمة الحرفية لـ «كنتُ ألعب» تعطي <span class="tl">I was play ❌</span> أو <span class="tl">I was playing every day ❌</span>. للعادة القديمة قل: <span class="tl">I used to play ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (2):</b> لا تخلط بين <span class="tl">I <b>used to</b> wake up early</span> (كنتُ أستيقظ مبكرًا، والآن لا) و <span class="tl">I <b>am used to</b> waking up early</span> (أنا <b>معتاد</b> على الاستيقاظ مبكرًا). الثانية معنى مختلف، وسنتعلمها لاحقًا.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (3):</b> لا يوجد <span class="tl">used to</span> للمضارع. لا تقل <span class="tl">I use to drink coffee every morning ❌</span>. للعادة الآن قل: <span class="tl">I usually drink coffee ✅</span>.</div>
+  </section>
+
+  <section id="pron">
+    <h2>👄 النطق: <span class="tl">used to</span> = <span class="ipa">/ˈjuːs.tə/</span></h2>
+    <p>كثير من العرب يقولون «يوزد تو» <span class="tl">"yoozd too" ❌</span>. لكن في <span class="tl">used to</span>:</p>
+    <ul>
+      <li>الحرف <span class="tl">s</span> يُنطق <span class="ipa">/s/</span> (سين)، <b>وليس</b> <span class="ipa">/z/</span> (زاي).</li>
+      <li>حرفا <span class="tl">d</span> و <span class="tl">t</span> يصبحان صوت <span class="ipa">/t/</span> واحدًا فقط.</li>
+      <li>كلمة <span class="tl">to</span> ضعيفة: <span class="ipa">/tə/</span>.</li>
+    </ul>
+    <p>النتيجة: «<b>يُوسْتَه</b>» <span class="ipa">/ˈjuːs.tə/</span>. وكلمة <span class="tl">use to</span> بعد <span class="tl">didn't</span> تُنطق بنفس الطريقة تمامًا!</p>
+    <p class="instr">Listen and compare.<span class="instr-ar">استمع وقارن.</span></p>
+    <table>
+      <tr><th><span class="ipa">/juːzd/</span> — <span class="tl">used</span> = استخدم</th><th><span class="ipa">/ˈjuːs.tə/</span> — <span class="tl">used to</span> = كان يفعل</th></tr>
+      <tr><td><span class="tl">I used a pen.</span> <button class="say" data-text="I used a pen.">🔊</button> استخدمتُ قلمًا.</td><td><span class="tl">I used to write letters.</span> <button class="say" data-text="I used to write letters.">🔊</button> كنتُ أكتب رسائل.</td></tr>
+      <tr><td><span class="tl">She used my phone.</span> <button class="say" data-text="She used my phone.">🔊</button> استخدمت هاتفي.</td><td><span class="tl">She used to be shy.</span> <button class="say" data-text="She used to be shy.">🔊</button> كانت خجولة.</td></tr>
+    </table>
+    <h3><span class="tl">Connected speech</span> — الكلام المتصل</h3>
+    <ul>
+      <li><span class="tl">Did you use to...?</span> → <span class="ipa">/ˈdɪdʒə ˈjuːs.tə/</span> «دِجَه يُوسْتَه» <button class="say" data-text="Did you use to play marbles?">🔊</button></li>
+      <li><span class="tl">I didn't use to...</span> → <span class="ipa">/aɪ ˈdɪd.ənt ˈjuːs.tə/</span> <button class="say" data-text="I didn't use to like school.">🔊</button></li>
+    </ul>
+    <div class="ex quiz" data-explain="في used to يُنطق الحرف s سينًا /s/، ويصبح dt صوتًا واحدًا /t/.">
+      <div class="q">🎧 <span class="tl">How do you say "used to"?</span></div>
+      <button class="option tl">/juːzd tuː/ — "yoozd too"</button>
+      <button class="option tl" data-correct="true">/ˈjuːs.tə/ — "yoos-tuh"</button>
+      <button class="option tl">/ˈjuː.zɪd tuː/ — "yoo-zid too"</button>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section id="dialogue">
+    <h2>💬 حوار من الحياة <span class="tl">— Old family photos</span></h2>
+    <p class="instr">Listen to Hana and her grandfather. Find 4 sentences with used to and 3 with would.<span class="instr-ar">استمع إلى هنا وجدّها. ابحث عن 4 جمل فيها used to و 3 جمل فيها would.</span></p>
+    <button class="btn" id="playDialogue">▶️ استمع للحوار كاملًا</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Hana</div><div class="tl line">Grandpa, look at this old photo! Is that you?</div></div>
+      <div class="bubble b"><div class="who">Grandpa</div><div class="tl line">Yes, that's me. I was about ten. We used to live in a small village near Mansoura.</div></div>
+      <div class="bubble a"><div class="who">Hana</div><div class="tl line">Wow! Did you use to go to school there?</div></div>
+      <div class="bubble b"><div class="who">Grandpa</div><div class="tl line">Yes, I did. I used to walk three kilometres every morning. There were no buses.</div></div>
+      <div class="bubble a"><div class="who">Hana</div><div class="tl line">Three kilometres! What did you do after school?</div></div>
+      <div class="bubble b"><div class="who">Grandpa</div><div class="tl line">My friends and I would play football in the fields until sunset. Then my mother would call us for dinner.</div></div>
+      <div class="bubble a"><div class="who">Hana</div><div class="tl line">Were you a naughty child?</div></div>
+      <div class="bubble b"><div class="who">Grandpa</div><div class="tl line">Very naughty! My father was strict, and he would tell me off almost every day.</div></div>
+      <div class="bubble a"><div class="who">Hana</div><div class="tl line">Ha! And did you have a TV?</div></div>
+      <div class="bubble b"><div class="who">Grandpa</div><div class="tl line">No, we didn't use to have a TV. We listened to the radio. Then, in 1970, my uncle bought the first TV in the village.</div></div>
+      <div class="bubble a"><div class="who">Hana</div><div class="tl line">Have you ever been back to the village?</div></div>
+      <div class="bubble b"><div class="who">Grandpa</div><div class="tl line">Yes, I went there last year. It has changed a lot since then. But I still have wonderful memories of my childhood.</div></div>
+    </div>
+    <details><summary>👀 Answers</summary>
+      <table class="tl">
+        <tr><th>Form</th><th>Sentence</th></tr>
+        <tr><td>used to</td><td>We used to live in a small village. · Did you use to go to school there? · I used to walk three kilometres. · We didn't use to have a TV.</td></tr>
+        <tr><td>would</td><td>My friends and I would play football. · My mother would call us for dinner. · He would tell me off almost every day.</td></tr>
+      </table>
+      <p>لاحظ: <span class="tl">We used to <b>live</b></span> و <span class="tl">didn't use to <b>have</b></span> مع <span class="tl">used to</span> فقط، لأنهما حالة <span class="tl">(state)</span>. وجملة <span class="tl">in 1970, my uncle <b>bought</b> the first TV</span> بالماضي البسيط، لأنها حدثت <b>مرة واحدة</b>. وانظر إلى المراجعة: <span class="tl">Have you ever been back...?</span> من الدرس 1، و <span class="tl">It has changed a lot since then</span> من الدرس 2.</p>
+    </details>
+  </section>
+
+  <section id="practice">
+    <h2>🏋️ تدريب <span class="tl">— Practice</span></h2>
+
+    <h3 class="instr">A. Choose the correct answer.<span class="instr-ar">اختر الإجابة الصحيحة.</span></h3>
+
+    <div class="ex quiz" data-explain="عادة في الماضي توقفت → used to + base verb.">
+      <div class="q">1. <span class="tl">I ___ football every day, but now I don't have time.</span></div>
+      <button class="option tl">use to play</button>
+      <button class="option tl" data-correct="true">used to play</button>
+      <button class="option tl">am used to play</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="مع didn't نستخدم use to (بدون d).">
+      <div class="q">2. <span class="tl">My sister ___ like vegetables.</span></div>
+      <button class="option tl" data-correct="true">didn't use to</button>
+      <button class="option tl">didn't used to</button>
+      <button class="option tl">wasn't use to</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="السؤال: Did + subject + use to + base verb?">
+      <div class="q">3. <span class="tl">___ cartoons on Friday mornings?</span></div>
+      <button class="option tl">Used you to watch</button>
+      <button class="option tl">Were you used to watch</button>
+      <button class="option tl" data-correct="true">Did you use to watch</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="be حالة (state) → used to فقط، لا would.">
+      <div class="q">4. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">When I was young, I would be very shy.</button>
+      <button class="option tl" data-correct="true">When I was young, I used to be very shy.</button>
+      <button class="option tl">When I was young, I was be very shy.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="in 2010 حدث مرة واحدة في وقت محدد → past simple.">
+      <div class="q">5. <span class="tl">We ___ to Sharm El Sheikh in 2010. It was our only trip there.</span></div>
+      <button class="option tl">used to go</button>
+      <button class="option tl">would go</button>
+      <button class="option tl" data-correct="true">went</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="عادة الآن → usually + present simple. لا يوجد used to للحاضر.">
+      <div class="q">6. <span class="tl">Now I'm an adult. I ___ get up at 6 a.m. for work.</span></div>
+      <button class="option tl">use to</button>
+      <button class="option tl" data-correct="true">usually</button>
+      <button class="option tl">used to</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">B. Complete with used to, didn't use to or use to and the verb.<span class="instr-ar">أكمل بالشكل الصحيح للفعل بين القوسين.</span></h3>
+    <div class="ex fill">
+      <p class="tl">7. I <input class="blank wide" data-answer="used to play"> (play) marbles with my cousins.</p>
+      <p class="tl">8. We <input class="blank wide" data-answer="didn't use to have|did not use to have"> (not / have) a computer at home.</p>
+      <p class="tl">9. <input class="blank" data-answer="did"> you <input class="blank wide" data-answer="use to get"> (get) pocket money?</p>
+      <p class="tl">10. My teacher was strict. She <input class="blank wide" data-answer="used to tell|would tell"> (tell) us off a lot.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">C. Complete with would or used to. Sometimes both are correct.<span class="instr-ar">أكمل بـ would أو used to. أحيانًا تكون الاثنتان صحيحتين. تذكّر: الحالات مع used to فقط.</span></h3>
+    <div class="ex fill">
+      <p class="tl">11. We <input class="blank" data-answer="used to"> live in a small flat in Shubra.</p>
+      <p class="tl">12. Every Friday, my grandmother <input class="blank" data-answer="would|used to"> cook molokhia for everyone.</p>
+      <p class="tl">13. I <input class="blank" data-answer="used to"> have a cat called Mishmish.</p>
+      <p class="tl">14. After school, we <input class="blank" data-answer="would|used to"> play hide-and-seek in the playground.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">D. Put the words in order.<span class="instr-ar">رتّب الكلمات لتكوّن جملة.</span></h3>
+    <div class="ex builder" data-answer="Did you use to walk to school">
+      <div class="q">15. ❓</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex builder" data-answer="My grandmother would tell us stories every night">
+      <div class="q">16. 👵</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">E. Say it! 🎤<span class="instr-ar">قل الجملة بصوتك. انطق used to «يُوسْتَه».</span></h3>
+    <div class="ex speak-check" data-text="I used to play football every day">
+      <div class="q">17. <span class="tl">I used to play football every day.</span> <button class="say" data-text="I used to play football every day.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+    <div class="ex speak-check" data-text="Did you use to get pocket money">
+      <div class="q">18. <span class="tl">Did you use to get pocket money?</span> <button class="say" data-text="Did you use to get pocket money?">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+  </section>
+
+  <section id="task">
+    <h2>✍️ مهمة الكتابة <span class="tl">— Writing task (50–80 words)</span></h2>
+    <p class="instr">Write about your childhood memories.<span class="instr-ar">اكتب فقرة عن ذكريات طفولتك. أرسلها لي في المحادثة وسأصححها.</span></p>
+    <ul class="tl">
+      <li>Where you <b>used to</b> live.</li>
+      <li>Two things you <b>used to</b> or <b>would</b> do (games, family, school).</li>
+      <li>One thing you <b>didn't use to</b> like.</li>
+      <li>One thing that happened <b>only once</b> (past simple).</li>
+    </ul>
+    <details><summary>👀 Model answer (78 words)</summary>
+      <p class="tl">When I was a child, we used to live in an old building in Alexandria. I had a lot of friends in my neighbourhood. Every afternoon, we would play hide-and-seek on the stairs, and our neighbours would tell us off for the noise! I didn't use to like school because my maths teacher was very strict. One summer, my father took us to Aswan. That was my first train trip, and I still remember it.</p>
+    </details>
+  </section>
+
+  <section id="mistakes">
+    <h2>🚫 الأخطاء الشائعة عند العرب <span class="tl">— Common mistakes</span></h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>لماذا؟</th></tr>
+      <tr><td class="tl">I was play in the street.</td><td class="tl">I used to play in the street.</td><td>«كنتُ ألعب» عادة قديمة → <span class="tl">used to</span>.</td></tr>
+      <tr><td class="tl">I used to playing football.</td><td class="tl">I used to play football.</td><td>بعد <span class="tl">used to</span> المصدر فقط.</td></tr>
+      <tr><td class="tl">I didn't used to like fish.</td><td class="tl">I didn't use to like fish.</td><td>مع <span class="tl">did / didn't</span> نحذف <span class="tl">-d</span>.</td></tr>
+      <tr><td class="tl">Used you to have a bike?</td><td class="tl">Did you use to have a bike?</td><td>السؤال يبدأ بـ <span class="tl">Did</span>.</td></tr>
+      <tr><td class="tl">We would live in a village.</td><td class="tl">We used to live in a village.</td><td><span class="tl">live</span> حالة → لا نستخدم <span class="tl">would</span>.</td></tr>
+      <tr><td class="tl">I use to drink tea every morning.</td><td class="tl">I usually drink tea every morning.</td><td>لا يوجد <span class="tl">used to</span> للحاضر.</td></tr>
+      <tr><td class="tl">I used to go to Paris in 2015. (مرة واحدة)</td><td class="tl">I went to Paris in 2015.</td><td>حدث مرة واحدة → الماضي البسيط.</td></tr>
+      <tr><td class="tl">"yoozd too"</td><td class="tl">used to /ˈjuːs.tə/</td><td>صوت <span class="ipa">/s/</span> وصوت <span class="ipa">/t/</span> واحد.</td></tr>
+    </table>
+  </section>
+
+  <section id="summary">
+    <h2>📌 الخلاصة <span class="tl">— Summary</span></h2>
+    <ul>
+      <li><span class="tl"><b>used to + base verb</b></span> = «كنتُ أفعل»: عادة أو حالة في الماضي، ليست صحيحة الآن.</li>
+      <li>النفي: <span class="tl">didn't <b>use</b> to</span> · السؤال: <span class="tl">Did you <b>use</b> to...?</span> (بدون <span class="tl">d</span>).</li>
+      <li><span class="tl"><b>would + base verb</b></span> = أفعال متكررة في القصص والذكريات. لا تستخدمها مع الحالات <span class="tl">(be, have, live, like)</span>.</li>
+      <li>حدث مرة واحدة أو في وقت محدد → <span class="tl"><b>past simple</b></span>.</li>
+      <li>للعادة الآن: <span class="tl">usually + present simple</span>، وليس <span class="tl">use to</span>.</li>
+      <li>انطق <span class="tl">used to</span> «يُوسْتَه» <span class="ipa">/ˈjuːs.tə/</span>.</li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <h2>🔄 مراجعة سريعة <span class="tl">— Quick review (Lesson 2)</span></h2>
+    <p>هل تتذكر <span class="tl">for / since</span> و <span class="tl">just / already / yet</span>؟</p>
+    <div class="ex quiz" data-explain="I was a child نقطة بداية → since. والفعل مستمر حتى الآن → present perfect.">
+      <div class="q">R1. <span class="tl">I've known my best friend ___ I was a child.</span></div>
+      <button class="option tl">for</button>
+      <button class="option tl" data-correct="true">since</button>
+      <button class="option tl">ago</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="شيء مستمر حتى الآن → have lived. ثماني سنوات مدة → for.">
+      <div class="q">R2. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">I live in Giza since eight years.</button>
+      <button class="option tl" data-correct="true">I've lived in Giza for eight years.</button>
+      <button class="option tl">I've lived in Giza since eight years.</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="yet في آخر الجملة المنفية.">
+      <div class="q">R3. <span class="tl">We haven't bought the furniture ___.</span></div>
+      <button class="option tl">just</button>
+      <button class="option tl">already</button>
+      <button class="option tl" data-correct="true">yet</button>
+      <div class="feedback"></div>
+    </div>
+    <p class="tl">Review words: neighbourhood · landlord · rent · furniture · grow up · settle down · take up</p>
+  </section>
+
+  <section id="next">
+    <h2>➡️ الدرس التالي <span class="tl">— Next lesson</span></h2>
+    <p>الدرس 4: <span class="tl">While I was waiting...</span>: الماضي المستمر مقابل الماضي البسيط، لتحكي قصة قصيرة عن موقف أو حادث. اكتب «التالي» لتبدأ.</p>
+  </section>
+
+</div>
+
+<footer>تعلّم خطوة بخطوة 🌍 · <span class="tl">English B1 · Lesson 3</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif" });
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("المتصفح لا يدعم الصوت. جرّب Chrome أو Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 السرعة: عادية" : "🐢 السرعة: بطيئة";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · ضع الفأرة على الخانة الحمراء لترى الإجابة." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition) — accepts alternatives separated by |
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "المتصفح لا يدعم التعرف على الصوت. جرّب Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ I'm listening... أستمع إليك...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var targets = box.getAttribute("data-text").split("|").map(norm);
+        var ok = targets.indexOf(norm(said)) !== -1;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again. حاول مرة أخرى.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ لم أسمع جيدًا. تأكد من إذن الميكروفون وحاول مرة أخرى."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>
