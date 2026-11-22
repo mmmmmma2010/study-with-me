@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study With Me · ادرس معي — مكتبتك التعليمية</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.svg" alt="Study With Me Logo">
+        <div class="brand-text">
+          <span class="brand-title en">Study With Me</span>
+          <span class="brand-sub">ادرس معي · مكتبتك الدراسية</span>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input id="searchInput" type="search" placeholder="ابحث عن درس أو موضوع..." aria-label="ابحث عن درس">
+        </div>
+        <button id="themeToggle" class="icon-btn" type="button" title="تبديل المظهر">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel">الداكن</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-kicker">
+          <span>✨</span>
+          <span class="en">Study With Me</span>
+          <span>·</span>
+          <span>منصتك للدراسة في أي مكان</span>
+        </div>
+        <h1>كل موادك الدراسية في مكان واحد، مرتبة وجاهزة للمذاكرة</h1>
+        <p>
+          تصفح دروس <span class="en">System Design</span> و<span class="en">English</span> بتصميم تفاعلي متناسق،
+          وتابع تقدمك خطوة بخطوة من أي جهاز.
+        </p>
+        <div class="hero-badges">
+          <span class="badge">📚 بدون خادم أو قاعدة بيانات</span>
+          <span class="badge">💾 حفظ تلقائي للتقدم</span>
+          <span class="badge">⚡ بحث وتصفية فورية</span>
+        </div>
+      </div>
+
+      <div class="stats-card">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value" id="statSections">0</div>
+            <div class="stat-label">أقسام دراسية</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="statLessons">0</div>
+            <div class="stat-label">إجمالي الدروس</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="statCompleted">0</div>
+            <div class="stat-label">دروس مكتملة</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="statHours">0 س</div>
+            <div class="stat-label">وقت الدراسة الكلي</div>
+          </div>
+        </div>
+
+        <div class="progress-header">
+          <span>التقدم العام</span>
+          <span id="statPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="overallProgressFill"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="continueBanner" class="continue-banner">
+      <div class="continue-meta">
+        <small>📖 استكمل من حيث توقفت</small>
+        <strong id="continueTitle">—</strong>
+      </div>
+      <a id="continueLink" class="btn" href="#">متابعة الدرس ←</a>
+    </div>
+
+    <div class="controls-bar">
+      <div id="sectionTabs" class="tabs" role="tablist" aria-label="الأقسام"></div>
+      <div class="status-filters">
+        <button class="tab-btn active" data-status="all" type="button">الكل</button>
+        <button class="tab-btn" data-status="pending" type="button">قيد الدراسة</button>
+        <button class="tab-btn" data-status="done" type="button">مكتمل ✓</button>
+      </div>
+    </div>
+
+    <div id="sectionsContainer"></div>
+  </main>
+
+  <footer class="site-footer">
+    <strong class="en">Study With Me</strong> · بُني بحب لتسهيل المذاكرة في أي وقت ومن أي مكان.
+  </footer>
+
+  <script src="data/catalog.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>
