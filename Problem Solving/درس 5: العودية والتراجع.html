@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>العودية والتراجع</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif; font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text); }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero { background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981); color: #fff; padding: 48px 24px; text-align: center; }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 700px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .stack { display: flex; flex-direction: column-reverse; gap: 6px; align-items: center; direction: ltr; margin: 12px 0; }
+  .frame { border: 2px solid var(--primary); border-radius: 10px; padding: 6px 14px; font-family: 'JetBrains Mono', monospace; min-width: 280px; text-align: center; transition: all .3s; }
+  .frame.top { background: var(--primary); color: #fff; }
+  .frame.ret { background: var(--good); border-color: var(--good); color: #fff; }
+  .mem { display: flex; gap: 8px; flex-wrap: wrap; direction: ltr; justify-content: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 52px; text-align: center; transition: all .3s; }
+  .box.new { background: var(--primary); color: #fff; transform: scale(1.08); }
+  .box.empty { border-style: dashed; color: var(--muted); }
+  .state { direction: ltr; text-align: center; font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); border-radius: 10px; padding: 8px; }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--primary-soft); }
+  .card h4 { margin: 0 0 4px; color: var(--primary); }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>العودية والتراجع <span class="en">(Recursion &amp; Backtracking)</span></h1>
+  <p>ستتعلم كيف تكتب دالة تستدعي نفسها بثقة، وكيف تجرّب كل الاختيارات الممكنة بقالب واحد، وكيف توقف البحث مبكرًا عندما لا يفيد.</p>
+  <div class="badges">
+    <span class="badge">الدرس 5 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 45 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 1، المشروع كان يجد <strong>دفعتين</strong> مجموعهما يساوي الفاتورة. لكن ماذا لو دفع العميل على 3 أو 4 دفعات؟ عندها لا يكفي <span class="en">Two Sum</span>. تحتاج أن تجرب مجموعات من المعاملات بأحجام مختلفة. هذا هو موضوع هذا الدرس.</div>
+      <p>العودية (<span class="en">Recursion</span>) هي أن تحل المسألة بحل نسخة أصغر منها. والتراجع (<span class="en">Backtracking</span>) هو طريقة منظمة لتجربة كل الاختيارات: تختار، ثم تكمل، ثم تلغي الاختيار وتجرب غيره.</p>
+      <p>لماذا يهمك هذا؟ لأن مسائل كثيرة تطلب "كل" الحلول: كل المجموعات الجزئية، وكل الترتيبات، وكل الطرق. ولا توجد حلقات متداخلة بعدد ثابت تحل هذه المسائل، لأن عمق البحث يعتمد على المدخلات.</p>
+      <p>ستتعلم في هذا الدرس طريقة التفكير في العودية، ومكدس الاستدعاءات، وقالب التراجع، وثلاث مسائل كلاسيكية، والتقليم (<span class="en">Pruning</span>). في النهاية ستبني نظامًا يطابق فاتورة مع عدة دفعات جزئية.</p>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">🪆 <strong>العودية:</strong> تخيّل دمى ماتريوشكا الروسية. لكي تعرف عدد الدمى، تفتح الدمية الخارجية، وتقول: "العدد = 1 + عدد الدمى التي في الداخل". ثم تكرر نفس الشيء مع الدمية التي في الداخل. وعندما تصل إلى دمية صغيرة لا تُفتح، تعرف أن عددها 1. هذه هي <strong>حالة الأساس</strong>.<br><br>
+      🧭 <strong>التراجع:</strong> تخيّل أنك في متاهة، ومعك فتات خبز. عند كل مفترق تختار طريقًا وتضع فتاتًا خلفك. إذا وصلت إلى طريق مسدود، ترجع إلى آخر مفترق، وتلتقط الفتات، وتجرب الطريق التالي. وإذا رأيت من بعيد أن الطريق مسدود، لا تدخله أصلًا. هذا هو <strong>التقليم</strong>.</div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>العودية</td><td class="en">Recursion</td><td>دالة تستدعي نفسها على مسألة أصغر.</td></tr>
+        <tr><td>حالة الأساس</td><td class="en">Base Case</td><td>أصغر مسألة نعرف جوابها مباشرة. عندها تتوقف العودية.</td></tr>
+        <tr><td>الحالة العودية</td><td class="en">Recursive Case</td><td>الجزء الذي يصغّر المسألة ويستدعي الدالة من جديد.</td></tr>
+        <tr><td>مكدس الاستدعاءات</td><td class="en">Call Stack</td><td>المكان الذي تنتظر فيه الدوال التي لم تنتهِ بعد. آخر دالة دخلت هي أول دالة تخرج.</td></tr>
+        <tr><td>التراجع</td><td class="en">Backtracking</td><td>اختر، ثم استكشف، ثم ألغِ الاختيار، ثم جرّب الاختيار التالي.</td></tr>
+        <tr><td>شجرة القرارات</td><td class="en">Decision Tree</td><td>رسم لكل الاختيارات. كل عقدة حالة، وكل فرع اختيار.</td></tr>
+        <tr><td>المسار</td><td class="en">Path / State</td><td>الاختيارات التي قمنا بها حتى الآن، مثل <code>[1, 3]</code>.</td></tr>
+        <tr><td>التقليم</td><td class="en">Pruning</td><td>قطع فرع من الشجرة عندما نعرف أنه لن يعطي حلًا.</td></tr>
+        <tr><td>المجموعات الجزئية</td><td class="en">Subsets</td><td>كل طرق اختيار بعض العناصر. لـ n عنصر يوجد 2ⁿ مجموعة.</td></tr>
+        <tr><td>الترتيبات</td><td class="en">Permutations</td><td>كل طرق ترتيب العناصر. لـ n عنصر يوجد n! ترتيب.</td></tr>
+        <tr><td>التوافيق</td><td class="en">Combinations</td><td>اختيار k عناصر بدون اهتمام بالترتيب.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>كيف تفكر في العودية: ثلاثة أسئلة</h3>
+      <div class="steps-grid">
+        <div class="card"><h4>1. ما أصغر مسألة؟</h4>هذه حالة الأساس. مثل: قائمة فارغة، أو <code>n == 0</code>.</div>
+        <div class="card"><h4>2. كيف أصغّر المسألة؟</h4>كل استدعاء يجب أن يقترب من حالة الأساس، مثل <code>n - 1</code> أو <code>n // 2</code>.</div>
+        <div class="card"><h4>3. كيف أبني الجواب؟</h4><strong>افترض أن الاستدعاء الأصغر يعمل</strong>، ثم اسأل: كيف أستخدم جوابه؟</div>
+      </div>
+      <div class="callout tip">💡 <strong>قفزة الثقة (<span class="en">Leap of Faith</span>):</strong> لا تحاول أن تتتبع كل الاستدعاءات في رأسك. افترض أن <code>factorial(n - 1)</code> يرجع الجواب الصحيح. عندها يكون جوابك <code>n * factorial(n - 1)</code>. إذا كانت حالة الأساس صحيحة، وكانت الخطوة صحيحة، فالدالة كلها صحيحة. هذا هو الاستقراء الرياضي.</div>
+
+      <h3>قالب التراجع</h3>
+      <p>كل مسائل التراجع تقريبًا تتبع ثلاث خطوات: <strong>اختر ← استكشف ← تراجع</strong>.</p>
+      <div class="diagram mermaid">
+flowchart TD
+  A["backtrack(state)"] --> B{"هل الحالة حل كامل؟"}
+  B -->|"نعم"| C["سجّل نسخة من الحل وارجع"]
+  B -->|"لا"| D["لكل اختيار ممكن"]
+  D --> E{"هل الاختيار صالح؟"}
+  E -->|"لا: تقليم"| D
+  E -->|"نعم"| F["1. اختر: أضفه إلى path"]
+  F --> G["2. استكشف: backtrack للحالة الجديدة"]
+  G --> H["3. تراجع: احذفه من path"]
+  H --> D
+      </div>
+
+      <h3>المسائل الثلاث الكلاسيكية</h3>
+      <table>
+        <tr><th>المسألة</th><th>السؤال في كل خطوة</th><th>متى نسجل الحل؟</th><th>العدد</th></tr>
+        <tr><td>المجموعات الجزئية</td><td>أي عنصر <strong>بعد</strong> آخر عنصر اخترته؟</td><td>في كل عقدة</td><td class="en">2ⁿ</td></tr>
+        <tr><td>الترتيبات</td><td>أي عنصر <strong>لم أستخدمه بعد</strong>؟</td><td>عندما يكون طول المسار n</td><td class="en">n!</td></tr>
+        <tr><td>التوافيق ومجموع الهدف</td><td>أي عنصر بعده لا يتجاوز الباقي؟</td><td>عندما يصل الباقي إلى 0</td><td>حسب الهدف</td></tr>
+      </table>
+
+      <h3>معادلة التعقيد</h3>
+      <p>كما رأيت في الدرس 2، الوقت هو عدد الاستدعاءات مضروبًا في العمل داخل كل استدعاء. إذا كان كل استدعاء يولّد استدعاءين بمسألة أصغر بواحد:</p>
+      <div dir="ltr">$$T(n) = 2\,T(n-1) + O(1) \;\Rightarrow\; O(2^n)$$</div>
+      <p>وإذا كان كل استدعاء يولّد استدعاءً واحدًا بنصف المسألة:</p>
+      <div dir="ltr">$$T(n) = T(n/2) + O(1) \;\Rightarrow\; O(\log n)$$</div>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>مكدس الاستدعاءات: <code>factorial(3)</code></h3>
+      <p>كل استدعاء ينشئ إطارًا (<span class="en">frame</span>) جديدًا فوق المكدس. الإطار يحفظ قيمة <code>n</code> الخاصة به، وينتظر حتى يرجع الاستدعاء الذي فوقه.</p>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: استدعاء <code>factorial(3)</code></h4>
+          <div class="stack"><div class="frame top">factorial(3): waiting for 3 * factorial(2)</div></div>
+          <p><code>n = 3</code> ليست حالة أساس، فتستدعي الدالة نفسها بـ 2. الإطار الحالي يتوقف وينتظر.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: استدعاء <code>factorial(2)</code></h4>
+          <div class="stack"><div class="frame">factorial(3): waiting for 3 * factorial(2)</div><div class="frame top">factorial(2): waiting for 2 * factorial(1)</div></div>
+          <p>إطار جديد فوق المكدس. كل إطار له <code>n</code> خاص به، فلا يتداخلان.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: حالة الأساس <code>factorial(1)</code></h4>
+          <div class="stack"><div class="frame">factorial(3): waiting for 3 * factorial(2)</div><div class="frame">factorial(2): waiting for 2 * factorial(1)</div><div class="frame ret">factorial(1): base case → return 1</div></div>
+          <p>المكدس الآن في أعمق نقطة، وفيه 3 إطارات. لذلك الذاكرة <span class="en">O(n)</span>. هذه أول دالة ترجع.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: <code>factorial(2)</code> يرجع</h4>
+          <div class="stack"><div class="frame">factorial(3): waiting for 3 * factorial(2)</div><div class="frame ret">factorial(2): 2 * 1 = 2 → return 2</div></div>
+          <p>إطار <code>factorial(1)</code> اختفى. الإطار الذي تحته يكمل عمله بالقيمة التي وصلت.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: النتيجة النهائية ✅</h4>
+          <div class="stack"><div class="frame ret">factorial(3): 3 * 2 = 6 → return 6</div></div>
+          <p>العمل الحقيقي (الضرب) يحدث في طريق <strong>الرجوع</strong>، وليس في طريق النزول.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+
+      <h3>شجرة القرارات للمجموعات الجزئية <code>[1, 2, 3]</code></h3>
+      <p>في كل عقدة نختار عنصرًا يأتي <strong>بعد</strong> آخر عنصر اخترناه. لذلك لا تظهر <code>[2, 1]</code> أبدًا، لأنها نفس المجموعة <code>[1, 2]</code>. كل عقدة في الشجرة مجموعة جزئية، وعدد العقد 8 = 2³.</p>
+      <div class="diagram mermaid">
+flowchart TD
+  R["[ ]"] --> A["[1]"]
+  R --> B["[2]"]
+  R --> C["[3]"]
+  A --> D["[1, 2]"]
+  A --> E["[1, 3]"]
+  D --> F["[1, 2, 3]"]
+  B --> G["[2, 3]"]
+      </div>
+
+      <h3>التراجع خطوة بخطوة</h3>
+      <p>تابع المتغير <code>path</code>. لاحظ كيف يكبر عند "اختر" ويصغر عند "تراجع". نفس القائمة تُستخدم في كل الشجرة.</p>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: البداية</h4>
+          <div class="mem"><div class="box empty">path = [ ]</div></div>
+          <div class="state">record [] → result = [[]]</div>
+          <p>المجموعة الفارغة مجموعة جزئية صحيحة، فنسجلها.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: اختر 1</h4>
+          <div class="mem"><div class="box new">1</div></div>
+          <div class="state">record [1] → result = [[], [1]]</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: اختر 2</h4>
+          <div class="mem"><div class="box">1</div><div class="box new">2</div></div>
+          <div class="state">record [1, 2]</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: اختر 3، ثم تراجع مرتين</h4>
+          <div class="mem"><div class="box">1</div><div class="box">2</div><div class="box new">3</div></div>
+          <div class="state">record [1, 2, 3] → no more items → pop 3 → pop 2 → path = [1]</div>
+          <p>لا توجد عناصر بعد 3، فنرجع. عند كل رجوع نحذف آخر اختيار.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: من [1] جرّب 3</h4>
+          <div class="mem"><div class="box">1</div><div class="box new">3</div></div>
+          <div class="state">record [1, 3] → pop 3 → pop 1 → path = []</div>
+          <p>انتهى كل ما يبدأ بـ 1. نعود إلى الجذر.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 6: ما يبدأ بـ 2، ثم 3 ✅</h4>
+          <div class="mem"><div class="box new">2</div><div class="box new">3</div></div>
+          <div class="state">record [2], [2, 3], [3] → total = 8 subsets</div>
+          <p>الناتج النهائي: <code>[[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]]</code>.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: أساسيات العودية وحد العمق</h3>
+<pre><code class="language-python">import sys
+
+
+def factorial(n: int) -> int:
+    if n &lt;= 1:                      # base case
+        return 1
+    return n * factorial(n - 1)     # smaller problem
+
+
+def total(nums: list[int], i: int = 0) -> int:
+    if i == len(nums):              # base case: nothing left
+        return 0
+    return nums[i] + total(nums, i + 1)   # pass an index, don't slice
+
+
+print(factorial(5))
+print(total([4, 8, 15, 16, 23, 42]))
+print(sys.getrecursionlimit())
+
+try:
+    factorial(5000)
+except RecursionError:
+    print("RecursionError: too deep")</code></pre>
+      <div class="output">120
+108
+1000
+RecursionError: too deep</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>if n &lt;= 1</code>: حالة الأساس. بدونها لن تتوقف الدالة أبدًا.</li>
+        <li><code>n * factorial(n - 1)</code>: كل استدعاء يقترب من حالة الأساس.</li>
+        <li><code>total(nums, i + 1)</code>: نمرر موقعًا ولا نقطع القائمة. لو كتبنا <code>total(nums[1:])</code>، فكل استدعاء ينسخ القائمة بتكلفة <span class="en">O(n)</span>، فيصبح المجموع <span class="en">O(n²)</span>. تذكّر التكلفة المخفية للتقطيع من الدرس 2.</li>
+        <li><code>sys.getrecursionlimit()</code>: <span class="en">Python</span> يسمح بحوالي 1000 إطار. هذا يحمي البرنامج من استهلاك كل الذاكرة.</li>
+        <li><code>factorial(5000)</code> يحتاج 5000 إطار، فيظهر <code>RecursionError</code>.</li>
+      </ol>
+
+      <h3>مثال 2: المجموعات الجزئية</h3>
+<pre><code class="language-python">def subsets(nums: list[int]) -> list[list[int]]:
+    """Time: O(n * 2^n), Space: O(n) recursion + output."""
+    result: list[list[int]] = []
+    path: list[int] = []
+
+    def backtrack(start: int) -> None:
+        result.append(path[:])              # every node is a subset: save a COPY
+        for i in range(start, len(nums)):
+            path.append(nums[i])            # 1) choose
+            backtrack(i + 1)                # 2) explore: only items after i
+            path.pop()                      # 3) un-choose
+
+    backtrack(0)
+    return result
+
+
+print(subsets([1, 2, 3]))</code></pre>
+      <div class="output">[[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]]</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>path</code>: قائمة واحدة نعدّلها طوال البحث. هذا يوفّر الذاكرة.</li>
+        <li><code>path[:]</code>: نحفظ <strong>نسخة</strong>، لأن <code>path</code> ستتغير بعد ذلك.</li>
+        <li><code>backtrack(i + 1)</code>: نختار فقط العناصر بعد <code>i</code>. هكذا لا نكرر نفس المجموعة بترتيب مختلف.</li>
+        <li><code>path.pop()</code>: نلغي الاختيار حتى نجرب الاختيار التالي من نفس الحالة.</li>
+        <li><strong>التعقيد:</strong> 2ⁿ مجموعة، وكل نسخة تكلّف حتى <span class="en">O(n)</span>، فالمجموع <span class="en">O(n · 2ⁿ)</span>.</li>
+      </ol>
+
+      <h3>مثال 3: الترتيبات</h3>
+<pre><code class="language-python">def permutations(nums: list[int]) -> list[list[int]]:
+    """Time: O(n * n!), Space: O(n) recursion + output."""
+    result: list[list[int]] = []
+    path: list[int] = []
+    used = [False] * len(nums)
+
+    def backtrack() -> None:
+        if len(path) == len(nums):          # complete arrangement
+            result.append(path[:])
+            return
+        for i in range(len(nums)):
+            if used[i]:
+                continue                    # each item once per arrangement
+            used[i] = True
+            path.append(nums[i])
+            backtrack()
+            path.pop()
+            used[i] = False                 # undo BOTH changes
+
+    backtrack()
+    return result
+
+
+print(permutations([1, 2, 3]))</code></pre>
+      <div class="output">[[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><strong>الفرق عن المجموعات:</strong> الترتيب مهم هنا، فنبدأ الحلقة من 0 دائمًا وليس من <code>start</code>.</li>
+        <li><code>used</code>: مصفوفة تحفظ العناصر المستخدمة في المسار الحالي. البحث فيها <span class="en">O(1)</span>، أما <code>nums[i] in path</code> فيكلّف <span class="en">O(n)</span>، ولا يعمل مع القيم المكررة.</li>
+        <li>نسجل الحل فقط عندما يكون طول المسار n، وليس في كل عقدة.</li>
+        <li>التراجع يلغي <strong>كل</strong> تغيير قمنا به: <code>path.pop()</code> و <code>used[i] = False</code>.</li>
+      </ol>
+
+      <h3>مثال 4: مجموع الهدف مع التقليم</h3>
+      <p>المطلوب: كل التوافيق من <code>candidates</code> التي مجموعها <code>target</code>، ويمكن استخدام نفس الرقم أكثر من مرة.</p>
+<pre><code class="language-python">def combination_sum(candidates: list[int], target: int) -> list[list[int]]:
+    """candidates are positive and distinct."""
+    candidates = sorted(candidates)         # sorting enables pruning
+    result: list[list[int]] = []
+    path: list[int] = []
+
+    def backtrack(start: int, remaining: int) -> None:
+        if remaining == 0:
+            result.append(path[:])
+            return
+        for i in range(start, len(candidates)):
+            c = candidates[i]
+            if c > remaining:
+                break                       # prune: every later c is bigger too
+            path.append(c)
+            backtrack(i, remaining - c)     # i, not i + 1: reuse allowed
+            path.pop()
+
+    backtrack(0, target)
+    return result
+
+
+print(combination_sum([2, 3, 6, 7], 7))
+print(combination_sum([2], 1))</code></pre>
+      <div class="output">[[2, 2, 3], [7]]
+[]</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>sorted(candidates)</code>: بعد الترتيب، إذا كان رقم أكبر من الباقي، فكل ما بعده أكبر أيضًا.</li>
+        <li><code>break</code> وليس <code>continue</code>: نقطع الفرع كله، وليس رقمًا واحدًا فقط. هذا هو التقليم.</li>
+        <li><code>backtrack(i, ...)</code>: نبدأ من نفس الموقع، لأن الرقم يمكن أن يتكرر. ولا نرجع إلى الأرقام السابقة، حتى لا تظهر <code>[2, 3, 2]</code> و <code>[3, 2, 2]</code> كحلين مختلفين.</li>
+        <li><code>remaining</code>: نمرر الباقي بدل حساب <code>sum(path)</code> في كل مرة، فنوفّر <span class="en">O(n)</span> في كل استدعاء.</li>
+      </ol>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>خطأ 1: حفظ <code>path</code> بدل نسخة منها</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def subsets(nums: list[int]):
+    result, path = [], []
+    def backtrack(start: int):
+        result.append(path)       # same list object!
+        for i in range(start, len(nums)):
+            path.append(nums[i])
+            backtrack(i + 1)
+            path.pop()
+    backtrack(0)
+    return result
+
+print(subsets([1, 2]))  # [[], [], [], []]  wrong!</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">def subsets(nums: list[int]):
+    result, path = [], []
+    def backtrack(start: int):
+        result.append(path[:])    # snapshot copy
+        for i in range(start, len(nums)):
+            path.append(nums[i])
+            backtrack(i + 1)
+            path.pop()
+    backtrack(0)
+    return result
+
+print(subsets([1, 2]))  # [[], [1], [1, 2], [2]]</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> <code>result</code> يحتوي 4 إشارات إلى <strong>نفس القائمة</strong>. في نهاية البحث تصبح <code>path</code> فارغة بعد كل عمليات <code>pop</code>، فتظهر كل النتائج فارغة. هذا أشهر خطأ في التراجع.</div>
+
+      <h3>خطأ 2: نسيان التراجع</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def subsets(nums: list[int]):
+    result, path = [], []
+    def backtrack(start: int):
+        result.append(path[:])
+        for i in range(start, len(nums)):
+            path.append(nums[i])
+            backtrack(i + 1)
+            # forgot path.pop()
+    backtrack(0)
+    return result
+
+print(subsets([1, 2]))  # [[], [1], [1, 2], [1, 2, 2]]</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">def subsets(nums: list[int]):
+    result, path = [], []
+    def backtrack(start: int):
+        result.append(path[:])
+        for i in range(start, len(nums)):
+            path.append(nums[i])
+            backtrack(i + 1)
+            path.pop()            # undo the choice
+    backtrack(0)
+    return result
+
+print(subsets([1, 2]))  # [[], [1], [1, 2], [2]]</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> عندما نرجع من الفرع <code>[1]</code>، يبقى 1 و 2 في المسار. لذلك نضيف 2 فوق <code>[1, 2]</code> بدل أن نبدأ من مسار فارغ. القاعدة: <strong>كل تغيير في "اختر" يحتاج إلغاءً في "تراجع"</strong>.</div>
+
+      <h3>أخطاء أخرى متكررة</h3>
+      <ul>
+        <li><strong>حالة أساس مفقودة أو لا يمكن الوصول إليها:</strong> مثلًا <code>if n == 0</code> مع <code>n - 2</code> وقيمة فردية لـ n. النتيجة <code>RecursionError</code>. استخدم <code>n &lt;= 0</code>.</li>
+        <li><strong>قائمة كقيمة افتراضية:</strong> <code>def collect(x, acc=[])</code> تُنشأ القائمة مرة واحدة فقط، وتبقى بين الاستدعاءات. استخدم <code>acc=None</code> ثم <code>if acc is None: acc = []</code>.</li>
+        <li><strong>التقطيع داخل العودية:</strong> <code>f(nums[1:])</code> ينسخ القائمة في كل استدعاء. مرّر موقعًا بدلًا منه.</li>
+        <li><strong>حلول مكررة مع قيم مكررة:</strong> رتّب القائمة، ثم تخطَّ <code>nums[i] == nums[i - 1]</code> في نفس المستوى (انظر تمرين 3).</li>
+        <li><strong>حساب نفس المسألة الصغيرة مرة بعد مرة:</strong> إذا كانت المسائل الصغيرة تتكرر (مثل <span class="en">Fibonacci</span> في الدرس 2)، فأنت تحتاج الحفظ (<span class="en">memoization</span>)، وليس تراجعًا أذكى.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>اكتب حالة الأساس أولًا</strong>، قبل أي سطر آخر.</li>
+        <li><strong>ارسم شجرة القرارات</strong> لمثال صغير (2 أو 3 عناصر) قبل الكود. اسأل: ما الاختيار في كل عقدة؟ ومتى أسجل الحل؟</li>
+        <li><strong>استخدم دالة داخلية</strong> (<span class="en">nested function</span>) مثل <code>backtrack</code>، حتى تصل إلى <code>result</code> و <code>path</code> بدون تمريرهما في كل استدعاء.</li>
+        <li><strong>مرّر الحالة الرخيصة كمعامل</strong> (مثل <code>start</code> و <code>remaining</code>)، وعدّل الحالة الكبيرة في مكانها مع تراجع (مثل <code>path</code> و <code>used</code>).</li>
+        <li><strong>قلّم مبكرًا:</strong> رتّب المدخلات، وتحقق من الشرط <strong>قبل</strong> الاستدعاء، وليس بعده.</li>
+        <li><strong>إذا احتجت حلًا واحدًا فقط</strong>، اجعل الدالة ترجع <code>True</code> وتوقف البحث فورًا (انظر المشروع).</li>
+        <li><strong>إذا كان العمق كبيرًا</strong> (آلاف المستويات)، حوّل العودية إلى حلقة مع مكدس يدوي (<code>stack = [...]</code>)، بدل رفع <code>sys.setrecursionlimit</code>.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>إشارات في نص المسألة:</strong> كلمات مثل "كل" و "جميع الطرق" و "أرجع كل التركيبات" و "ترتيبات" و "مجموعات جزئية"، مع قيود صغيرة مثل <code>n ≤ 15</code>، تشير غالبًا إلى التراجع. أما "كم عدد الطرق؟" مع <code>n</code> كبير فتشير غالبًا إلى البرمجة الديناميكية (الدرس 7).</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+      <h3>نمو عدد الحلول</h3>
+      <p>الرسم بمقياس لوغاريتمي. مع <code>n = 12</code> فقط، تصل الترتيبات إلى حوالي 5.7 مليار عملية. لهذا تعطيك المسائل قيودًا صغيرة جدًا عندما تطلب كل الحلول.</p>
+      <div class="chart-box"><canvas id="growthChart"></canvas></div>
+
+      <h3>تعقيد المسائل الكلاسيكية</h3>
+      <table>
+        <tr><th>المسألة</th><th>عدد الحلول</th><th>الوقت</th><th>الذاكرة (بدون المخرجات)</th><th>القيد المعتاد</th></tr>
+        <tr><td>المجموعات الجزئية</td><td class="en">2ⁿ</td><td class="en">O(n · 2ⁿ)</td><td class="en">O(n)</td><td class="en">n ≤ 20</td></tr>
+        <tr><td>الترتيبات</td><td class="en">n!</td><td class="en">O(n · n!)</td><td class="en">O(n)</td><td class="en">n ≤ 10</td></tr>
+        <tr><td>توافيق k من n</td><td class="en">C(n, k)</td><td class="en">O(k · C(n, k))</td><td class="en">O(k)</td><td class="en">n ≤ 20</td></tr>
+        <tr><td><span class="en">N-Queens</span></td><td>أقل بكثير من n!</td><td>حوالي <span class="en">O(n!)</span></td><td class="en">O(n)</td><td class="en">n ≤ 12</td></tr>
+        <tr><td>القوة السريعة <code>power(x, n)</code></td><td>1</td><td class="en">O(log n)</td><td class="en">O(log n)</td><td>أي n</td></tr>
+      </table>
+
+      <h3>التراجع أم البرمجة الديناميكية؟</h3>
+      <table>
+        <tr><th>السؤال</th><th>الأداة</th><th>السبب</th></tr>
+        <tr><td>أرجع <strong>كل</strong> الحلول</td><td>التراجع</td><td>يجب أن تبني كل حل، فلا يمكن أن تكون أسرع من عدد الحلول.</td></tr>
+        <tr><td>هل يوجد حل؟ أو أعطني حلًا واحدًا</td><td>التراجع مع توقف مبكر وتقليم</td><td>قد ينتهي بسرعة في الحالات العادية.</td></tr>
+        <tr><td>كم عدد الحلول؟ أو ما أفضل حل؟</td><td>البرمجة الديناميكية</td><td>إذا تكررت المسائل الصغيرة، نحفظ نتائجها ولا نبني كل حل.</td></tr>
+      </table>
+      <div class="callout note">📝 <strong>التقليم لا يغيّر أسوأ حالة غالبًا</strong>، لكنه يقلل الوقت الفعلي كثيرًا. في <code>combination_sum</code>، الـ <code>break</code> يقطع كل الفروع التي تتجاوز الهدف، ولا ننزل فيها أبدًا.</div>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: مطابقة فاتورة مع عدة دفعات جزئية</h2>
+      <p><strong>القصة:</strong> في الدرس 1 طابقنا الفاتورة مع دفعتين. الآن العميل قد يقسم الفاتورة على <strong>حتى 4 دفعات</strong>. المطلوب: جد مجموعة من المعاملات مجموعها يساوي مبلغ الفاتورة بالضبط.</p>
+
+      <h3>طبّق الخطوات الست</h3>
+      <ol>
+        <li><strong>الفهم:</strong> المدخلات قائمة <code>(id, amount_cents)</code>، ومبلغ الفاتورة، وأكبر عدد للدفعات. المخرجات قائمة أرقام المعاملات، أو <code>None</code>.</li>
+        <li><strong>الحالات الطرفية:</strong> مبالغ مستردة سالبة، ومبالغ متساوية لمعاملات مختلفة، وفاتورة أصغر من أصغر دفعة، وحل يحتاج دفعات أكثر من المسموح.</li>
+        <li><strong>الحل البدائي:</strong> جرّب كل المجموعات الجزئية. التعقيد <span class="en">O(2ⁿ)</span>.</li>
+        <li><strong>التحسين:</strong> تراجع مع ثلاثة أنواع من التقليم: رتّب ثم <code>break</code> إذا تجاوز المبلغ الباقي، وتوقف عند <code>max_parts</code>، وتخطَّ المبالغ المكررة في نفس المستوى. وتوقف عند أول حل.</li>
+        <li><strong>الكود:</strong> بالأسفل.</li>
+        <li><strong>الاختبار:</strong> حل بثلاث دفعات، وحل بحد دفعتين، وحالة بدون حل.</li>
+      </ol>
+<pre><code class="language-python">Payment = tuple[str, int]  # (transaction_id, amount_in_cents)
+
+
+def match_invoice(payments: list[Payment], invoice_cents: int, max_parts: int = 4) -> list[str] | None:
+    """Find up to `max_parts` payments that sum exactly to the invoice.
+    Worst case O(2^n) -- pruning makes typical cases fast."""
+    items = sorted((p for p in payments if p[1] > 0), key=lambda p: p[1])
+    path: list[str] = []
+
+    def backtrack(start: int, remaining: int) -> bool:
+        if remaining == 0:
+            return True                                  # found: stop everything
+        if len(path) == max_parts:
+            return False                                 # prune: too many parts
+        for i in range(start, len(items)):
+            tx_id, amount = items[i]
+            if amount > remaining:
+                break                                    # prune: sorted, rest are bigger
+            if i > start and amount == items[i - 1][1]:
+                continue                                 # prune: same amount already tried here
+            path.append(tx_id)
+            if backtrack(i + 1, remaining - amount):
+                return True                              # keep path as the answer
+            path.pop()
+        return False
+
+    return list(path) if backtrack(0, invoice_cents) else None
+
+
+payments: list[Payment] = [
+    ("TX1", 12000),   # 120.00
+    ("TX2", 5000),    #  50.00
+    ("TX3", 7550),    #  75.50
+    ("TX4", 2450),    #  24.50
+    ("TX5", 5000),    #  50.00 (same amount as TX2)
+    ("TX6", -3000),   # refund, ignored
+]
+
+print(match_invoice(payments, 15000))
+print(match_invoice(payments, 19550, max_parts=2))
+print(match_invoice(payments, 100))</code></pre>
+      <div class="output">['TX4', 'TX2', 'TX3']
+['TX3', 'TX1']
+None</div>
+      <h4>الشرح</h4>
+      <ol>
+        <li><code>p[1] > 0</code>: نتجاهل المبالغ المستردة. وهذا ضروري أيضًا للتقليم، لأن <code>break</code> يفترض أن الأرقام موجبة. هذه نفس فكرة شرط الرتابة من الدرس 3.</li>
+        <li><code>backtrack</code> ترجع <code>bool</code>: عندما نجد حلًا، نرجع <code>True</code> في كل المستويات بدون <code>pop</code>، فيبقى الحل في <code>path</code>.</li>
+        <li><code>amount == items[i - 1][1]</code>: <code>TX2</code> و <code>TX5</code> لهما نفس المبلغ. لا داعي لتجربة الفرع مرتين في نفس المستوى، لأن النتيجة واحدة.</li>
+        <li>في الحالة الثانية، الحد <code>max_parts=2</code> منع الحل بثلاث دفعات، فوجد <code>120.00 + 75.50</code>.</li>
+        <li>في الحالة الثالثة، أصغر دفعة (24.50) أكبر من الفاتورة، فيتوقف البحث فورًا بـ <code>break</code>.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>في الأنظمة الحقيقية:</strong> هذه مسألة <span class="en">Subset Sum</span>، وهي صعبة في أسوأ حالة. حدّ عدد المعاملات المرشحة أولًا: نفس العميل، وخلال فترة زمنية قريبة من تاريخ الفاتورة. هكذا يبقى n صغيرًا. وإذا كان n كبيرًا والمبالغ بالقروش محدودة، فالبرمجة الديناميكية في الدرس 7 تحلها بتعقيد <span class="en">O(n × invoice)</span>.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+      <div class="quiz" data-explain="بدون حالة أساس لا تتوقف الدالة، فيمتلئ مكدس الاستدعاءات حتى الحد (حوالي 1000 إطار)، ويظهر RecursionError.">
+        <div class="q">1. ماذا يحدث في Python إذا نسيت حالة الأساس؟</div>
+        <button class="option">ترجع الدالة None</button>
+        <button class="option">تعمل الدالة إلى الأبد</button>
+        <button class="option" data-correct="true">يظهر RecursionError بعد حوالي 1000 استدعاء</button>
+        <button class="option">ترجع الدالة 0</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="path قائمة واحدة نعدّلها طوال البحث. بدون نسخة، كل النتائج تشير إلى نفس القائمة، وتصبح فارغة في النهاية.">
+        <div class="q">2. لماذا نكتب result.append(path[:]) وليس result.append(path)؟</div>
+        <button class="option">لأن النسخة أسرع</button>
+        <button class="option" data-correct="true">لأن path ستتغير لاحقًا، فنحتاج صورة ثابتة منها</button>
+        <button class="option">لأن Python لا تقبل إضافة قائمة إلى قائمة</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="كل عنصر إما داخل المجموعة أو خارجها: اختياران لكل عنصر، فالعدد 2 × 2 × ... = 2ⁿ.">
+        <div class="q">3. كم مجموعة جزئية لقائمة فيها 10 عناصر مختلفة؟</div>
+        <button class="option">100</button>
+        <button class="option" data-correct="true">1024</button>
+        <button class="option">3,628,800</button>
+        <button class="option">10</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="القائمة مرتبة، فكل رقم بعد c أكبر منه، ولن يناسب الباقي أيضًا. break يقطع الفرع كله.">
+        <div class="q">4. في combination_sum، لماذا نستخدم break وليس continue عندما c > remaining؟</div>
+        <button class="option">لأن break أسرع في Python</button>
+        <button class="option" data-correct="true">لأن القائمة مرتبة، فكل الأرقام التالية أكبر أيضًا</button>
+        <button class="option">لأن continue يسبب RecursionError</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="كل استدعاء يتعامل مع نصف المسألة باستدعاء واحد فقط: T(n) = T(n/2) + O(1) = O(log n).">
+        <div class="q">5. power(x, n) تحسب half = power(x, n // 2) مرة واحدة، ثم ترجع half * half. ما التعقيد؟</div>
+        <button class="option">O(n)</button>
+        <button class="option">O(2ⁿ)</button>
+        <button class="option" data-correct="true">O(log n)</button>
+        <button class="option">O(n log n)</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+      <p>قبل كل تمرين، أجب عن ثلاثة أسئلة: ما حالة الأساس؟ ما الاختيار في كل خطوة؟ متى تسجل الحل؟</p>
+
+      <h3>تمرين 1 (سهل): القوة السريعة</h3>
+      <p>اكتب دالة <code>power(x: int, n: int) -> int</code> بتعقيد <span class="en">O(log n)</span>، حيث <code>n ≥ 0</code>. لا تستخدم <code>**</code>.</p>
+      <details><summary>💡 تلميح</summary><p>x¹⁰ = x⁵ × x⁵، و x⁵ = x² × x² × x. احسب النصف مرة واحدة فقط، واحفظه في متغير.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def power(x: int, n: int) -> int:
+    # Time: O(log n), Space: O(log n) call stack
+    if n == 0:
+        return 1
+    half = power(x, n // 2)        # ONE recursive call
+    if n % 2 == 0:
+        return half * half
+    return half * half * x
+
+
+print(power(2, 10))
+print(power(3, 5))
+print(power(5, 0))</code></pre>
+        <div class="output">1024
+243
+1</div>
+        <p>لو كتبت <code>power(x, n // 2) * power(x, n // 2)</code>، تصبح المعادلة <span class="en">T(n) = 2T(n/2) + O(1)</span>، والنتيجة <span class="en">O(n)</span>. حفظ النصف في متغير هو الفرق كله.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): الأقواس الصحيحة</h3>
+      <p>اكتب دالة <code>generate_parens(n: int) -> list[str]</code>. ترجع كل التركيبات الصحيحة من n زوج من الأقواس. مثلًا <code>n = 3</code> يعطي 5 تركيبات.</p>
+      <details><summary>💡 تلميح</summary><p>في كل خطوة لك اختياران. يمكنك أن تضيف <code>(</code> إذا كان عدد الأقواس المفتوحة أقل من n. ويمكنك أن تضيف <code>)</code> إذا كان عدد المغلقة أقل من المفتوحة. هذا تقليم يمنع التركيبات الخاطئة من البداية.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def generate_parens(n: int) -> list[str]:
+    result: list[str] = []
+    path: list[str] = []
+
+    def backtrack(open_count: int, close_count: int) -> None:
+        if len(path) == 2 * n:
+            result.append("".join(path))
+            return
+        if open_count &lt; n:
+            path.append("(")
+            backtrack(open_count + 1, close_count)
+            path.pop()
+        if close_count &lt; open_count:
+            path.append(")")
+            backtrack(open_count, close_count + 1)
+            path.pop()
+
+    backtrack(0, 0)
+    return result
+
+
+print(generate_parens(3))
+print(len(generate_parens(4)))</code></pre>
+        <div class="output">['((()))', '(()())', '(())()', '()(())', '()()()']
+14</div>
+        <p>لم نولّد كل النصوص الممكنة (2²ⁿ نص) ثم نفحصها. الشرطان يمنعان أي فرع خاطئ قبل أن يبدأ. عدد الحلول هو أعداد كاتالان (<span class="en">Catalan numbers</span>): 1، 2، 5، 14، 42...</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): المجموعات الجزئية مع قيم مكررة</h3>
+      <p>اكتب دالة <code>subsets_with_dup(nums: list[int]) -> list[list[int]]</code>. القائمة قد تحتوي قيمًا مكررة، والناتج يجب ألا يحتوي مجموعة مكررة. مثلًا <code>[1, 2, 2]</code> يعطي 6 مجموعات، وليس 8.</p>
+      <details><summary>💡 تلميح</summary><p>رتّب القائمة أولًا. في نفس المستوى من الشجرة، إذا كانت القيمة تساوي القيمة السابقة، فقد جربت هذا الفرع بالفعل. الشرط: <code>i > start and nums[i] == nums[i - 1]</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def subsets_with_dup(nums: list[int]) -> list[list[int]]:
+    nums = sorted(nums)
+    result: list[list[int]] = []
+    path: list[int] = []
+
+    def backtrack(start: int) -> None:
+        result.append(path[:])
+        for i in range(start, len(nums)):
+            if i > start and nums[i] == nums[i - 1]:
+                continue                     # same value, same level: skip
+            path.append(nums[i])
+            backtrack(i + 1)
+            path.pop()
+
+    backtrack(0)
+    return result
+
+
+print(subsets_with_dup([1, 2, 2]))</code></pre>
+        <div class="output">[[], [1], [1, 2], [1, 2, 2], [2], [2, 2]]</div>
+        <p>لماذا <code>i > start</code>؟ لأن تكرار القيمة <strong>عموديًا</strong> مسموح، مثل <code>[2, 2]</code>. الممنوع هو أن تبدأ فرعين من نفس القيمة في <strong>نفس المستوى</strong>. هذا هو نفس الشرط الذي استخدمناه في المشروع.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): <span class="en">N-Queens</span></h3>
+      <p>اكتب دالة <code>n_queens(n: int) -> int</code>. ترجع عدد الطرق لوضع n ملكة على رقعة n × n بحيث لا تهاجم ملكة ملكة أخرى. الملكة تهاجم في نفس الصف، ونفس العمود، والقطرين.</p>
+      <details><summary>💡 تلميح</summary><p>ضع ملكة واحدة في كل صف، فلا تحتاج أن تفحص الصفوف. احفظ الأعمدة المستخدمة في <span class="en">set</span>. كل خانات القطر الأول لها نفس قيمة <code>row - col</code>، وكل خانات القطر الثاني لها نفس قيمة <code>row + col</code>. هذا مفتاح موحّد كما في الدرس 4.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def n_queens(n: int) -> int:
+    cols: set[int] = set()
+    diag1: set[int] = set()   # row - col
+    diag2: set[int] = set()   # row + col
+
+    def place(row: int) -> int:
+        if row == n:
+            return 1                         # all queens placed
+        count = 0
+        for col in range(n):
+            if col in cols or (row - col) in diag1 or (row + col) in diag2:
+                continue                     # prune: attacked square
+            cols.add(col); diag1.add(row - col); diag2.add(row + col)
+            count += place(row + 1)
+            cols.remove(col); diag1.remove(row - col); diag2.remove(row + col)
+        return count
+
+    return place(0)
+
+
+print(n_queens(1))
+print(n_queens(4))
+print(n_queens(8))</code></pre>
+        <div class="output">1
+2
+92</div>
+        <p>الفحص <span class="en">O(1)</span> بفضل الـ <span class="en">sets</span>، بدل المرور على كل الملكات السابقة. لاحظ أن الدالة ترجع عددًا وليس قائمة، فالتجميع يحدث في طريق الرجوع، مثل <code>factorial</code>. والتراجع يلغي التغييرات الثلاثة كلها.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>العودية تحل المسألة بحل نسخة أصغر منها. تحتاج حالة أساس، وخطوة تقترب منها.</li>
+        <li>ثق بالاستدعاء الأصغر، ولا تحاول أن تتتبع كل المستويات في رأسك.</li>
+        <li>كل استدعاء ينشئ إطارًا في المكدس، فالذاكرة تساوي العمق على الأقل. حد <span class="en">Python</span> حوالي 1000.</li>
+        <li>قالب التراجع: اختر ← استكشف ← تراجع. وكل تغيير يحتاج إلغاءً.</li>
+        <li>احفظ <code>path[:]</code> وليس <code>path</code>.</li>
+        <li>المجموعات الجزئية: ابدأ من <code>start</code> وسجّل في كل عقدة. الترتيبات: ابدأ من 0 مع <code>used</code>، وسجّل عند الطول n.</li>
+        <li>التقليم يقطع الفروع الميتة: رتّب ثم <code>break</code>، وتخطَّ القيم المكررة في نفس المستوى، وتوقف عند أول حل إذا احتجت حلًا واحدًا.</li>
+        <li>التراجع أُسّي بطبيعته، فهو مناسب لـ <code>n</code> صغير. إذا تكررت المسائل الصغيرة، فأنت تحتاج البرمجة الديناميكية.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <ul>
+        <li><strong>الدرس 6: البحث الثنائي (<span class="en">Binary Search</span>)</strong>. ستتعلم كيف تقسم مجال البحث إلى نصفين في كل خطوة، وكيف تكتب الحدود بدون أخطاء، وكيف تبحث في "مجال الجواب"، وليس في القائمة فقط.</li>
+        <li>الدرس 7: البرمجة الديناميكية (<span class="en">Dynamic Programming</span>). ستحوّل التراجع الأُسّي إلى حل سريع بالحفظ.</li>
+        <li>للتدريب: حلّ 5 مسائل على <span class="en">LeetCode</span> بوسم <span class="en">Backtracking</span>. قبل الكود، ارسم شجرة القرارات لمثال فيه 3 عناصر.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  // Code highlighting + copy buttons
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  // Mermaid diagrams
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  // Math formulas
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  // Growth chart: n^2 vs n*2^n vs n*n!
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var gc = document.getElementById("growthChart");
+  if (gc) {
+    var ns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    function fact(n) { var r = 1; for (var i = 2; i <= n; i++) { r *= i; } return r; }
+    new Chart(gc, {
+      type: "line",
+      data: {
+        labels: ns.map(String),
+        datasets: [
+          { label: "O(n²) للمقارنة", data: ns.map(function (n) { return n * n; }), borderColor: "#10b981", backgroundColor: "#10b981", tension: 0.2 },
+          { label: "المجموعات الجزئية n·2ⁿ", data: ns.map(function (n) { return n * Math.pow(2, n); }), borderColor: "#f59e0b", backgroundColor: "#f59e0b", tension: 0.2 },
+          { label: "الترتيبات n·n!", data: ns.map(function (n) { return n * fact(n); }), borderColor: "#ef4444", backgroundColor: "#ef4444", tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: { legend: { rtl: true }, tooltip: { rtl: true } },
+        scales: {
+          y: { type: "logarithmic", title: { display: true, text: "عدد العمليات (مقياس لوغاريتمي)" } },
+          x: { title: { display: true, text: "عدد العناصر n" } }
+        }
+      }
+    });
+  }
+
+  // Steppers
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  // Quizzes
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  // Reading progress bar (fills from the right, RTL)
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

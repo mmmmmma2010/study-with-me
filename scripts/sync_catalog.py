@@ -41,6 +41,18 @@ SECTION_DEFAULTS = {
         "level": "B1 / B2",
         "language": "العربية + English",
     },
+    "Problem Solving": {
+        "id": "problem-solving",
+        "title": "حل المشكلات البرمجية",
+        "titleEn": "Problem Solving",
+        "subtitle": "من منهجية الحل إلى البرمجة الديناميكية والرسوم البيانية",
+        "description": "سلسلة عملية من 8 دروس لتعلم مهارات حل المشكلات البرمجية والخوارزميات بلغة Python.",
+        "icon": "🧩",
+        "accent": "#2563eb",
+        "gradient": "linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981)",
+        "level": "متوسط",
+        "language": "العربية + Python",
+    },
 }
 
 

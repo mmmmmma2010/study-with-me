@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحليل التعقيد (Big-O)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif; font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text); }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero { background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981); color: #fff; padding: 48px 24px; text-align: center; }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 700px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .codeview { direction: ltr; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: .9rem; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .codeview div { padding: 4px 12px; display: flex; justify-content: space-between; gap: 12px; transition: background .3s; }
+  .codeview div.hl { background: rgba(37,99,235,.2); font-weight: 600; }
+  .codeview span.cost { color: var(--muted); }
+  .codeview div.hl span.cost { color: var(--primary); }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--primary-soft); }
+  .card h4 { margin: 0 0 4px; color: var(--primary); }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>تحليل التعقيد <span class="en">(Big-O Notation)</span></h1>
+  <p>ستتعلم في هذا الدرس كيف تعرف سرعة أي كود وحجم الذاكرة التي يحتاجها قبل أن تشغّله.</p>
+  <div class="badges">
+    <span class="badge">الدرس 2 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 35 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 1 قلنا إن حل <span class="en">Two Sum</span> بالقاموس أسرع من الحل البدائي. قلنا إن الأول <span class="en">O(n)</span> والثاني <span class="en">O(n²)</span>. في هذا الدرس ستفهم معنى هذه الرموز، وتتعلم كيف تحسبها بنفسك.</div>
+      <p>لماذا لا نقيس السرعة بالثواني فقط؟ لأن الثواني تختلف من جهاز إلى جهاز، ومن لغة إلى لغة. أما <span class="en">Big-O</span> فيجيب عن سؤال أهم: <strong>إذا زاد حجم المدخلات، كيف يزيد الوقت؟</strong></p>
+      <p>الكود الذي يعالج 100 معاملة في ثانية واحدة قد يحتاج ساعات لمعالجة مليون معاملة. وقد يحتاج ثانيتين فقط. الفرق بين الحالتين هو التعقيد، وليس سرعة الجهاز.</p>
+      <p>في هذا الدرس ستتعلم قواعد حساب التعقيد، والتكلفة المخفية لعمليات <span class="en">Python</span> الشائعة، وكيف تحلل الكود الذي فيه عودية (<span class="en">recursion</span>).</p>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">🎉 تخيّل أنك تريد أن تدعو <strong>n</strong> شخصًا إلى حفلة:<br><br>
+      • <strong><span class="en">O(1)</span>:</strong> تكتب رسالة واحدة في مجموعة الواتساب. الوقت ثابت، سواء كانوا 10 أشخاص أو 1000.<br>
+      • <strong><span class="en">O(log n)</span>:</strong> تخبر شخصين، وكل واحد منهما يخبر شخصين، وهكذا. عدد الجولات صغير جدًا. مع 1000 شخص تحتاج حوالي 10 جولات فقط.<br>
+      • <strong><span class="en">O(n)</span>:</strong> تتصل بكل شخص وحده. إذا تضاعف العدد، تضاعف الوقت.<br>
+      • <strong><span class="en">O(n²)</span>:</strong> تطلب من كل شخص أن يصافح كل الأشخاص الآخرين. إذا تضاعف العدد، صار الوقت أربعة أضعاف.<br><br>
+      <span class="en">Big-O</span> لا يهتم بالوقت الذي تأخذه المكالمة الواحدة. هو يهتم بكيفية نمو الوقت كله عندما يزيد عدد الأشخاص.</div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>رمز O الكبير</td><td class="en">Big-O</td><td>حد أعلى لنمو الوقت أو الذاكرة. معناه: "لن يكون أسوأ من هذا".</td></tr>
+        <tr><td>أسوأ حالة</td><td class="en">Worst Case</td><td>المدخلات التي تجعل الكود أبطأ ما يمكن. هي الحالة التي نهتم بها عادةً.</td></tr>
+        <tr><td>أفضل حالة</td><td class="en">Best Case</td><td>المدخلات التي تجعل الكود أسرع ما يمكن، مثل أن تجد الجواب في أول عنصر.</td></tr>
+        <tr><td>الحالة المتوسطة</td><td class="en">Average Case</td><td>الوقت المتوقع مع مدخلات عادية أو عشوائية.</td></tr>
+        <tr><td>الحد المسيطر</td><td class="en">Dominant Term</td><td>الجزء الذي ينمو أسرع من غيره. هو الذي يحدد التعقيد في النهاية.</td></tr>
+        <tr><td>التكلفة المُطفأة</td><td class="en">Amortized Cost</td><td>متوسط تكلفة العملية على سلسلة طويلة من العمليات. بعض العمليات مكلفة، لكنها نادرة.</td></tr>
+        <tr><td>الذاكرة الإضافية</td><td class="en">Auxiliary Space</td><td>الذاكرة التي يحتاجها الحل فوق المدخلات نفسها.</td></tr>
+        <tr><td>مكدس الاستدعاءات</td><td class="en">Call Stack</td><td>المكان الذي يحفظ فيه البرنامج الدوال التي لم تنتهِ بعد. العودية العميقة تملؤه.</td></tr>
+        <tr><td>اللوغاريتم</td><td class="en">Logarithm (log₂ n)</td><td>عدد مرات قسمة n على 2 حتى تصل إلى 1.</td></tr>
+        <tr><td>أوميغا / ثيتا</td><td class="en">Big-Ω / Big-Θ</td><td>Ω حد أدنى، و Θ حد دقيق من الأعلى والأسفل. في المقابلات يقول الناس O وهم يقصدون Θ غالبًا.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>التعريف ببساطة</h3>
+      <p>نقول إن الدالة <span class="en">f(n)</span> هي <span class="en">O(g(n))</span> إذا وُجد ثابت <span class="en">c</span>، وكانت <span class="en">f(n)</span> بعد حجم معيّن لا تتجاوز <span class="en">c · g(n)</span>:</p>
+      <div dir="ltr">$$f(n) = O(g(n)) \iff \exists\, c > 0,\ n_0 : \ f(n) \le c \cdot g(n) \quad \forall\, n \ge n_0$$</div>
+      <p>لا تقلق من الرموز. الفكرة باختصار: <strong>عندما يكبر n، نهتم بشكل النمو فقط</strong>، ونتجاهل الثوابت والتفاصيل الصغيرة.</p>
+
+      <h3>القواعد الخمس لحساب التعقيد</h3>
+      <div class="steps-grid">
+        <div class="card"><h4>1. احذف الثوابت</h4><span class="en">O(2n)</span> هي <span class="en">O(n)</span>، و <span class="en">O(500)</span> هي <span class="en">O(1)</span>.</div>
+        <div class="card"><h4>2. احذف الحدود الصغيرة</h4><span class="en">O(n² + n)</span> هي <span class="en">O(n²)</span>، لأن n² يسيطر عندما يكبر n.</div>
+        <div class="card"><h4>3. المتتالي يُجمع</h4>حلقة بعد حلقة: <span class="en">O(n) + O(n) = O(n)</span>.</div>
+        <div class="card"><h4>4. المتداخل يُضرب</h4>حلقة داخل حلقة: <span class="en">O(n) × O(n) = O(n²)</span>.</div>
+        <div class="card"><h4>5. مدخلات مختلفة = متغيرات مختلفة</h4>قائمتان بحجمين a و b: النتيجة <span class="en">O(a + b)</span> أو <span class="en">O(a × b)</span>، وليست <span class="en">O(n)</span>.</div>
+      </div>
+      <p>مثال على القاعدتين 1 و 2:</p>
+      <div dir="ltr">$$3n^2 + 5n + 2 \;\Rightarrow\; O(n^2)$$</div>
+      <p>لماذا؟ عندما يكون <code>n = 1000</code>، يساوي الحد <span class="en">3n²</span> ثلاثة ملايين، بينما يساوي <span class="en">5n</span> خمسة آلاف فقط. الحد الصغير لا يغيّر الصورة.</p>
+
+      <h3>من أين يأتي <span class="en">log n</span>؟</h3>
+      <p>عندما تقسم المسألة على 2 في كل خطوة، تسأل: بعد كم خطوة نصل إلى عنصر واحد؟</p>
+      <div dir="ltr">$$\frac{n}{2^k} = 1 \;\Rightarrow\; 2^k = n \;\Rightarrow\; k = \log_2 n$$</div>
+      <p>مع مليون عنصر، يكفي حوالي 20 خطوة. لهذا يُعدّ <span class="en">O(log n)</span> سريعًا جدًا، وهو أساس <span class="en">Binary Search</span> في الدرس 6.</p>
+
+      <h3>فئات التعقيد الشائعة</h3>
+      <table>
+        <tr><th>التعقيد</th><th>الاسم</th><th>مثال</th><th>عدد العمليات عندما n = 1,000</th></tr>
+        <tr><td class="en">O(1)</td><td>ثابت</td><td><code>d[key]</code>، <code>nums[i]</code></td><td class="en">1</td></tr>
+        <tr><td class="en">O(log n)</td><td>لوغاريتمي</td><td><span class="en">Binary Search</span></td><td class="en">~10</td></tr>
+        <tr><td class="en">O(n)</td><td>خطي</td><td>المرور على القائمة مرة واحدة</td><td class="en">1,000</td></tr>
+        <tr><td class="en">O(n log n)</td><td>خطي لوغاريتمي</td><td><code>sorted()</code></td><td class="en">~10,000</td></tr>
+        <tr><td class="en">O(n²)</td><td>تربيعي</td><td>حلقتان متداخلتان</td><td class="en">1,000,000</td></tr>
+        <tr><td class="en">O(2ⁿ)</td><td>أُسّي</td><td>كل المجموعات الجزئية، و <span class="en">Fibonacci</span> البدائي</td><td>رقم من 302 خانة 😱</td></tr>
+        <tr><td class="en">O(n!)</td><td>مضروب</td><td>كل الترتيبات الممكنة</td><td>أكبر بكثير</td></tr>
+      </table>
+
+      <h3>كيف تحلل أي كود؟</h3>
+      <div class="diagram mermaid">
+flowchart TD
+  A["اقرأ الكود"] --> B{"هل فيه حلقات؟"}
+  B -->|"لا"| C{"هل فيه عودية؟"}
+  B -->|"نعم"| D{"هل الحلقات متداخلة؟"}
+  D -->|"نعم"| E["اضرب عدد التكرارات"]
+  D -->|"لا"| F["اجمع عدد التكرارات"]
+  E --> G{"هل المتغير يُقسم أو يُضرب في 2؟"}
+  F --> G
+  G -->|"نعم"| H["هذه الحلقة log n"]
+  G -->|"لا"| I["ابحث عن عمليات مخفية مثل in list و sort"]
+  H --> I
+  C -->|"نعم"| J["ارسم شجرة الاستدعاءات: عدد العقد × العمل في كل عقدة"]
+  C -->|"لا"| K["O(1)"]
+  I --> L["احذف الثوابت والحدود الصغيرة"]
+  J --> L
+      </div>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+      <h3>تحليل دالة سطرًا بسطر</h3>
+      <p>هذه دالة تتحقق من وجود زوج مجموعه <code>target</code> باستخدام الترتيب ومؤشرين. سنحسب تكلفة كل سطر، ثم نجمع النتائج.</p>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: الترتيب</h4>
+          <div class="codeview">
+            <div class="hl"><span>nums_sorted = sorted(nums)</span><span class="cost">O(n log n)</span></div>
+            <div><span>left, right = 0, len(nums_sorted) - 1</span><span class="cost"></span></div>
+            <div><span>while left &lt; right:</span><span class="cost"></span></div>
+            <div><span>    total = nums_sorted[left] + nums_sorted[right]</span><span class="cost"></span></div>
+            <div><span>    ...move left or right...</span><span class="cost"></span></div>
+            <div><span>return False</span><span class="cost"></span></div>
+          </div>
+          <p>دالة <code>sorted()</code> في <span class="en">Python</span> تأخذ <span class="en">O(n log n)</span>. وهي أيضًا تنشئ قائمة جديدة، فتحتاج ذاكرة <span class="en">O(n)</span>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: الإسناد</h4>
+          <div class="codeview">
+            <div><span>nums_sorted = sorted(nums)</span><span class="cost">O(n log n)</span></div>
+            <div class="hl"><span>left, right = 0, len(nums_sorted) - 1</span><span class="cost">O(1)</span></div>
+            <div><span>while left &lt; right:</span><span class="cost"></span></div>
+            <div><span>    total = nums_sorted[left] + nums_sorted[right]</span><span class="cost"></span></div>
+            <div><span>    ...move left or right...</span><span class="cost"></span></div>
+            <div><span>return False</span><span class="cost"></span></div>
+          </div>
+          <p>الدالة <code>len()</code> في <span class="en">Python</span> ثابتة <span class="en">O(1)</span>، لأن القائمة تحفظ طولها.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: الحلقة</h4>
+          <div class="codeview">
+            <div><span>nums_sorted = sorted(nums)</span><span class="cost">O(n log n)</span></div>
+            <div><span>left, right = 0, len(nums_sorted) - 1</span><span class="cost">O(1)</span></div>
+            <div class="hl"><span>while left &lt; right:</span><span class="cost">≤ n times</span></div>
+            <div class="hl"><span>    total = nums_sorted[left] + nums_sorted[right]</span><span class="cost">O(1)</span></div>
+            <div class="hl"><span>    ...move left or right...</span><span class="cost">O(1)</span></div>
+            <div><span>return False</span><span class="cost"></span></div>
+          </div>
+          <p>في كل دورة يتحرك مؤشر واحد خطوة نحو الآخر. لذلك تتكرر الحلقة n مرة على الأكثر. تكلفة الحلقة: <span class="en">n × O(1) = O(n)</span>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: اجمع واحذف الحدود الصغيرة ✅</h4>
+          <div class="codeview">
+            <div class="hl"><span>nums_sorted = sorted(nums)</span><span class="cost">O(n log n)  ← dominant</span></div>
+            <div><span>left, right = 0, len(nums_sorted) - 1</span><span class="cost">O(1)</span></div>
+            <div><span>while left &lt; right: ...</span><span class="cost">O(n)</span></div>
+            <div><span>return False</span><span class="cost">O(1)</span></div>
+          </div>
+          <p>المجموع: <span class="en">O(n log n) + O(1) + O(n)</span>. الحد المسيطر هو <span class="en">n log n</span>، لذلك <strong>الوقت <span class="en">O(n log n)</span> والذاكرة <span class="en">O(n)</span></strong>. لاحظ أن الترتيب أبطأ من الحلقة نفسها. هذا هو عنق الزجاجة.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+
+      <h3>التكلفة المُطفأة: لماذا <code>append</code> سريع؟</h3>
+      <p>القائمة في <span class="en">Python</span> تحجز مساحة أكبر من حاجتها. عندما تمتلئ، تنشئ مساحة أكبر بنسبة ثابتة (حوالي 1.125 مرة في <span class="en">CPython</span>)، ثم تنسخ العناصر إليها. هذا النسخ يأخذ <span class="en">O(n)</span>، لكنه نادر. لنبسّط الحساب ونفترض أن المساحة تتضاعف. عندها يكون مجموع عمليات النسخ لـ n إضافة:</p>
+      <div dir="ltr">$$1 + 2 + 4 + \dots + n \;<\; 2n \;\Rightarrow\; \frac{2n}{n} = O(1) \text{ per append}$$</div>
+      <p>نفس الفكرة تبقى صحيحة مع أي نسبة نمو ثابتة. لذلك نقول إن <code>append</code> تأخذ <span class="en">O(1)</span> مُطفأة (<span class="en">amortized</span>). بعض الإضافات بطيئة، لكن المتوسط ثابت.</p>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: عدّ العمليات بدل قياس الثواني</h3>
+      <p>الثواني تختلف من جهاز إلى آخر، أما عدد العمليات فلا يتغير. سنعدّ الخطوات في ثلاث دوال.</p>
+<pre><code class="language-python">def steps_linear(n: int) -> int:
+    count = 0
+    for _ in range(n):
+        count += 1
+    return count
+
+
+def steps_quadratic(n: int) -> int:
+    count = 0
+    for _ in range(n):
+        for _ in range(n):
+            count += 1
+    return count
+
+
+def steps_log(n: int) -> int:
+    count = 0
+    while n > 1:
+        n //= 2        # halve the problem each step
+        count += 1
+    return count
+
+
+for n in [16, 1024]:
+    print(n, steps_linear(n), steps_quadratic(n), steps_log(n))</code></pre>
+      <div class="output">16 16 256 4
+1024 1024 1048576 10</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>steps_linear</code>: حلقة واحدة تتكرر n مرة، فالتعقيد <span class="en">O(n)</span>.</li>
+        <li><code>steps_quadratic</code>: حلقة داخل حلقة، n × n، فالتعقيد <span class="en">O(n²)</span>.</li>
+        <li><code>n //= 2</code>: نقسم على 2 في كل دورة، فالتعقيد <span class="en">O(log n)</span>.</li>
+        <li>لاحظ النتيجة: عندما زاد n حوالي 64 مرة (من 16 إلى 1024)، زادت الخطوات الخطية 64 مرة، والتربيعية حوالي 4096 مرة، واللوغاريتمية من 4 إلى 10 فقط.</li>
+      </ol>
+
+      <h3>مثال 2: التكلفة المخفية في <code>in</code></h3>
+      <p>الكلمة <code>in</code> تبدو بسيطة، لكن تكلفتها تختلف حسب نوع البيانات. هذه دالة تجد العناصر المشتركة بين قائمتين:</p>
+<pre><code class="language-python">def common_slow(a: list[int], b: list[int]) -> list[int]:
+    # 'x in b' scans the whole list b -> O(len(b)) each time
+    return [x for x in a if x in b]          # O(a * b)
+
+
+def common_fast(a: list[int], b: list[int]) -> list[int]:
+    b_set = set(b)                            # O(b) once
+    return [x for x in a if x in b_set]       # O(1) average lookup -> O(a)
+
+
+a = [4, 9, 2, 7, 1]
+b = [7, 3, 4, 8]
+print(common_slow(a, b))
+print(common_fast(a, b))</code></pre>
+      <div class="output">[4, 7]
+[4, 7]</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>x in b</code> عندما تكون <code>b</code> قائمة: <span class="en">Python</span> يمرّ على العناصر واحدًا واحدًا، فالتكلفة <span class="en">O(b)</span>. نكرر هذا لكل عنصر في <code>a</code>، فيصبح المجموع <span class="en">O(a × b)</span>.</li>
+        <li><code>set(b)</code>: ننشئ المجموعة مرة واحدة بتكلفة <span class="en">O(b)</span>.</li>
+        <li><code>x in b_set</code>: البحث في <span class="en">set</span> يأخذ <span class="en">O(1)</span> في المتوسط، كما رأينا في القاموس في الدرس 1.</li>
+        <li>المجموع <span class="en">O(a + b)</span>. مع قائمتين فيهما 100,000 عنصر، ننتقل من 10 مليارات عملية إلى حوالي 200 ألف.</li>
+      </ol>
+      <div class="callout warning">⚠️ <strong>انتبه:</strong> نفس السطر <code>x in something</code> قد يكون <span class="en">O(1)</span> أو <span class="en">O(n)</span>. لا يكفي أن تنظر إلى الحلقات، بل اسأل أيضًا: ما تكلفة كل عملية داخل الحلقة؟</div>
+
+      <h3>مثال 3: تحليل العودية (<span class="en">Fibonacci</span>)</h3>
+      <p>كيف تحلل دالة تستدعي نفسها؟ ارسم شجرة الاستدعاءات، ثم اضرب عدد العقد في العمل الذي تقوم به كل عقدة.</p>
+<pre><code class="language-python">def fib_naive(n: int, counter: list[int]) -> int:
+    counter[0] += 1                      # count every call
+    if n &lt; 2:
+        return n
+    return fib_naive(n - 1, counter) + fib_naive(n - 2, counter)
+
+
+def fib_memo(n: int, memo: dict[int, int], counter: list[int]) -> int:
+    counter[0] += 1
+    if n in memo:
+        return memo[n]                   # already computed: no new calls
+    if n &lt; 2:
+        return n
+    memo[n] = fib_memo(n - 1, memo, counter) + fib_memo(n - 2, memo, counter)
+    return memo[n]
+
+
+slow_calls = [0]
+fast_calls = [0]
+print(fib_naive(20, slow_calls), "calls:", slow_calls[0])
+print(fib_memo(20, {}, fast_calls), "calls:", fast_calls[0])</code></pre>
+      <div class="output">6765 calls: 21891
+6765 calls: 39</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>counter: list[int]</code>: نستخدم قائمة فيها عنصر واحد كعدّاد، لأن الدالة تستطيع تعديل محتوى القائمة.</li>
+        <li><code>fib_naive</code>: كل استدعاء يولّد استدعاءين، فعدد الاستدعاءات ينمو تقريبًا مثل <span class="en">2ⁿ</span>. الشجرة تحسب <code>fib(18)</code> مرتين، و <code>fib(17)</code> ثلاث مرات، وهكذا.</li>
+        <li><code>fib_memo</code>: نحفظ كل نتيجة في <code>memo</code>. كل قيمة من 2 إلى 20 تُحسب مرة واحدة فقط وتولّد استدعاءين، فالمجموع <code>1 + 2 × 19 = 39</code>.</li>
+        <li><strong>الذاكرة:</strong> كلا الحلين يحتاج <span class="en">O(n)</span> في مكدس الاستدعاءات، لأن أطول سلسلة هي <code>20 → 19 → … → 1</code>. الحل الثاني يحتاج أيضًا <span class="en">O(n)</span> للقاموس.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>قاعدة العودية:</strong> الوقت = (عدد الاستدعاءات) × (العمل في كل استدعاء). والذاكرة = (أعمق مسار في الشجرة) + (أي تخزين إضافي). هذا الحفظ (<span class="en">memoization</span>) هو بداية البرمجة الديناميكية في الدرس 7.</div>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>خطأ 1: <code>pop(0)</code> داخل حلقة</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة: <span class="en">O(n²)</span></h4>
+<pre><code class="language-python">def process_queue(tasks: list[str]) -> list[str]:
+    done = []
+    while tasks:
+        task = tasks.pop(0)   # shifts ALL items left: O(n)
+        done.append(task.upper())
+    return done
+
+print(process_queue(["a", "b", "c"]))  # ['A', 'B', 'C']</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة: <span class="en">O(n)</span></h4>
+<pre><code class="language-python">from collections import deque
+
+def process_queue(tasks: list[str]) -> list[str]:
+    queue = deque(tasks)
+    done = []
+    while queue:
+        task = queue.popleft()  # O(1)
+        done.append(task.upper())
+    return done
+
+print(process_queue(["a", "b", "c"]))  # ['A', 'B', 'C']</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> النتيجة صحيحة، لكن السرعة سيئة. عندما تحذف أول عنصر من القائمة، تتحرك كل العناصر الباقية خطوة إلى اليسار. هذا يأخذ <span class="en">O(n)</span> في كل دورة، فيصبح المجموع <span class="en">O(n²)</span>. أما <code>deque</code> فمصممة للحذف من الطرفين في <span class="en">O(1)</span>.</div>
+
+      <h3>خطأ 2: الظن أن كل حلقتين تعطيان <span class="en">O(n²)</span></h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ تحليل خاطئ</h4>
+<pre><code class="language-python">def min_and_max(nums: list[int]) -> tuple[int, int]:
+    lo = nums[0]
+    for x in nums:        # loop 1
+        lo = min(lo, x)
+    hi = nums[0]
+    for x in nums:        # loop 2
+        hi = max(hi, x)
+    return lo, hi
+
+# "Two loops, so O(n²)"  ← wrong analysis</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ تحليل صحيح</h4>
+<pre><code class="language-python">def min_and_max(nums: list[int]) -> tuple[int, int]:
+    lo = nums[0]
+    for x in nums:        # O(n)
+        lo = min(lo, x)
+    hi = nums[0]
+    for x in nums:        # + O(n)
+        hi = max(hi, x)
+    return lo, hi
+
+# O(n) + O(n) = O(2n) = O(n)  ← sequential, not nested</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> الحلقتان متتاليتان وليستا متداخلتين. المتتالي يُجمع، والمتداخل يُضرب (القاعدتان 3 و 4).</div>
+
+      <h3>أخطاء أخرى متكررة</h3>
+      <ul>
+        <li><strong>نسيان تكلفة الدوال الجاهزة:</strong> <code>sorted()</code> تأخذ <span class="en">O(n log n)</span>، والتقطيع <code>nums[a:b]</code> يأخذ <span class="en">O(b − a)</span> لأنه ينسخ العناصر، و <code>list.index()</code> و <code>list.count()</code> تأخذان <span class="en">O(n)</span>.</li>
+        <li><strong>استخدام n لقائمتين مختلفتين:</strong> اكتب <span class="en">O(a + b)</span> وليس <span class="en">O(n)</span>.</li>
+        <li><strong>نسيان ذاكرة العودية:</strong> عودية بعمق n تحتاج <span class="en">O(n)</span> ذاكرة، حتى لو لم تنشئ أي قائمة. وفي <span class="en">Python</span> الحد الافتراضي للعمق حوالي 1000.</li>
+        <li><strong>الخلط بين المتوسط والأسوأ:</strong> البحث في <span class="en">dict</span> يأخذ <span class="en">O(1)</span> في المتوسط. في الأسوأ، مع تصادمات كثيرة، قد يصل إلى <span class="en">O(n)</span>. لكن هذا نادر جدًا عمليًا.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>اكتب التعقيد في تعليق</strong> فوق كل دالة مهمة، مثل <code># Time: O(n), Space: O(n)</code>.</li>
+        <li><strong>حلّل الوقت والذاكرة معًا.</strong> المحاور في المقابلة سيسألك عن الاثنين.</li>
+        <li><strong>اسأل عن كل سطر داخل الحلقة:</strong> هل هو <span class="en">O(1)</span> فعلًا؟</li>
+        <li><strong>اختر هيكل البيانات حسب العملية:</strong> البحث المتكرر يحتاج <span class="en">set</span> أو <span class="en">dict</span>، والطابور يحتاج <code>deque</code>، وأصغر عنصر يحتاج <code>heapq</code>.</li>
+        <li><strong>قِس قبل أن تحسّن</strong> في المشاريع الحقيقية. استخدم <code>timeit</code> أو <code>cProfile</code> لتجد عنق الزجاجة الحقيقي.</li>
+        <li><strong>تذكّر أن الثوابت مهمة مع المدخلات الصغيرة.</strong> حل <span class="en">O(n²)</span> بسيط قد يكون أسرع من حل <span class="en">O(n log n)</span> معقد عندما يكون <code>n = 20</code>.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة للمقابلات:</strong> بعد أن تكتب الحل، قل التعقيد قبل أن يسألك المحاور. وقل أيضًا مصدره، مثل: "الترتيب هو عنق الزجاجة بتعقيد <span class="en">O(n log n)</span>، والحلقة <span class="en">O(n)</span>".</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+      <h3>مقارنة نمو فئات التعقيد</h3>
+      <p>الرسم بمقياس لوغاريتمي. لاحظ كيف يصعد <span class="en">2ⁿ</span> بسرعة كبيرة حتى مع n صغير.</p>
+      <div class="chart-box"><canvas id="growthChart"></canvas></div>
+
+      <h3>تكلفة عمليات <span class="en">Python</span> الشائعة</h3>
+      <table>
+        <tr><th>العملية</th><th><span class="en">list</span></th><th><span class="en">set / dict</span></th><th><span class="en">deque</span></th></tr>
+        <tr><td>الوصول بالموقع <code>x[i]</code></td><td class="en">O(1)</td><td>—</td><td class="en">O(n)</td></tr>
+        <tr><td>البحث <code>v in x</code></td><td class="en">O(n)</td><td class="en">O(1) avg</td><td class="en">O(n)</td></tr>
+        <tr><td>الإضافة في النهاية</td><td class="en">O(1) amortized</td><td class="en">O(1) avg</td><td class="en">O(1)</td></tr>
+        <tr><td>الحذف من النهاية <code>pop()</code></td><td class="en">O(1)</td><td>—</td><td class="en">O(1)</td></tr>
+        <tr><td>الإضافة أو الحذف من البداية</td><td class="en">O(n)</td><td>—</td><td class="en">O(1)</td></tr>
+        <tr><td>الحذف بالقيمة</td><td class="en">O(n)</td><td class="en">O(1) avg</td><td class="en">O(n)</td></tr>
+        <tr><td>الترتيب</td><td class="en">O(n log n)</td><td>—</td><td>—</td></tr>
+        <tr><td>النسخ أو التقطيع</td><td class="en">O(k)</td><td class="en">O(n)</td><td class="en">O(n)</td></tr>
+      </table>
+
+      <h3>متى لا يكفي <span class="en">Big-O</span>؟</h3>
+      <ul>
+        <li><strong>الثوابت المخفية:</strong> حلّان بتعقيد <span class="en">O(n)</span> قد يختلفان في السرعة 10 مرات.</li>
+        <li><strong>الذاكرة المؤقتة (<span class="en">Cache</span>):</strong> المرور على مصفوفة متصلة في الذاكرة أسرع من التنقل بين عُقد متفرقة، حتى لو كان التعقيد واحدًا.</li>
+        <li><strong>الدوال المكتوبة بلغة C:</strong> دوال مثل <code>sum()</code> و <code>sorted()</code> في <span class="en">Python</span> أسرع بكثير من حلقة تكتبها أنت بنفس التعقيد.</li>
+      </ul>
+      <div class="callout note">📝 <strong>الخلاصة العملية:</strong> استخدم <span class="en">Big-O</span> لتختار الفكرة الصحيحة، ثم استخدم القياس لتختار التنفيذ الأسرع.</div>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: تحليل وتحسين تسوية المعاملات</h2>
+      <p><strong>القصة:</strong> كل يوم يصلك كشف من البنك فيه أرقام المعاملات، وعندك سجل المعاملات في نظامك. تريد أن تعرف شيئين: أي معاملات في البنك غير موجودة في نظامك؟ وأي معاملات في نظامك غير موجودة في البنك؟ قد يصل عدد المعاملات إلى مليون في اليوم.</p>
+
+      <h3>الخطوة 1: الحل الأول، ثم حلّل تعقيده</h3>
+<pre><code class="language-python">def reconcile_slow(bank_ids: list[str], system_ids: list[str]) -> tuple[list[str], list[str]]:
+    # Time: O(b * s)  -- 'in list' inside a loop, twice
+    missing_in_system = [tx for tx in bank_ids if tx not in system_ids]
+    missing_in_bank = [tx for tx in system_ids if tx not in bank_ids]
+    return missing_in_system, missing_in_bank</code></pre>
+      <p>مع مليون معاملة في كل قائمة، يحتاج هذا الحل حوالي <span class="en">10¹² × 2</span> مقارنة. هذا يأخذ أيامًا في <span class="en">Python</span>، وليس دقائق.</p>
+
+      <h3>الخطوة 2: الحل المحسّن</h3>
+<pre><code class="language-python">def reconcile(bank_ids: list[str], system_ids: list[str]) -> tuple[list[str], list[str]]:
+    """
+    Time:  O(b + s + m log m)   m = number of mismatches (sorting the report)
+    Space: O(b + s)             two sets
+    """
+    bank = set(bank_ids)        # O(b)
+    system = set(system_ids)    # O(s)
+    missing_in_system = sorted(bank - system)   # set difference: O(b), then sort
+    missing_in_bank = sorted(system - bank)     # O(s), then sort
+    return missing_in_system, missing_in_bank
+
+
+bank_statement = ["TX1", "TX2", "TX3", "TX5"]
+system_records = ["TX1", "TX3", "TX4"]
+
+not_in_system, not_in_bank = reconcile(bank_statement, system_records)
+print("In bank, missing in system:", not_in_system)
+print("In system, missing in bank:", not_in_bank)</code></pre>
+      <div class="output">In bank, missing in system: ['TX2', 'TX5']
+In system, missing in bank: ['TX4']</div>
+      <h4>الشرح</h4>
+      <ol>
+        <li><code>set(bank_ids)</code>: نحوّل القائمة إلى مجموعة مرة واحدة بتكلفة <span class="en">O(b)</span>.</li>
+        <li><code>bank - system</code>: الفرق بين مجموعتين يمرّ على عناصر <code>bank</code> ويبحث عن كل عنصر في <code>system</code> بتكلفة <span class="en">O(1)</span>، فالمجموع <span class="en">O(b)</span>.</li>
+        <li><code>sorted(...)</code>: الفرق بين المجموعات لا يحفظ أي ترتيب، فنرتب التقرير حتى يكون سهل القراءة. التكلفة <span class="en">O(m log m)</span>، و m عادةً صغير لأن الفروقات قليلة.</li>
+        <li><strong>الموازنة:</strong> دفعنا ذاكرة <span class="en">O(b + s)</span> لنوفّر وقتًا هائلًا. من حوالي <span class="en">2 × 10¹²</span> عملية إلى حوالي <span class="en">4 × 10⁶</span>.</li>
+      </ol>
+      <div class="callout warning">⚠️ <strong>حالة طرفية:</strong> الـ <span class="en">set</span> يحذف التكرار. إذا ظهرت نفس المعاملة مرتين في كشف البنك (خصم مكرر)، لن يكتشفها هذا الحل. لاكتشاف التكرار، استخدم <code>Counter</code> بدل <code>set</code> وقارن الأعداد. التعقيد يبقى <span class="en">O(b + s)</span>.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+      <div class="quiz" data-explain="نحذف الثوابت والحدود الأصغر، فيبقى الحد المسيطر n².">
+        <div class="q">1. ما تعقيد دالة تنفذ 3n² + 100n + 5000 عملية؟</div>
+        <button class="option">O(3n²)</button>
+        <button class="option" data-correct="true">O(n²)</button>
+        <button class="option">O(n² + n)</button>
+        <button class="option">O(5000)</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="i يتضاعف في كل دورة: 1، 2، 4، 8... حتى يصل إلى n. عدد الدورات log₂ n.">
+        <div class="q">2. ما تعقيد هذا الكود؟ i = 1، ثم while i &lt; n: i *= 2</div>
+        <button class="option">O(n)</button>
+        <button class="option">O(n/2)</button>
+        <button class="option" data-correct="true">O(log n)</button>
+        <button class="option">O(1)</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="x in b على قائمة يأخذ O(b)، ونكرره لكل عنصر في a. والقائمتان بحجمين مختلفين، لذلك نستخدم متغيرين.">
+        <div class="q">3. for x in a: if x in b ... حيث a و b قائمتان (list). ما التعقيد؟</div>
+        <button class="option">O(a + b)</button>
+        <button class="option" data-correct="true">O(a × b)</button>
+        <button class="option">O(n)</button>
+        <button class="option">O(a)</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="أغلب الإضافات O(1). التوسيع والنسخ O(n) لكنه نادر، فالمتوسط على سلسلة طويلة ثابت.">
+        <div class="q">4. ما تعقيد list.append() في Python؟</div>
+        <button class="option">O(n) دائمًا</button>
+        <button class="option" data-correct="true">O(1) مُطفأة (amortized)</button>
+        <button class="option">O(log n)</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="كل استدعاء ينتظر في مكدس الاستدعاءات حتى ينتهي الاستدعاء الذي بعده. عمق n يعني n إطارًا في الذاكرة في نفس الوقت.">
+        <div class="q">5. دالة عودية تستدعي نفسها بـ n − 1 حتى تصل إلى 0، ولا تنشئ أي قائمة. ما ذاكرتها؟</div>
+        <button class="option">O(1)، لأنها لا تنشئ أي قائمة</button>
+        <button class="option" data-correct="true">O(n) بسبب مكدس الاستدعاءات</button>
+        <button class="option">O(log n)</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+
+      <h3>تمرين 1 (سهل): ما تعقيد كل كود؟</h3>
+<pre><code class="language-python"># A
+for i in range(n):
+    for j in range(5):
+        print(i, j)
+
+# B
+for i in range(n):
+    print(i)
+for j in range(m):
+    print(j)
+
+# C
+total = sum(nums)
+nums.sort()
+print(nums[0], total)</code></pre>
+      <details><summary>💡 تلميح</summary><p>في A: هل الحلقة الداخلية تعتمد على n؟ في B: هل n و m نفس الشيء؟ في C: ما أبطأ سطر؟</p></details>
+      <details><summary>✅ الحل</summary>
+        <ul>
+          <li><strong>A:</strong> <span class="en">O(5n) = O(n)</span>. الحلقة الداخلية ثابتة (5 دورات)، وليست n.</li>
+          <li><strong>B:</strong> <span class="en">O(n + m)</span>. حلقتان متتاليتان على مدخلين مختلفين.</li>
+          <li><strong>C:</strong> <span class="en">O(n) + O(n log n) + O(1) = O(n log n)</span>. الترتيب هو الحد المسيطر.</li>
+        </ul>
+      </details>
+
+      <h3>تمرين 2 (متوسط): حلقات متداخلة غير متساوية</h3>
+<pre><code class="language-python"># D
+for i in range(n):
+    for j in range(i, n):
+        work()
+
+# E
+for i in range(n):
+    j = n
+    while j > 1:
+        j //= 2
+        work()</code></pre>
+      <details><summary>💡 تلميح</summary><p>في D: كم مرة تعمل الحلقة الداخلية عندما يكون i = 0، ثم i = 1، وهكذا؟ اجمع هذه الأعداد. في E: الحلقة الداخلية تقسم على 2.</p></details>
+      <details><summary>✅ الحل</summary>
+        <p><strong>D:</strong> الحلقة الداخلية تعمل n مرة، ثم n − 1، ثم n − 2... حتى 1. المجموع:</p>
+        <div dir="ltr">$$n + (n-1) + \dots + 1 = \frac{n(n+1)}{2} = O(n^2)$$</div>
+        <p>قد يكون نصف عدد العمليات، لكنه ما زال <span class="en">O(n²)</span> لأننا نحذف الثوابت.</p>
+        <p><strong>E:</strong> الحلقة الخارجية n مرة، والداخلية log n مرة، فالتعقيد <span class="en">O(n log n)</span>.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): حذف التكرار مع الحفاظ على الترتيب</h3>
+      <p>هذا الكود صحيح لكنه بطيء. حلّل تعقيده، ثم حسّنه إلى <span class="en">O(n)</span>.</p>
+<pre><code class="language-python">def unique_slow(items: list[str]) -> list[str]:
+    result = []
+    for item in items:
+        if item not in result:
+            result.append(item)
+    return result</code></pre>
+      <details><summary>💡 تلميح</summary><p><code>item not in result</code> يمرّ على قائمة تكبر مع الوقت. أضف هيكلًا ثانيًا يجيب عن سؤال "هل رأيته؟" بسرعة، واترك القائمة لحفظ الترتيب.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def unique(items: list[str]) -> list[str]:
+    # Time: O(n), Space: O(n)
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in items:
+        if item not in seen:      # O(1) average
+            seen.add(item)
+            result.append(item)   # list keeps the original order
+    return result
+
+
+print(unique(["cash", "card", "wallet", "card", "cash"]))</code></pre>
+        <div class="output">['cash', 'card', 'wallet']</div>
+        <p>الحل الأصلي <span class="en">O(n²)</span> في الأسوأ (عندما تكون كل العناصر مختلفة). الـ <span class="en">set</span> للبحث السريع، والـ <span class="en">list</span> للترتيب. يوجد حل أقصر هو <code>list(dict.fromkeys(items))</code>، لأن القاموس في <span class="en">Python</span> يحفظ ترتيب الإضافة. تعقيده أيضًا <span class="en">O(n)</span>.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): حلقة <span class="en">while</span> داخل <span class="en">for</span>، لكنها <span class="en">O(n)</span>!</h3>
+      <p>هذه الدالة ترجع طول أطول جزء متصل من النص لا يتكرر فيه أي حرف. يبدو تعقيدها <span class="en">O(n²)</span>. أثبت أنه <span class="en">O(n)</span>.</p>
+<pre><code class="language-python">def longest_unique(s: str) -> int:
+    seen: set[str] = set()
+    left = 0
+    best = 0
+    for right, ch in enumerate(s):
+        while ch in seen:
+            seen.remove(s[left])
+            left += 1
+        seen.add(ch)
+        best = max(best, right - left + 1)
+    return best
+
+
+print(longest_unique("abcabcbb"))
+print(longest_unique("bbbbb"))
+print(longest_unique("pwwkew"))</code></pre>
+      <div class="output">3
+1
+3</div>
+      <details><summary>💡 تلميح</summary><p>لا تعدّ تكرارات الحلقة الداخلية في كل دورة. اسأل بدلًا من ذلك: كم مرة يمكن أن يتحرك <code>left</code> في الدالة كلها؟</p></details>
+      <details><summary>✅ الحل</summary>
+        <p>المؤشر <code>right</code> يتحرك n مرة. المؤشر <code>left</code> يتحرك للأمام فقط ولا يرجع، ولا يتجاوز <code>right</code>. لذلك يتحرك n مرة على الأكثر <strong>في الدالة كلها</strong>، وليس في كل دورة.</p>
+        <p>مجموع كل الحركات: <span class="en">n + n = 2n</span>، فالتعقيد <span class="en">O(n)</span>. هذا تحليل مُطفأ (<span class="en">amortized</span>): بعض الدورات تعمل كثيرًا، لكن المجموع محدود.</p>
+        <p>الذاكرة: <span class="en">O(k)</span>، حيث k عدد الحروف المختلفة. هذا هو نمط <span class="en">Sliding Window</span>، وسنشرحه بالتفصيل في الدرس القادم.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li><span class="en">Big-O</span> يقيس كيف ينمو الوقت أو الذاكرة مع حجم المدخلات، وليس عدد الثواني.</li>
+        <li>احذف الثوابت والحدود الصغيرة: <span class="en">3n² + 5n → O(n²)</span>.</li>
+        <li>الحلقات المتتالية تُجمع، والمتداخلة تُضرب.</li>
+        <li>القسمة على 2 في كل خطوة تعطي <span class="en">O(log n)</span>.</li>
+        <li>استخدم متغيرًا مختلفًا لكل مدخل: <span class="en">O(a + b)</span> وليس <span class="en">O(n)</span>.</li>
+        <li>انتبه للتكلفة المخفية: <code>in list</code>، و <code>pop(0)</code>، و <code>sorted()</code>، والتقطيع.</li>
+        <li>العودية: الوقت = عدد الاستدعاءات × العمل في كل استدعاء، والذاكرة تشمل عمق المكدس.</li>
+        <li><code>append</code> تأخذ <span class="en">O(1)</span> مُطفأة، والتحليل المُطفأ يشرح لماذا تكون بعض الحلقات المتداخلة <span class="en">O(n)</span>.</li>
+        <li>اختيار هيكل البيانات المناسب هو أسهل طريقة لتحسين التعقيد.</li>
+        <li><span class="en">Big-O</span> يساعدك على اختيار الفكرة، والقياس يساعدك على اختيار التنفيذ.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <ul>
+        <li><strong>الدرس 3: المؤشران والنافذة المنزلقة (<span class="en">Two Pointers &amp; Sliding Window</span>)</strong>. ستتعلم كيف تحوّل حلولًا بتعقيد <span class="en">O(n²)</span> إلى <span class="en">O(n)</span>، كما رأيت في التمرين 4.</li>
+        <li>الدرس 4: <span class="en">Hashing</span> والعدّ.</li>
+        <li>للتدريب: افتح 5 حلول قديمة كتبتها، واكتب فوق كل دالة تعقيد الوقت والذاكرة. ستجد على الأغلب عملية <code>in list</code> مخفية واحدة على الأقل.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  // Code highlighting + copy buttons
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  // Mermaid diagrams
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  // Math formulas
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  // Growth chart
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var growth = document.getElementById("growthChart");
+  if (growth) {
+    var ns = [2, 4, 8, 16, 32, 64];
+    new Chart(growth, {
+      type: "line",
+      data: {
+        labels: ns.map(String),
+        datasets: [
+          { label: "O(log n)", data: ns.map(function (n) { return Math.log2(n); }), borderColor: "#10b981", backgroundColor: "#10b981", tension: 0.2 },
+          { label: "O(n)", data: ns, borderColor: "#2563eb", backgroundColor: "#2563eb", tension: 0.2 },
+          { label: "O(n log n)", data: ns.map(function (n) { return n * Math.log2(n); }), borderColor: "#a855f7", backgroundColor: "#a855f7", tension: 0.2 },
+          { label: "O(n²)", data: ns.map(function (n) { return n * n; }), borderColor: "#f59e0b", backgroundColor: "#f59e0b", tension: 0.2 },
+          { label: "O(2ⁿ)", data: ns.map(function (n) { return Math.pow(2, n); }), borderColor: "#ef4444", backgroundColor: "#ef4444", tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: { legend: { rtl: true }, tooltip: { rtl: true } },
+        scales: {
+          y: { type: "logarithmic", title: { display: true, text: "عدد العمليات (مقياس لوغاريتمي)" } },
+          x: { title: { display: true, text: "حجم المدخلات n" } }
+        }
+      }
+    });
+  }
+
+  // Steppers
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  // Quizzes
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  // Reading progress bar (fills from the right, RTL)
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

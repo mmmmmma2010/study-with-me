@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الـ Hashing والعدّ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif; font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text); }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero { background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981); color: #fff; padding: 48px 24px; text-align: center; }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 700px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 8px; flex-wrap: wrap; direction: ltr; justify-content: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; min-width: 58px; text-align: center; transition: all .3s; }
+  .box small { display: block; font-size: .7rem; opacity: .75; }
+  .box.empty { border-style: dashed; color: var(--muted); }
+  .box.new { background: var(--primary); color: #fff; transform: scale(1.08); }
+  .box.probe { background: var(--warn); border-color: var(--warn); color: #fff; }
+  .box.found { background: var(--good); border-color: var(--good); color: #fff; transform: scale(1.1); }
+  .box.miss { background: var(--bad); border-color: var(--bad); color: #fff; }
+  .state { direction: ltr; text-align: center; font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); border-radius: 10px; padding: 8px; }
+  .legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: .9rem; color: var(--muted); }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: middle; margin-inline-end: 4px; }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--primary-soft); }
+  .card h4 { margin: 0 0 4px; color: var(--primary); }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>الـ Hashing والعدّ <span class="en">(Hashing &amp; Counting)</span></h1>
+  <p>ستتعلم كيف يعمل dict و set من الداخل، ولماذا البحث فيهما سريع، وخمسة أنماط تحل بها عددًا كبيرًا من المسائل.</p>
+  <div class="badges">
+    <span class="badge">الدرس 4 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 40 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدروس السابقة استخدمت <code>dict</code> في <span class="en">Two Sum</span>، و <code>set</code> في تسوية المعاملات، وقاموسًا للعدّ في تمرين 4 من الدرس 3. وكنا نقول دائمًا إن البحث فيها <span class="en">O(1)</span>. في هذا الدرس ستفهم لماذا.</div>
+      <p>الـ <span class="en">Hashing</span> هو أكثر أداة تستخدمها في حل المشكلات. السبب بسيط: أغلب الحلول البدائية بطيئة لأنها تبحث عن شيء مرة بعد مرة. والـ <span class="en">Hashing</span> يجعل هذا البحث ثابت الوقت تقريبًا.</p>
+      <p>لكن له شروطًا. ليس كل شيء يصلح مفتاحًا. وله تكلفة في الذاكرة. وفيه أخطاء صامتة قد تجعل البيانات "تختفي" من القاموس.</p>
+      <p>في هذا الدرس ستتعلم كيف يعمل جدول الـ <span class="en">hash</span>، وما الذي يجعل الكائن قابلًا للتجزئة (<span class="en">hashable</span>)، وأدوات <code>Counter</code> و <code>defaultdict</code>. في النهاية ستبني نظامًا يكشف الخصم المكرر على البطاقة.</p>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">📬 تخيّل مكتب بريد فيه 100 صندوق مرقّم. عندما تصل رسالة، لا يبحث الموظف في كل الصناديق. هو يطبق قاعدة ثابتة على اسم صاحب الرسالة، مثل "آخر رقمين من رقم الهاتف"، فيعرف رقم الصندوق مباشرة.<br><br>
+      • القاعدة هي <strong>دالة الـ <span class="en">hash</span></strong>.<br>
+      • رقم الصندوق هو <strong>الموقع في الجدول</strong>.<br>
+      • إذا كان لشخصين نفس آخر رقمين، تذهب رسالتاهما إلى نفس الصندوق. هذا <strong>تصادم</strong> (<span class="en">collision</span>)، وعندها يقرأ الموظف الأسماء داخل الصندوق.<br>
+      • إذا غيّر شخص رقم هاتفه بعد أن وضعنا رسالته في الصندوق، لن يجدها أحد بعد ذلك. لهذا يجب ألا يتغير المفتاح بعد إضافته.</div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>دالة التجزئة</td><td class="en">Hash Function</td><td>دالة تحوّل المفتاح إلى عدد صحيح. نفس المفتاح يعطي نفس العدد دائمًا.</td></tr>
+        <tr><td>جدول التجزئة</td><td class="en">Hash Table</td><td>مصفوفة من الخانات. موقع كل مفتاح يُحسب من الـ <span class="en">hash</span> الخاص به.</td></tr>
+        <tr><td>الخانة</td><td class="en">Slot / Bucket</td><td>مكان واحد في الجدول.</td></tr>
+        <tr><td>التصادم</td><td class="en">Collision</td><td>مفتاحان مختلفان يذهبان إلى نفس الخانة.</td></tr>
+        <tr><td>البحث المفتوح</td><td class="en">Open Addressing / Probing</td><td>عند التصادم، جرّب خانة أخرى في الجدول. هذه طريقة <span class="en">CPython</span>.</td></tr>
+        <tr><td>السلاسل</td><td class="en">Chaining</td><td>عند التصادم، ضع المفاتيح في قائمة داخل نفس الخانة. هذه طريقة <span class="en">Java</span> في <code>HashMap</code>.</td></tr>
+        <tr><td>معامل الامتلاء</td><td class="en">Load Factor (α)</td><td>عدد المفاتيح مقسومًا على عدد الخانات. كلما زاد، زادت التصادمات.</td></tr>
+        <tr><td>إعادة البناء</td><td class="en">Resize / Rehash</td><td>عندما يمتلئ الجدول، ننشئ جدولًا أكبر ونضع كل المفاتيح فيه من جديد.</td></tr>
+        <tr><td>قابل للتجزئة</td><td class="en">Hashable</td><td>كائن له <span class="en">hash</span> لا يتغير طوال حياته، ويمكن مقارنته بـ <code>==</code>. يصلح أن يكون مفتاحًا.</td></tr>
+        <tr><td>المفتاح الموحّد</td><td class="en">Canonical Key</td><td>شكل واحد نحوّل إليه الأشياء "المتشابهة"، مثل ترتيب حروف الكلمة لتجميع الكلمات المتجانسة.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>الفكرة في سطرين</h3>
+      <div dir="ltr">$$\text{index} = \text{hash}(\text{key}) \bmod m$$</div>
+      <p>حيث <span class="en">m</span> عدد الخانات. نحسب الموقع مباشرة من المفتاح، فلا نحتاج أن نمرّ على العناصر.</p>
+
+      <h3>القاعدة الذهبية للمفاتيح</h3>
+      <div class="callout warning">⚠️ <strong>إذا كان <code>a == b</code>، فيجب أن يكون <code>hash(a) == hash(b)</code>.</strong> وإلا يذهب المفتاحان المتساويان إلى خانتين مختلفتين، ويفشل البحث. ولهذا أيضًا يجب ألا يتغير الـ <span class="en">hash</span> بعد إضافة المفتاح.</div>
+      <table>
+        <tr><th>النوع</th><th>يصلح مفتاحًا؟</th><th>لماذا؟</th></tr>
+        <tr><td><code>int</code>، <code>str</code>، <code>bool</code>، <code>None</code></td><td>✅ نعم</td><td>غير قابلة للتعديل (<span class="en">immutable</span>).</td></tr>
+        <tr><td><code>tuple</code></td><td>✅ نعم، إذا كانت كل عناصره قابلة للتجزئة</td><td><code>(1, 2)</code> يصلح، أما <code>(1, [2])</code> فلا.</td></tr>
+        <tr><td><code>frozenset</code></td><td>✅ نعم</td><td>نسخة غير قابلة للتعديل من <span class="en">set</span>.</td></tr>
+        <tr><td><code>list</code>، <code>dict</code>، <code>set</code></td><td>❌ لا</td><td>قابلة للتعديل، فقد يتغير الـ <span class="en">hash</span>.</td></tr>
+        <tr><td><code>float</code></td><td>⚠️ يصلح لكن احذر</td><td><code>0.1 + 0.2</code> لا يساوي <code>0.3</code>، فلن تجد المفتاح. استخدم القروش كـ <code>int</code>.</td></tr>
+      </table>
+
+      <h3>الأنماط الخمسة</h3>
+      <div class="steps-grid">
+        <div class="card"><h4>1. الوجود</h4>"هل رأيت هذا من قبل؟" ← <code>set</code>. مثل كشف التكرار.</div>
+        <div class="card"><h4>2. العدّ</h4>"كم مرة ظهر؟" ← <code>Counter</code>. مثل الكلمات المتجانسة وأكثر العناصر تكرارًا.</div>
+        <div class="card"><h4>3. التجميع</h4>"ضع المتشابهات معًا" ← <code>defaultdict(list)</code> مع مفتاح موحّد.</div>
+        <div class="card"><h4>4. الربط</h4>"أين رأيته؟" ← <code>dict</code> من القيمة إلى الموقع. مثل <span class="en">Two Sum</span>.</div>
+        <div class="card"><h4>5. المجموع التراكمي</h4>"كم مرة رأيت <code>prefix - k</code>؟" ← <code>dict</code> للعدّ على المجاميع.</div>
+      </div>
+
+      <h3>أي أداة تختار؟</h3>
+      <div class="diagram mermaid">
+flowchart TD
+  A["ماذا تحتاج أن تحفظ عن كل مفتاح؟"] --> B{"لا شيء، فقط هل هو موجود؟"}
+  B -->|"نعم"| C["set"]
+  B -->|"لا"| D{"عدد مرات الظهور؟"}
+  D -->|"نعم"| E{"المفاتيح أرقام صغيرة؟ مثل 26 حرفًا"}
+  E -->|"نعم"| F["list بحجم ثابت"]
+  E -->|"لا"| G["Counter"]
+  D -->|"لا"| H{"قائمة من العناصر المتشابهة؟"}
+  H -->|"نعم"| I["defaultdict(list)"]
+  H -->|"لا"| J["dict: مفتاح إلى قيمة"]
+      </div>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+      <p>سنبني جدولًا صغيرًا فيه 8 خانات. في <span class="en">Python</span> يكون <code>hash(n)</code> للأعداد الصحيحة الصغيرة الموجبة هو العدد نفسه، فالموقع هو <code>n % 8</code>. عند التصادم سنجرب الخانة التالية (<span class="en">linear probing</span>).</p>
+      <div class="legend"><span><span class="dot" style="background:#2563eb"></span>إضافة</span><span><span class="dot" style="background:#f59e0b"></span>خانة مشغولة، نكمل</span><span><span class="dot" style="background:#10b981"></span>وجدناه</span><span><span class="dot" style="background:#ef4444"></span>خانة فارغة، غير موجود</span></div>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: إضافة 12</h4>
+          <div class="mem"><div class="box empty">—<small>0</small></div><div class="box empty">—<small>1</small></div><div class="box empty">—<small>2</small></div><div class="box empty">—<small>3</small></div><div class="box new">12<small>4</small></div><div class="box empty">—<small>5</small></div><div class="box empty">—<small>6</small></div><div class="box empty">—<small>7</small></div></div>
+          <div class="state">12 % 8 = 4 → slot 4 is empty → store</div>
+          <p>خطوة واحدة فقط، بدون أي بحث.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: إضافة 5</h4>
+          <div class="mem"><div class="box empty">—<small>0</small></div><div class="box empty">—<small>1</small></div><div class="box empty">—<small>2</small></div><div class="box empty">—<small>3</small></div><div class="box">12<small>4</small></div><div class="box new">5<small>5</small></div><div class="box empty">—<small>6</small></div><div class="box empty">—<small>7</small></div></div>
+          <div class="state">5 % 8 = 5 → slot 5 is empty → store</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: إضافة 20 ← تصادم!</h4>
+          <div class="mem"><div class="box empty">—<small>0</small></div><div class="box empty">—<small>1</small></div><div class="box empty">—<small>2</small></div><div class="box empty">—<small>3</small></div><div class="box probe">12<small>4</small></div><div class="box probe">5<small>5</small></div><div class="box new">20<small>6</small></div><div class="box empty">—<small>7</small></div></div>
+          <div class="state">20 % 8 = 4 → taken (12) → try 5 → taken (5) → try 6 → store</div>
+          <p>الرقمان 20 و 12 يذهبان إلى نفس الخانة. نجرب الخانات التالية حتى نجد خانة فارغة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: إضافة 13</h4>
+          <div class="mem"><div class="box empty">—<small>0</small></div><div class="box empty">—<small>1</small></div><div class="box empty">—<small>2</small></div><div class="box empty">—<small>3</small></div><div class="box">12<small>4</small></div><div class="box probe">5<small>5</small></div><div class="box probe">20<small>6</small></div><div class="box new">13<small>7</small></div></div>
+          <div class="state">13 % 8 = 5 → taken → 6 taken → 7 → store</div>
+          <p>لاحظ أن المفاتيح بدأت تتجمع في منطقة واحدة (<span class="en">clustering</span>). كلما امتلأ الجدول، طال البحث.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: البحث عن 20 ✅</h4>
+          <div class="mem"><div class="box empty">—<small>0</small></div><div class="box empty">—<small>1</small></div><div class="box empty">—<small>2</small></div><div class="box empty">—<small>3</small></div><div class="box probe">12<small>4</small></div><div class="box probe">5<small>5</small></div><div class="box found">20<small>6</small></div><div class="box">13<small>7</small></div></div>
+          <div class="state">start at 4: 12 ≠ 20 → 5: 5 ≠ 20 → 6: 20 == 20 → found</div>
+          <p>البحث يتبع نفس مسار الإضافة بالضبط. ثلاث مقارنات فقط، ولم ننظر إلى الخانات 0 إلى 3.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 6: البحث عن 28 ❌</h4>
+          <div class="mem"><div class="box miss">—<small>0</small></div><div class="box empty">—<small>1</small></div><div class="box empty">—<small>2</small></div><div class="box empty">—<small>3</small></div><div class="box probe">12<small>4</small></div><div class="box probe">5<small>5</small></div><div class="box probe">20<small>6</small></div><div class="box probe">13<small>7</small></div></div>
+          <div class="state">28 % 8 = 4 → 4, 5, 6, 7 taken → wrap to 0 → empty → not found</div>
+          <p>الخانة الفارغة تعني "المفتاح غير موجود"، لأنه لو كان موجودًا لوُضع هنا. هذا البحث الفاشل كلّف 5 خطوات لأن المفاتيح متجمعة. الجدول ممتلئ بنسبة 50%. <span class="en">CPython</span> يكبّر الجدول عندما يمتلئ بنسبة الثلثين تقريبًا، حتى يبقى البحث قصيرًا.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+      <div class="callout note">📝 <strong>تبسيط:</strong> <span class="en">CPython</span> لا يجرب الخانة التالية مباشرة. هو يستخدم صيغة تقفز في الجدول بطريقة تعتمد على بتات الـ <span class="en">hash</span> كلها، فيقل التجمع. لكن الفكرة واحدة: احسب الموقع، وإذا كان مشغولًا جرّب موقعًا آخر حتى تجد المفتاح أو خانة فارغة.</div>
+
+      <h3>لماذا يبقى البحث <span class="en">O(1)</span>؟</h3>
+      <p>معامل الامتلاء هو:</p>
+      <div dir="ltr">$$\alpha = \frac{n}{m} \qquad \text{expected probes} \approx O\!\left(\frac{1}{1-\alpha}\right)$$</div>
+      <p>ما دام <span class="en">α</span> أقل من ثابت (مثل <span class="en">2/3</span>)، يبقى عدد المحاولات ثابتًا في المتوسط. والجدول يحافظ على ذلك بإعادة البناء عندما يمتلئ. إعادة البناء تكلّف <span class="en">O(n)</span>، لكنها نادرة. هذا نفس التحليل المُطفأ الذي رأيته مع <code>append</code> في الدرس 2.</p>
+
+      <h3>لماذا يحفظ <code>dict</code> ترتيب الإضافة؟</h3>
+      <p>منذ <span class="en">Python 3.7</span> صار هذا مضمونًا. القاموس يتكوّن من جزأين: مصفوفة صغيرة من المواقع (هي جدول الـ <span class="en">hash</span>)، ومصفوفة من العناصر بترتيب إضافتها. الجدول يشير إلى موقع العنصر في المصفوفة الثانية. لذلك يكون المرور على القاموس بترتيب الإضافة.</p>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: ما الذي يصلح مفتاحًا؟</h3>
+<pre><code class="language-python">print(hash(42))
+print(hash("paymob") == hash("paymob"))
+print(hash((1, 2)) == hash((1, 2)))
+
+try:
+    hash([1, 2])
+except TypeError as e:
+    print("TypeError:", e)
+
+routes = {("EG", "card"): "gateway-A"}   # tuple as a composite key
+print(routes[("EG", "card")])</code></pre>
+      <div class="output">42
+True
+True
+TypeError: unhashable type: 'list'
+gateway-A</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>hash(42)</code>: في <span class="en">CPython</span>، الـ <span class="en">hash</span> للعدد الصحيح الصغير هو العدد نفسه.</li>
+        <li>نفس النص يعطي نفس الـ <span class="en">hash</span> داخل نفس التشغيل. لكن قيمة <code>hash("paymob")</code> تتغير من تشغيل إلى آخر، لأن <span class="en">Python</span> يضيف عشوائية للنصوص (<code>PYTHONHASHSEED</code>) لحماية الخوادم من الهجمات. لذلك لا تحفظ هذه القيمة في ملف أو قاعدة بيانات.</li>
+        <li><code>hash([1, 2])</code>: القائمة قابلة للتعديل، فترفض <span class="en">Python</span> حساب الـ <span class="en">hash</span> لها.</li>
+        <li><code>("EG", "card")</code>: الـ <span class="en">tuple</span> هو أفضل طريقة لعمل مفتاح من أكثر من قيمة.</li>
+      </ol>
+
+      <h3>مثال 2: ثلاث طرق للعدّ</h3>
+<pre><code class="language-python">from collections import Counter, defaultdict
+
+methods = ["card", "wallet", "card", "cash", "card", "wallet"]
+
+# 1) plain dict + get
+counts: dict[str, int] = {}
+for m in methods:
+    counts[m] = counts.get(m, 0) + 1
+print(counts)
+
+# 2) defaultdict(int): missing keys start at 0
+dd: defaultdict[str, int] = defaultdict(int)
+for m in methods:
+    dd[m] += 1
+print(dict(dd))
+
+# 3) Counter: built for counting
+c = Counter(methods)
+print(c.most_common(2))
+print(c["crypto"])   # missing key -> 0, no KeyError</code></pre>
+      <div class="output">{'card': 3, 'wallet': 2, 'cash': 1}
+{'card': 3, 'wallet': 2, 'cash': 1}
+[('card', 3), ('wallet', 2)]
+0</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>counts.get(m, 0)</code>: إذا لم يوجد المفتاح، نبدأ من 0. لو كتبت <code>counts[m] += 1</code> مباشرة لظهر <code>KeyError</code> في أول مرة.</li>
+        <li><code>defaultdict(int)</code>: عندما تقرأ مفتاحًا غير موجود، ينشئه بقيمة <code>int()</code>، أي 0.</li>
+        <li><code>Counter(methods)</code>: يعدّ كل القائمة في سطر واحد بتعقيد <span class="en">O(n)</span>.</li>
+        <li><code>most_common(2)</code>: أكثر عنصرين تكرارًا.</li>
+        <li><code>c["crypto"]</code>: الـ <code>Counter</code> يرجع 0 للمفتاح غير الموجود، ولا يضيفه إلى القاموس.</li>
+      </ol>
+
+      <h3>مثال 3: التجميع بمفتاح موحّد (الكلمات المتجانسة)</h3>
+<pre><code class="language-python">from collections import defaultdict
+
+
+def group_anagrams(words: list[str]) -> list[list[str]]:
+    """Time: O(n * k log k), k = longest word. Space: O(n * k)."""
+    groups: defaultdict[str, list[str]] = defaultdict(list)
+    for word in words:
+        key = "".join(sorted(word))     # canonical form: "tea" -> "aet"
+        groups[key].append(word)
+    return list(groups.values())
+
+
+print(group_anagrams(["eat", "tea", "tan", "ate", "nat", "bat"]))</code></pre>
+      <div class="output">[['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><strong>الفكرة:</strong> الكلمات المتجانسة لها نفس الحروف. إذا رتبنا الحروف، تصبح كلها نفس النص. هذا هو المفتاح الموحّد.</li>
+        <li><code>"".join(sorted(word))</code>: الدالة <code>sorted</code> ترجع قائمة، والقائمة لا تصلح مفتاحًا. لذلك نحوّلها إلى نص.</li>
+        <li><code>groups[key].append(word)</code>: مع <code>defaultdict(list)</code> لا نحتاج أن نتحقق هل المفتاح موجود.</li>
+        <li><strong>تحسين:</strong> بدل الترتيب، يمكن أن يكون المفتاح <span class="en">tuple</span> فيه عدد كل حرف من الـ 26. هذا يعطي <span class="en">O(n·k)</span>، لكنه أفضل فقط عندما تكون الكلمات طويلة.</li>
+      </ol>
+
+      <h3>مثال 4: كائن من صنعك كمفتاح</h3>
+<pre><code class="language-python">from dataclasses import dataclass
+
+
+@dataclass(frozen=True)        # frozen -> immutable -> auto __hash__ and __eq__
+class Merchant:
+    country: str
+    merchant_id: str
+
+
+fees_bps = {Merchant("EG", "M1"): 275}     # 2.75% in basis points
+
+print(fees_bps[Merchant("EG", "M1")])      # a NEW object, but equal -> found
+print(Merchant("EG", "M1") == Merchant("EG", "M1"))</code></pre>
+      <div class="output">275
+True</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>frozen=True</code>: يمنع تعديل الحقول، وينشئ <code>__hash__</code> و <code>__eq__</code> من الحقول تلقائيًا. هكذا تتحقق القاعدة الذهبية.</li>
+        <li>بحثنا بكائن جديد ووجدناه، لأن الكائنين متساويان ولهما نفس الـ <span class="en">hash</span>.</li>
+        <li><strong>نقاط الأساس</strong> (<span class="en">basis points</span>): نخزّن 2.75% كعدد صحيح 275، لنفس سبب استخدام القروش.</li>
+      </ol>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>خطأ 1: قائمة كمفتاح</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">seen_pairs = set()
+pair = [3, 7]
+seen_pairs.add(pair)
+# TypeError: unhashable type: 'list'</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">seen_pairs = set()
+pair = [3, 7]
+seen_pairs.add(tuple(pair))
+print((3, 7) in seen_pairs)  # True</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> لو قبلت <span class="en">Python</span> القائمة، ثم أضفت إليها عنصرًا، سيتغير الـ <span class="en">hash</span>. عندها يبقى المفتاح في خانة لا تطابق قيمته الجديدة. حوّل القائمة إلى <span class="en">tuple</span>، أو <span class="en">set</span> إلى <span class="en">frozenset</span>.</div>
+
+      <h3>خطأ 2: تعديل مفتاح بعد إضافته (خطأ صامت!)</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">class Card:
+    def __init__(self, number: str):
+        self.number = number
+    def __eq__(self, other):
+        return isinstance(other, Card) and self.number == other.number
+    def __hash__(self):
+        return hash(self.number)   # based on a MUTABLE field
+
+c = Card("1111")
+blocked = {c}
+c.number = "2222"                  # mutated after insertion
+
+print(Card("2222") in blocked)     # False
+print(Card("1111") in blocked)     # False
+print(len(blocked))                # 1  -- it's there, but lost!</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">from dataclasses import dataclass, FrozenInstanceError
+
+@dataclass(frozen=True)
+class Card:
+    number: str
+
+c = Card("1111")
+blocked = {c}
+try:
+    c.number = "2222"
+except FrozenInstanceError:
+    print("Cannot change a key")
+
+print(Card("1111") in blocked)     # True</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> البطاقة حُفظت في خانة محسوبة من <code>"1111"</code>. البحث عن <code>"2222"</code> يذهب إلى خانة أخرى. والبحث عن <code>"1111"</code> يصل إلى الخانة الصحيحة، لكن المقارنة <code>==</code> تفشل لأن الرقم تغيّر. النتيجة: بطاقة محظورة لا يجدها النظام، ولا يظهر أي خطأ. في نظام مدفوعات، هذا يعني أن بطاقة مسروقة قد تمرّ.</div>
+
+      <h3>أخطاء أخرى متكررة</h3>
+      <ul>
+        <li><strong>القراءة من <code>defaultdict</code> تنشئ مفاتيح:</strong> السطر <code>if dd["refund"] &gt; 0</code> يضيف <code>"refund"</code> بقيمة 0. بعدها يعطي <code>len(dd)</code> رقمًا خاطئًا. للقراءة فقط استخدم <code>dd.get("refund", 0)</code> أو <code>"refund" in dd</code>.</li>
+        <li><strong><code>1</code> و <code>True</code> و <code>1.0</code> مفتاح واحد:</strong> لأنها متساوية ولها نفس الـ <span class="en">hash</span>. القاموس <code>{1: "a", True: "b"}</code> يصبح <code>{1: 'b'}</code>.</li>
+        <li><strong>أرقام <code>float</code> كمفاتيح:</strong> المبلغ المحسوب <code>0.1 + 0.2</code> لن يجد المفتاح <code>0.3</code>.</li>
+        <li><strong>تعديل القاموس أثناء المرور عليه:</strong> <code>for k in d: del d[k]</code> يرفع <code>RuntimeError</code>. مرّ على نسخة: <code>for k in list(d):</code>.</li>
+        <li><strong>الاعتماد على ترتيب <code>set</code>:</strong> الـ <span class="en">set</span> لا يحفظ الترتيب. إذا احتجت ترتيبًا، رتّب النتيجة أو استخدم <code>dict.fromkeys</code>.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>اختر أبسط أداة:</strong> <code>set</code> للوجود، و <code>Counter</code> للعدّ، و <code>defaultdict(list)</code> للتجميع، و <code>dict</code> لما عدا ذلك.</li>
+        <li><strong>استخدم <span class="en">tuple</span> للمفاتيح المركبة</strong>، مثل <code>(card, merchant, amount)</code>، ولا تجمع النصوص بفاصل مثل <code>f"{a}-{b}"</code>. الفاصل قد يظهر داخل القيم نفسها.</li>
+        <li><strong>اجعل كائناتك المفتاحية غير قابلة للتعديل</strong> باستخدام <code>@dataclass(frozen=True)</code>.</li>
+        <li><strong>ابحث عن المفتاح الموحّد</strong> عندما تقرأ "مجموعات" أو "متشابه" أو "نفس الشكل". اسأل: ما الشكل الواحد الذي تتحول إليه كل العناصر المتشابهة؟</li>
+        <li><strong>إذا كانت المفاتيح أرقامًا صغيرة ومعروفة</strong> (مثل الحروف الإنجليزية الصغيرة أو أرقام 0 إلى 9)، فمصفوفة عادية أسرع وتستهلك ذاكرة أقل.</li>
+        <li><strong>لا تحفظ قيمة <code>hash()</code></strong> في ملف أو قاعدة بيانات. هي تتغير بين التشغيلات. للتخزين الدائم استخدم <code>hashlib</code> (مثل <span class="en">SHA-256</span>).</li>
+      </ul>
+      <div class="callout tip">💡 <strong>إشارات في نص المسألة:</strong> كلمات مثل "تكرار" و "فريد" و "كم مرة" و "الأكثر شيوعًا" و "جمّع" و "متجانس" و "هل يوجد زوج" تشير غالبًا إلى الـ <span class="en">Hashing</span>.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+      <h3>البحث في <span class="en">list</span> مقابل <span class="en">set</span></h3>
+      <p>عدد المقارنات في أسوأ حالة لعملية <code>x in data</code> واحدة. الرسم بمقياس لوغاريتمي.</p>
+      <div class="chart-box"><canvas id="lookupChart"></canvas></div>
+
+      <h3>مقارنة الأدوات</h3>
+      <table>
+        <tr><th>الأداة</th><th>البحث</th><th>الإضافة</th><th>الذاكرة</th><th>متى تستخدمها؟</th></tr>
+        <tr><td><code>list</code> (بحث خطي)</td><td class="en">O(n)</td><td class="en">O(1)*</td><td>الأقل</td><td>بيانات قليلة، أو تحتاج الترتيب والمواقع.</td></tr>
+        <tr><td><code>set</code></td><td class="en">O(1) avg</td><td class="en">O(1) avg</td><td>أكبر من <span class="en">list</span> بعدة مرات</td><td>الوجود، وحذف التكرار، والتقاطع والفرق.</td></tr>
+        <tr><td><code>dict</code></td><td class="en">O(1) avg</td><td class="en">O(1) avg</td><td>أكبر</td><td>ربط مفتاح بقيمة.</td></tr>
+        <tr><td><code>Counter</code></td><td class="en">O(1) avg</td><td class="en">O(1) avg</td><td>مثل <span class="en">dict</span></td><td>العدّ، و <code>most_common</code>، وجمع وطرح الأعداد.</td></tr>
+        <tr><td>مصفوفة عدّ <code>[0] * 26</code></td><td class="en">O(1)</td><td class="en">O(1)</td><td>الأقل، وحجمها ثابت</td><td>مفاتيح أرقام صغيرة في مجال معروف.</td></tr>
+        <tr><td>ترتيب + بحث ثنائي</td><td class="en">O(log n)</td><td>—</td><td class="en">O(1)</td><td>الذاكرة محدودة، أو تحتاج "أقرب قيمة" (الدرس 6).</td></tr>
+      </table>
+      <p>* مُطفأة.</p>
+
+      <h3>متى يصبح الـ <span class="en">Hashing</span> بطيئًا؟</h3>
+      <ul>
+        <li><strong>أسوأ حالة <span class="en">O(n)</span>:</strong> إذا ذهبت كل المفاتيح إلى نفس الخانة. هذا نادر مع دوال <span class="en">Python</span>، لكن المهاجم قد يرسل مفاتيح مصممة لتتصادم (<span class="en">hash flooding</span>). لهذا يضيف <span class="en">Python</span> عشوائية لـ <span class="en">hash</span> النصوص.</li>
+        <li><strong>المفاتيح الكبيرة:</strong> حساب <span class="en">hash</span> لنص طوله k يأخذ <span class="en">O(k)</span>. النصوص تحفظ الـ <span class="en">hash</span> بعد أول حساب، لكن الـ <span class="en">tuple</span> يعيد حسابه في كل مرة.</li>
+        <li><strong>الذاكرة:</strong> مليون عدد صحيح في <span class="en">set</span> يستهلك ذاكرة أكبر بكثير منه في <span class="en">list</span>، بسبب الخانات الفارغة والـ <span class="en">hash</span> المحفوظ لكل عنصر.</li>
+      </ul>
+      <div class="callout note">📝 <strong>الموازنة الأساسية:</strong> الـ <span class="en">Hashing</span> يدفع ذاكرة ليكسب وقتًا، ويتخلى عن الترتيب. إذا احتجت "أصغر قيمة" أو "كل القيم بين a و b"، فالـ <span class="en">dict</span> لا يساعدك. عندها تحتاج ترتيبًا أو <code>heapq</code>.</div>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: كشف الخصم المكرر (<span class="en">Duplicate Charge Detection</span>)</h2>
+      <p><strong>القصة:</strong> في الدرس 2 رأيت أن <span class="en">set</span> لا يكتشف الخصم المكرر. الآن سنبني الكاشف الحقيقي. قد يضغط العميل زر الدفع مرتين، أو يعيد التطبيق إرسال الطلب بعد انقطاع الشبكة. التعريف: معاملتان لهما <strong>نفس البطاقة ونفس التاجر ونفس المبلغ</strong>، والفرق بينهما 120 ثانية أو أقل.</p>
+
+      <h3>طبّق الخطوات الست</h3>
+      <ol>
+        <li><strong>الفهم:</strong> المدخلات قائمة <code>(tx_id, card, merchant, amount_cents, ts)</code>، وغير مرتبة. المخرجات أزواج <code>(الأصلية، المكررة)</code>.</li>
+        <li><strong>الحالات الطرفية:</strong> نفس المبلغ عند تاجر مختلف (ليس تكرارًا)، ونفس التاجر بمبلغ مختلف (ليس تكرارًا)، وثلاث محاولات متتالية، وفرق 121 ثانية.</li>
+        <li><strong>الحل البدائي:</strong> قارن كل زوج. التعقيد <span class="en">O(n²)</span>.</li>
+        <li><strong>التحسين:</strong> نحتاج "هل رأيت هذا المزيج من قبل، ومتى؟". هذا نمط الربط، والمفتاح المركب هو <span class="en">tuple</span>.</li>
+        <li><strong>الكود:</strong> بالأسفل.</li>
+        <li><strong>الاختبار:</strong> البيانات تغطي كل الحالات الطرفية.</li>
+      </ol>
+<pre><code class="language-python">from collections import Counter
+
+Txn = tuple[str, str, str, int, int]  # (tx_id, card, merchant, amount_cents, ts)
+
+
+def find_duplicate_charges(txns: list[Txn], window_seconds: int = 120) -> list[tuple[str, str]]:
+    """Return (original_tx, duplicate_tx) pairs.
+    Time: O(n log n) for sorting, Space: O(n)."""
+    last_seen: dict[tuple[str, str, int], tuple[str, int]] = {}
+    duplicates: list[tuple[str, str]] = []
+    for tx_id, card, merchant, amount, ts in sorted(txns, key=lambda t: t[4]):
+        key = (card, merchant, amount)              # composite, hashable key
+        if key in last_seen:
+            prev_id, prev_ts = last_seen[key]
+            if ts - prev_ts &lt;= window_seconds:
+                duplicates.append((prev_id, tx_id))
+        last_seen[key] = (tx_id, ts)                # always keep the latest
+    return duplicates
+
+
+txns: list[Txn] = [
+    ("T1", "C1", "M1", 15000, 100),
+    ("T2", "C2", "M1", 15000, 105),   # different card
+    ("T3", "C1", "M1", 15000, 130),   # duplicate of T1 (30s later)
+    ("T4", "C1", "M2", 15000, 140),   # different merchant
+    ("T5", "C1", "M1", 15000, 400),   # 270s after T3 -> not a duplicate
+    ("T6", "C2", "M1", 9900, 110),    # different amount
+]
+
+print(find_duplicate_charges(txns))
+print(Counter(t[2] for t in txns).most_common(1))   # busiest merchant</code></pre>
+      <div class="output">[('T1', 'T3')]
+[('M1', 5)]</div>
+      <h4>الشرح</h4>
+      <ol>
+        <li><code>sorted(txns, key=lambda t: t[4])</code>: نرتب بالوقت. بعدها يكفي أن نقارن كل معاملة بآخر معاملة لها نفس المفتاح. هذا هو عنق الزجاجة بتعقيد <span class="en">O(n log n)</span>.</li>
+        <li><code>key = (card, merchant, amount)</code>: مفتاح مركب. الوقت ليس جزءًا منه، لأننا نقارن الوقت بعد أن نجد المفتاح.</li>
+        <li><code>last_seen[key] = (tx_id, ts)</code>: نحدّث دائمًا إلى آخر معاملة. هكذا تُكشف ثلاث محاولات متتالية على شكل زوجين.</li>
+        <li><code>T5</code> ليست تكرارًا، لأن الفرق بينها وبين آخر معاملة مشابهة (<code>T3</code>) هو 270 ثانية.</li>
+        <li>السطر الأخير يستخدم <code>Counter</code> مع <span class="en">generator</span> ليجد أكثر تاجر لديه معاملات، بدون إنشاء قائمة وسيطة.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>في الأنظمة الحقيقية:</strong> أفضل من كشف التكرار بعد حدوثه أن تمنعه من البداية بمفتاح عدم التكرار (<span class="en">Idempotency Key</span>). يرسل التطبيق مع كل طلب دفع معرّفًا فريدًا. يحفظ الخادم المعرّفات في جدول <span class="en">hash</span> (في الذاكرة أو في خدمة مثل <span class="en">Redis</span>). إذا وصل نفس المعرّف مرة ثانية، يرجع الخادم نتيجة الطلب الأول ولا يخصم مرة أخرى. البحث <span class="en">O(1)</span>، وهذه هي نفس فكرة الدرس.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+      <div class="quiz" data-explain="القائمة قابلة للتعديل. لو تغيّرت بعد إضافتها، يتغير الـ hash ويضيع المفتاح في خانة خاطئة.">
+        <div class="q">1. لماذا لا تصلح list كمفتاح في dict؟</div>
+        <button class="option">لأنها بطيئة</button>
+        <button class="option" data-correct="true">لأنها قابلة للتعديل، فقد يتغير الـ hash بعد الإضافة</button>
+        <button class="option">لأنها قد تكون فارغة</button>
+        <button class="option">لأن dict يقبل النصوص فقط</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="1 == True والـ hash لهما متساوٍ، فهما مفتاح واحد. يبقى المفتاح الأول (1) وتُستبدل القيمة بآخر قيمة ('b').">
+        <div class="q">2. ما ناتج {1: "a", True: "b"}؟</div>
+        <button class="option">{1: 'a', True: 'b'}</button>
+        <button class="option" data-correct="true">{1: 'b'}</button>
+        <button class="option">{True: 'a'}</button>
+        <button class="option">TypeError</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الخانة الفارغة تعني أن المفتاح غير موجود، لأنه لو كان موجودًا لوُضع فيها أو قبلها في نفس المسار.">
+        <div class="q">3. أثناء البحث في جدول hash بطريقة probing، وصلنا إلى خانة فارغة. ماذا نستنتج؟</div>
+        <button class="option">يجب أن نكمل البحث في كل الجدول</button>
+        <button class="option" data-correct="true">المفتاح غير موجود</button>
+        <button class="option">يجب إعادة بناء الجدول</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="defaultdict ينشئ المفتاح عند القراءة بقيمة int()، أي 0. لذلك يزيد len(dd) بواحد.">
+        <div class="q">4. dd = defaultdict(int)، ثم print(dd["x"])، ثم print(len(dd)). ماذا يطبع السطر الأخير؟</div>
+        <button class="option">0</button>
+        <button class="option" data-correct="true">1</button>
+        <button class="option">KeyError</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="كل الكلمات المتجانسة تصبح نفس النص بعد ترتيب حروفها. هذا هو المفتاح الموحّد.">
+        <div class="q">5. ما أفضل مفتاح لتجميع الكلمات المتجانسة مثل "eat" و "tea"؟</div>
+        <button class="option">طول الكلمة</button>
+        <button class="option">أول حرف</button>
+        <button class="option" data-correct="true">حروف الكلمة بعد ترتيبها</button>
+        <button class="option">hash(word)</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+      <p>قبل كل تمرين، حدد أي نمط من الأنماط الخمسة ستستخدم.</p>
+
+      <h3>تمرين 1 (سهل): هل تكفي الحروف؟</h3>
+      <p>اكتب دالة <code>can_construct(note: str, magazine: str) -> bool</code>. ترجع <code>True</code> إذا كانت حروف <code>magazine</code> تكفي لكتابة <code>note</code>، بشرط أن يُستخدم كل حرف مرة واحدة.</p>
+      <details><summary>💡 تلميح</summary><p>نمط العدّ. اعدد حروف كل نص، ثم تأكد أن عدد كل حرف مطلوب لا يتجاوز العدد المتوفر.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from collections import Counter
+
+
+def can_construct(note: str, magazine: str) -> bool:
+    # Time: O(n + m), Space: O(k) distinct letters
+    have = Counter(magazine)
+    need = Counter(note)
+    return all(have[ch] >= count for ch, count in need.items())
+
+
+print(can_construct("aa", "aab"))
+print(can_construct("aa", "ab"))
+print(can_construct("", "abc"))</code></pre>
+        <div class="output">True
+False
+True</div>
+        <p><code>have[ch]</code> يرجع 0 للحرف غير الموجود، لأن <code>Counter</code> لا يرفع <code>KeyError</code>. حل أقصر: <code>not (Counter(note) - Counter(magazine))</code>، لأن طرح <code>Counter</code> يحذف الأعداد الصفرية والسالبة.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): أكثر k عناصر تكرارًا في <span class="en">O(n)</span></h3>
+      <p>اكتب دالة <code>top_k_frequent(nums: list[int], k: int) -> list[int]</code>. مثلًا <code>[1, 1, 1, 2, 2, 3]</code> و <code>k = 2</code> يعطي <code>[1, 2]</code>. الحل <code>Counter(nums).most_common(k)</code> صحيح، لكن تعقيده <span class="en">O(n log k)</span>. هل تستطيع الوصول إلى <span class="en">O(n)</span>؟</p>
+      <details><summary>💡 تلميح</summary><p>أي عنصر يظهر بين 1 و n مرة. أنشئ قائمة من n + 1 "سلة"، والسلة رقم c فيها العناصر التي ظهرت c مرة. ثم مرّ على السلال من الأكبر إلى الأصغر.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from collections import Counter
+
+
+def top_k_frequent(nums: list[int], k: int) -> list[int]:
+    # Bucket by frequency. Time: O(n), Space: O(n)
+    counts = Counter(nums)
+    buckets: list[list[int]] = [[] for _ in range(len(nums) + 1)]
+    for num, c in counts.items():
+        buckets[c].append(num)
+
+    result: list[int] = []
+    for c in range(len(buckets) - 1, 0, -1):
+        for num in buckets[c]:
+            result.append(num)
+            if len(result) == k:
+                return result
+    return result
+
+
+print(top_k_frequent([1, 1, 1, 2, 2, 3], 2))
+print(top_k_frequent([4], 1))</code></pre>
+        <div class="output">[1, 2]
+[4]</div>
+        <p>هذا الحل يستخدم العدّ مرتين: مرة لعدّ القيم، ومرة لتوزيع القيم على السلال حسب عددها. لا نحتاج ترتيبًا، لأن رقم السلة هو العدد نفسه.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): أطول سلسلة أرقام متتالية</h3>
+      <p>اكتب دالة <code>longest_consecutive(nums: list[int]) -> int</code>. مثلًا <code>[100, 4, 200, 1, 3, 2]</code> يعطي 4، لأن السلسلة هي <code>1, 2, 3, 4</code>. المطلوب <span class="en">O(n)</span>، أي بدون ترتيب.</p>
+      <details><summary>💡 تلميح</summary><p>ضع كل الأرقام في <span class="en">set</span>. ابدأ العدّ فقط من الرقم الذي هو بداية سلسلة، أي الرقم الذي لا يوجد قبله <code>v - 1</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def longest_consecutive(nums: list[int]) -> int:
+    # Time: O(n) amortized, Space: O(n)
+    values = set(nums)
+    best = 0
+    for v in values:
+        if v - 1 not in values:          # v starts a run
+            length = 1
+            while v + length in values:
+                length += 1
+            best = max(best, length)
+    return best
+
+
+print(longest_consecutive([100, 4, 200, 1, 3, 2]))
+print(longest_consecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1]))
+print(longest_consecutive([]))</code></pre>
+        <div class="output">4
+9
+0</div>
+        <p>فيه حلقة <code>while</code> داخل <code>for</code>، لكن التعقيد <span class="en">O(n)</span>. السبب: الحلقة الداخلية تعمل فقط من بداية كل سلسلة، وكل رقم يُزار داخلها مرة واحدة في الدالة كلها. هذا هو التحليل المُطفأ من الدرس 2.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): أجزاء مجموعها يقبل القسمة على k</h3>
+      <p>اكتب دالة <code>subarrays_div_by_k(nums: list[int], k: int) -> int</code>. ترجع عدد الأجزاء المتصلة التي يقبل مجموعها القسمة على <code>k</code>. مثلًا <code>[4, 5, 0, -2, -3, 1]</code> و <code>k = 5</code> يعطي 7.</p>
+      <details><summary>💡 تلميح</summary><p>هذا نمط المجموع التراكمي مع تعديل. الجزء من <code>i</code> إلى <code>j</code> يقبل القسمة على k إذا كان <code>prefix[j] % k == prefix[i] % k</code>. إذن اعدد كم مرة ظهر كل باقي قسمة.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def subarrays_div_by_k(nums: list[int], k: int) -> int:
+    # Time: O(n), Space: O(k)
+    counts: dict[int, int] = {0: 1}     # empty prefix has remainder 0
+    prefix = 0
+    total = 0
+    for num in nums:
+        prefix = (prefix + num) % k      # Python's % is never negative for k > 0
+        total += counts.get(prefix, 0)
+        counts[prefix] = counts.get(prefix, 0) + 1
+    return total
+
+
+print(subarrays_div_by_k([4, 5, 0, -2, -3, 1], 5))
+print(subarrays_div_by_k([5], 9))</code></pre>
+        <div class="output">7
+0</div>
+        <p>إذا تساوى باقيا القسمة لمجموعين تراكميين، فالفرق بينهما يقبل القسمة على k. لاحظ الأرقام السالبة: في <span class="en">Python</span> يعطي <code>-1 % 5</code> الناتج <code>4</code>. أما في <span class="en">Java</span> و <span class="en">C++</span> فالناتج <code>-1</code>، وعندها تحتاج <code>((x % k) + k) % k</code>. وكما تعلمت في الدرس 3، النافذة المنزلقة لا تعمل هنا بسبب الأرقام السالبة.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>جدول الـ <span class="en">hash</span> يحسب موقع المفتاح مباشرة: <code>hash(key) % m</code>.</li>
+        <li>التصادمات طبيعية. <span class="en">CPython</span> يحلّها بالبحث عن خانة أخرى، ويكبّر الجدول قبل أن يمتلئ.</li>
+        <li>البحث والإضافة <span class="en">O(1)</span> في المتوسط، و <span class="en">O(n)</span> في أسوأ حالة نادرة.</li>
+        <li>القاعدة الذهبية: الكائنات المتساوية لها نفس الـ <span class="en">hash</span>، والـ <span class="en">hash</span> لا يتغير بعد الإضافة.</li>
+        <li>استخدم <span class="en">tuple</span> و <code>frozenset</code> و <code>@dataclass(frozen=True)</code> للمفاتيح. لا تستخدم <span class="en">list</span> أو <span class="en">float</span>.</li>
+        <li>الأنماط الخمسة: الوجود، والعدّ، والتجميع، والربط، والمجموع التراكمي.</li>
+        <li><code>Counter</code> للعدّ، و <code>defaultdict(list)</code> للتجميع. وانتبه أن القراءة من <code>defaultdict</code> تنشئ مفاتيح.</li>
+        <li>مفتاح التجميع الجيد هو شكل موحّد تتحول إليه كل العناصر المتشابهة.</li>
+        <li>الـ <span class="en">Hashing</span> يدفع ذاكرة ويتخلى عن الترتيب ليكسب وقتًا.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <ul>
+        <li><strong>الدرس 5: العودية والتراجع (<span class="en">Recursion &amp; Backtracking</span>)</strong>. ستتعلم كيف تفكر في دالة تستدعي نفسها، وكيف تولّد كل المجموعات الجزئية والترتيبات، ومتى توقف البحث مبكرًا (<span class="en">pruning</span>).</li>
+        <li>الدرس 6: البحث الثنائي (<span class="en">Binary Search</span>).</li>
+        <li>للتدريب: حلّ 5 مسائل على <span class="en">LeetCode</span> بوسم <span class="en">Hash Table</span>. قبل كل مسألة، اكتب أي نمط من الخمسة ستستخدم، وما المفتاح، وما القيمة.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  // Code highlighting + copy buttons
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  // Mermaid diagrams
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  // Math formulas
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  // Chart: list vs set lookup
+  Chart.defaultsfont = null;
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var lc = document.getElementById("lookupChart");
+  if (lc) {
+    var sizes = [10, 100, 1000, 10000, 100000, 1000000];
+    new Chart(lc, {
+      type: "line",
+      data: {
+        labels: sizes.map(function (n) { return n.toLocaleString("en-US"); }),
+        datasets: [
+          { label: "list: x in data  O(n)", data: sizes, borderColor: "#ef4444", backgroundColor: "#ef4444", tension: 0.2 },
+          { label: "set: x in data  O(1) avg", data: sizes.map(function () { return 1; }), borderColor: "#10b981", backgroundColor: "#10b981", tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: { legend: { rtl: true }, tooltip: { rtl: true } },
+        scales: {
+          y: { type: "logarithmic", title: { display: true, text: "عدد المقارنات (مقياس لوغاريتمي)" } },
+          x: { title: { display: true, text: "حجم البيانات n" } }
+        }
+      }
+    });
+  }
+
+  // Steppers
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  // Quizzes
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  // Reading progress bar (fills from the right, RTL)
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

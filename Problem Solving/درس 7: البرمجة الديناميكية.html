@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>البرمجة الديناميكية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif; font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text); }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero { background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981); color: #fff; padding: 48px 24px; text-align: center; }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 700px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 8px; flex-wrap: wrap; direction: ltr; justify-content: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; min-width: 54px; text-align: center; transition: all .3s; }
+  .box small { display: block; font-size: .7rem; opacity: .8; }
+  .box.empty { border-style: dashed; color: var(--muted); }
+  .box.src { background: rgba(245,158,11,.25); border-color: var(--warn); }
+  .box.new { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.found { background: var(--good); border-color: var(--good); color: #fff; transform: scale(1.1); }
+  .state { direction: ltr; text-align: center; font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); border-radius: 10px; padding: 8px; }
+  .legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: .9rem; color: var(--muted); }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: middle; margin-inline-end: 4px; }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--primary-soft); }
+  .card h4 { margin: 0 0 4px; color: var(--primary); }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>البرمجة الديناميكية <span class="en">(Dynamic Programming)</span></h1>
+  <p>ستتعلم كيف تحوّل حلولًا أُسّية إلى حلول سريعة، لأنك تحفظ جواب كل مسألة صغيرة ولا تحسبه مرتين، وستتعلم وصفة من خمس خطوات تبني بها أي حل.</p>
+  <div class="badges">
+    <span class="badge">الدرس 7 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 45 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 2 حسبنا <code>fib(20)</code> بطريقتين. الطريقة البدائية احتاجت 21,891 استدعاء، والطريقة التي تحفظ النتائج احتاجت 39 فقط. وفي الدرس 5 كان تعقيد مطابقة الفاتورة مع عدة دفعات <span class="en">O(2ⁿ)</span>، ووعدناك بحل أسرع. هذا الدرس يشرح الفكرة التي تجمع الاثنين.</div>
+      <p>البرمجة الديناميكية (<span class="en">Dynamic Programming</span>) اسم يخيف كثيرًا من المبرمجين، لكن فكرتها بسيطة: <strong>إذا كانت المسألة الكبيرة تتكون من مسائل صغيرة تتكرر، فاحسب كل مسألة صغيرة مرة واحدة واحفظ جوابها</strong>.</p>
+      <p>الصعوبة الحقيقية ليست في الكود، فهو غالبًا حلقة أو حلقتان. الصعوبة في أن تعرف <strong>ماذا تحفظ</strong>. لذلك سنتعلم وصفة من خمس خطوات تجيب عن هذا السؤال في كل مسألة.</p>
+      <p>في هذا الدرس ستتعلم الطريقتين: الحفظ من الأعلى (<span class="en">Memoization</span>) والجدول من الأسفل (<span class="en">Tabulation</span>). وستتعلم كيف تقلل الذاكرة، وستحل مسائل كلاسيكية: الدرج، والعملات، والمسافة بين نصين، والحقيبة. وفي النهاية ستطابق الفاتورة مع عدة دفعات بتعقيد <span class="en">O(n × invoice)</span>.</p>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">📒 اكتب على ورقة: <code>1 + 1 + 1 + 1 + 1 + 1 + 1 + 1</code>، واسأل صديقك عن الناتج. سيعدّ، ثم يقول 8. الآن أضف <code>+ 1</code> في النهاية واسأله من جديد. سيقول 9 فورًا، ولن يعدّ من البداية، لأنه <strong>تذكّر</strong> أن الجزء السابق يساوي 8.<br><br>
+      هذه هي البرمجة الديناميكية بالضبط: الجواب الكبير يُبنى من أجوبة صغيرة محفوظة.<br><br>
+      🧾 <strong>من عالم العمل:</strong> المحاسب الذي يحسب رصيد نهاية الشهر لا يجمع كل المعاملات منذ فتح الحساب. هو يأخذ رصيد الأمس ويضيف معاملات اليوم. رصيد الأمس هو "المسألة الصغيرة المحفوظة".</div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>المسائل الصغيرة المتكررة</td><td class="en">Overlapping Subproblems</td><td>نفس المسألة الصغيرة تظهر أكثر من مرة في الحل البدائي.</td></tr>
+        <tr><td>البنية المثلى</td><td class="en">Optimal Substructure</td><td>أفضل حل للمسألة الكبيرة يُبنى من أفضل حلول المسائل الصغيرة.</td></tr>
+        <tr><td>الحالة</td><td class="en">State</td><td>المعلومات التي تحدد مسألة صغيرة واحدة، مثل <code>dp[i]</code> أو <code>dp[i][j]</code>.</td></tr>
+        <tr><td>الانتقال</td><td class="en">Transition / Recurrence</td><td>المعادلة التي تحسب حالة من حالات أصغر.</td></tr>
+        <tr><td>حالة الأساس</td><td class="en">Base Case</td><td>أصغر حالة نعرف جوابها مباشرة، مثل <code>dp[0] = 0</code>.</td></tr>
+        <tr><td>الحفظ من الأعلى</td><td class="en">Memoization (Top-down)</td><td>عودية عادية، لكنها تحفظ كل نتيجة في قاموس أو <code>@cache</code>.</td></tr>
+        <tr><td>الجدول من الأسفل</td><td class="en">Tabulation (Bottom-up)</td><td>حلقة تملأ جدولًا من الحالات الصغيرة إلى الكبيرة، بدون عودية.</td></tr>
+        <tr><td>ترتيب الحساب</td><td class="en">Evaluation Order</td><td>الترتيب الذي يضمن أن كل حالة تحتاجها محسوبة قبلك.</td></tr>
+        <tr><td>تقليل الذاكرة</td><td class="en">Space Optimization</td><td>حفظ الصفوف أو القيم الأخيرة فقط، بدل الجدول كله.</td></tr>
+        <tr><td>مسألة الحقيبة</td><td class="en">0/1 Knapsack</td><td>كل عنصر تأخذه مرة واحدة أو لا تأخذه، تحت حد للوزن أو الميزانية.</td></tr>
+        <tr><td>متعدد الحدود الزائف</td><td class="en">Pseudo-polynomial</td><td>تعقيد يعتمد على <strong>قيمة</strong> رقم في المدخلات، مثل <span class="en">O(n × amount)</span>، وليس على عدد العناصر فقط.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>متى تستخدم البرمجة الديناميكية؟ شرطان</h3>
+      <ul>
+        <li><strong>المسائل الصغيرة تتكرر:</strong> إذا رسمت شجرة الاستدعاءات، فسترى نفس العقدة أكثر من مرة. إذا لم تتكرر المسائل (كما في المجموعات الجزئية في الدرس 5)، فالحفظ لا يفيد.</li>
+        <li><strong>البنية المثلى:</strong> الحل الأفضل يتكون من حلول أفضل لمسائل أصغر.</li>
+      </ul>
+
+      <h3>شجرة <code>climb(5)</code>: انظر إلى التكرار</h3>
+      <p>عدد طرق صعود درج من 5 درجات إذا كنت تصعد درجة أو درجتين في كل خطوة. العقد الملونة محسوبة <strong>من قبل</strong>.</p>
+      <div class="diagram mermaid">
+flowchart TD
+  A["climb(5)"] --> B["climb(4)"]
+  A --> C["climb(3)"]
+  B --> D["climb(3)"]
+  B --> E["climb(2)"]
+  C --> F["climb(2)"]
+  C --> G["climb(1)"]
+  D --> H["climb(2)"]
+  D --> I["climb(1)"]
+  style C fill:#fde68a
+  style F fill:#fde68a
+  style G fill:#fde68a
+  style H fill:#fde68a
+  style I fill:#fde68a
+  style E fill:#fde68a
+      </div>
+      <p>توجد 5 مسائل مختلفة فقط (من <code>climb(1)</code> إلى <code>climb(5)</code>)، لكن الشجرة فيها 9 عقد. ومع <code>n = 50</code> تصبح الشجرة فيها عشرات المليارات من العقد، رغم أن المسائل المختلفة 50 فقط.</p>
+
+      <h3>الوصفة: خمس خطوات</h3>
+      <div class="steps-grid">
+        <div class="card"><h4>1. عرّف الحالة بالكلمات</h4>"<code>dp[s]</code> = أقل عدد عملات مجموعها s". هذه أهم خطوة.</div>
+        <div class="card"><h4>2. اكتب الانتقال</h4>كيف تحسب <code>dp[s]</code> من حالات أصغر؟ اسأل: ما <strong>آخر اختيار</strong>؟</div>
+        <div class="card"><h4>3. حدد حالة الأساس</h4>مثل <code>dp[0] = 0</code>: مبلغ صفر يحتاج صفر عملات.</div>
+        <div class="card"><h4>4. حدد ترتيب الحساب</h4>من الصغير إلى الكبير، حتى تكون كل حالة تحتاجها جاهزة.</div>
+        <div class="card"><h4>5. أين الجواب؟</h4>غالبًا <code>dp[n]</code>، أو <code>dp[m][n]</code>، أو <code>max(dp)</code>.</div>
+      </div>
+      <div class="callout tip">💡 <strong>سؤال "آخر اختيار":</strong> لكي تجد الانتقال، تخيّل أن الحل اكتمل، ثم اسأل: ما آخر شيء فعلته؟ في الدرج: آخر خطوة كانت درجة واحدة أو درجتين. إذن <code>climb(n) = climb(n - 1) + climb(n - 2)</code>.</div>
+
+      <h3>معادلة العملات</h3>
+      <p>لكي تصل إلى مبلغ s، آخر عملة استخدمتها هي إحدى العملات c. قبلها كان المبلغ <code>s - c</code>:</p>
+      <div dir="ltr">$$dp[s] = \min_{c \,\in\, coins,\; c \le s} \big(dp[s - c] + 1\big), \qquad dp[0] = 0$$</div>
+
+      <h3>الطريقتان</h3>
+      <table>
+        <tr><th></th><th>الحفظ من الأعلى (<span class="en">Memoization</span>)</th><th>الجدول من الأسفل (<span class="en">Tabulation</span>)</th></tr>
+        <tr><td>الشكل</td><td>دالة عودية مع <code>@cache</code></td><td>حلقة تملأ مصفوفة</td></tr>
+        <tr><td>السهولة</td><td>الأسهل: حوّل الحل البدائي مباشرة</td><td>تحتاج أن تفكر في ترتيب الحساب</td></tr>
+        <tr><td>الحالات المحسوبة</td><td>فقط الحالات التي تحتاجها</td><td>كل الحالات في الجدول</td></tr>
+        <tr><td>حد العمق</td><td>⚠️ قد يظهر <code>RecursionError</code> مع n كبير</td><td>✅ لا توجد عودية</td></tr>
+        <tr><td>تقليل الذاكرة</td><td>صعب</td><td>✅ سهل: احفظ الصفوف الأخيرة فقط</td></tr>
+      </table>
+
+      <h3>كيف تقرر؟</h3>
+      <div class="diagram mermaid">
+flowchart TD
+  A["ارسم شجرة الحل البدائي"] --> B{"هل تتكرر نفس المسائل الصغيرة؟"}
+  B -->|"لا"| C["Backtracking أو Divide and Conquer"]
+  B -->|"نعم"| D{"هل المطلوب عدد أو أفضل قيمة أو نعم/لا؟"}
+  D -->|"لا، أرجع كل الحلول"| C
+  D -->|"نعم"| E["عرّف الحالة واكتب الانتقال"]
+  E --> F{"هل الحالة صغيرة والعمق قليل؟"}
+  F -->|"نعم"| G["Memoization مع @cache"]
+  F -->|"لا أو تحتاج ذاكرة أقل"| H["Tabulation"]
+  H --> I{"هل الانتقال يحتاج الصف السابق فقط؟"}
+  I -->|"نعم"| J["احفظ صفًا واحدًا أو متغيرين"]
+      </div>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+      <h3>ملء جدول العملات خطوة بخطوة</h3>
+      <p>العملات <code>[1, 3, 4]</code> والمبلغ <code>6</code>. الحالة: <code>dp[s]</code> = أقل عدد عملات مجموعها s. الرمز <code>∞</code> يعني "لم نصل إليه بعد".</p>
+      <div class="legend"><span><span class="dot" style="background:#f59e0b"></span>الحالة التي جاء منها الجواب</span><span><span class="dot" style="background:#2563eb"></span>الحالة الجديدة</span><span><span class="dot" style="background:#10b981"></span>الجواب النهائي</span></div>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: حالة الأساس</h4>
+          <div class="mem"><div class="box new">0<small>s=0</small></div><div class="box empty">∞<small>1</small></div><div class="box empty">∞<small>2</small></div><div class="box empty">∞<small>3</small></div><div class="box empty">∞<small>4</small></div><div class="box empty">∞<small>5</small></div><div class="box empty">∞<small>6</small></div></div>
+          <div class="state">dp[0] = 0</div>
+          <p>المبلغ صفر لا يحتاج أي عملة.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: s = 1 و s = 2</h4>
+          <div class="mem"><div class="box src">0<small>0</small></div><div class="box src">1<small>1</small></div><div class="box new">2<small>2</small></div><div class="box empty">∞<small>3</small></div><div class="box empty">∞<small>4</small></div><div class="box empty">∞<small>5</small></div><div class="box empty">∞<small>6</small></div></div>
+          <div class="state">dp[1] = dp[0] + 1 = 1 &nbsp;|&nbsp; dp[2] = dp[1] + 1 = 2</div>
+          <p>العملة الوحيدة الأصغر من 3 هي 1.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: s = 3</h4>
+          <div class="mem"><div class="box src">0<small>0</small></div><div class="box">1<small>1</small></div><div class="box">2<small>2</small></div><div class="box new">1<small>3</small></div><div class="box empty">∞<small>4</small></div><div class="box empty">∞<small>5</small></div><div class="box empty">∞<small>6</small></div></div>
+          <div class="state">c=1: dp[2]+1 = 3 &nbsp;|&nbsp; c=3: dp[0]+1 = 1 → dp[3] = 1</div>
+          <p>نجرب كل عملة كأنها "آخر عملة"، ونأخذ الأقل.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: s = 4</h4>
+          <div class="mem"><div class="box src">0<small>0</small></div><div class="box">1<small>1</small></div><div class="box">2<small>2</small></div><div class="box">1<small>3</small></div><div class="box new">1<small>4</small></div><div class="box empty">∞<small>5</small></div><div class="box empty">∞<small>6</small></div></div>
+          <div class="state">c=1: dp[3]+1 = 2 | c=3: dp[1]+1 = 2 | c=4: dp[0]+1 = 1 → dp[4] = 1</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: s = 5</h4>
+          <div class="mem"><div class="box">0<small>0</small></div><div class="box src">1<small>1</small></div><div class="box">2<small>2</small></div><div class="box">1<small>3</small></div><div class="box src">1<small>4</small></div><div class="box new">2<small>5</small></div><div class="box empty">∞<small>6</small></div></div>
+          <div class="state">c=1: dp[4]+1 = 2 | c=3: dp[2]+1 = 3 | c=4: dp[1]+1 = 2 → dp[5] = 2</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 6: s = 6 ✅</h4>
+          <div class="mem"><div class="box">0<small>0</small></div><div class="box">1<small>1</small></div><div class="box">2<small>2</small></div><div class="box src">1<small>3</small></div><div class="box">1<small>4</small></div><div class="box">2<small>5</small></div><div class="box found">2<small>6</small></div></div>
+          <div class="state">c=1: dp[5]+1 = 3 | c=3: dp[3]+1 = 2 | c=4: dp[2]+1 = 3 → dp[6] = 2  (3 + 3)</div>
+          <p>الجواب عملتان: <code>3 + 3</code>. لاحظ أن الطريقة الجشعة (<span class="en">greedy</span>) تأخذ أكبر عملة أولًا، أي <code>4 + 1 + 1</code>، فتحتاج 3 عملات. الجشع يختار الأفضل <strong>الآن</strong>، أما البرمجة الديناميكية فتجرب كل "آخر اختيار".</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+      <div class="callout note">📝 <strong>لماذا الترتيب من الصغير إلى الكبير؟</strong> <code>dp[6]</code> يحتاج <code>dp[5]</code> و <code>dp[3]</code> و <code>dp[2]</code>. كلها أصغر من 6، فهي محسوبة قبله. هذا هو ترتيب الحساب، الخطوة 4 في الوصفة.</div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: الدرج بثلاث طرق</h3>
+<pre><code class="language-python">from functools import cache
+
+
+@cache                                   # memoization in one line
+def climb_memo(n: int) -> int:
+    if n &lt;= 2:
+        return n
+    return climb_memo(n - 1) + climb_memo(n - 2)
+
+
+def climb_table(n: int) -> int:
+    """Bottom-up table. Time: O(n), Space: O(n)."""
+    if n &lt;= 2:
+        return n
+    dp = [0] * (n + 1)
+    dp[1], dp[2] = 1, 2
+    for i in range(3, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+    return dp[n]
+
+
+def climb(n: int) -> int:
+    """Only the last two values. Time: O(n), Space: O(1)."""
+    if n &lt;= 2:
+        return n
+    prev2, prev1 = 1, 2
+    for _ in range(3, n + 1):
+        prev2, prev1 = prev1, prev1 + prev2
+    return prev1
+
+
+print(climb_memo(5), climb_table(5), climb(5))
+print(climb(50))</code></pre>
+      <div class="output">8 8 8
+20365011074</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>@cache</code>: يحفظ نتيجة كل <code>n</code> في قاموس داخلي. الاستدعاء الثاني بنفس القيمة يرجع فورًا. يحتاج أن تكون المعاملات قابلة للتجزئة (<span class="en">hashable</span>)، كما في الدرس 4.</li>
+        <li><code>climb_table</code>: نفس المعادلة، لكن بحلقة. <code>dp[i]</code> = عدد طرق الوصول إلى الدرجة i.</li>
+        <li><code>climb</code>: الانتقال يحتاج آخر قيمتين فقط، فلا نحتاج المصفوفة كلها. الذاكرة <span class="en">O(1)</span>.</li>
+        <li>الحل البدائي بدون حفظ يحتاج عشرات المليارات من الاستدعاءات لـ <code>n = 50</code>. هنا 48 دورة فقط.</li>
+        <li><strong>تحذير:</strong> <code>climb_memo(5000)</code> يرفع <code>RecursionError</code> بسبب عمق العودية (الدرس 5). الجدول لا يعاني من هذه المشكلة.</li>
+      </ol>
+
+      <h3>مثال 2: أقل عدد عملات (والجشع يفشل)</h3>
+<pre><code class="language-python">def min_coins(coins: list[int], amount: int) -> int:
+    """dp[s] = fewest coins summing to s. Time: O(amount * k), Space: O(amount)."""
+    INF = amount + 1                     # more coins than ever needed
+    dp = [0] + [INF] * amount
+    for s in range(1, amount + 1):
+        for c in coins:
+            if c &lt;= s and dp[s - c] + 1 &lt; dp[s]:
+                dp[s] = dp[s - c] + 1
+    return dp[amount] if dp[amount] &lt;= amount else -1
+
+
+def greedy_coins(coins: list[int], amount: int) -> int:
+    count = 0
+    for c in sorted(coins, reverse=True):   # biggest coin first
+        count += amount // c
+        amount %= c
+    return count if amount == 0 else -1
+
+
+print(min_coins([1, 3, 4], 6), greedy_coins([1, 3, 4], 6))
+print(min_coins([1, 2, 5], 11))
+print(min_coins([2], 3))</code></pre>
+      <div class="output">2 3
+3
+-1</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>INF = amount + 1</code>: لا يوجد حل يحتاج عملات أكثر من المبلغ نفسه (إذا كانت كل عملة 1). لذلك هذه القيمة تعني "مستحيل"، وتبقى عددًا صحيحًا.</li>
+        <li><code>dp[s - c] + 1</code>: آخر عملة هي c، وقبلها كان المبلغ <code>s - c</code>.</li>
+        <li>إذا بقي <code>dp[amount]</code> أكبر من المبلغ، فلا يوجد حل، كما في <code>[2]</code> مع 3.</li>
+        <li><code>greedy_coins</code> صحيح مع عملات الجنيه والدولار، لكنه يفشل مع <code>[1, 3, 4]</code>. لا تفترض أن الجشع صحيح إلا إذا أثبتّ ذلك.</li>
+      </ol>
+
+      <h3>مثال 3: عدد الطرق (ترتيب الحلقات مهم!)</h3>
+<pre><code class="language-python">def count_ways(coins: list[int], amount: int) -> int:
+    """Number of COMBINATIONS (order doesn't matter). Time: O(k * amount)."""
+    ways = [0] * (amount + 1)
+    ways[0] = 1                          # one way to make 0: use nothing
+    for c in coins:                      # coins outer
+        for s in range(c, amount + 1):   # amounts inner
+            ways[s] += ways[s - c]
+    return ways[amount]
+
+
+print(count_ways([1, 2, 5], 5))
+print(count_ways([2], 3))</code></pre>
+      <div class="output">4
+0</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>ways[0] = 1</code>: توجد طريقة واحدة لعمل صفر، وهي ألا تأخذ شيئًا. بدونها يكون كل الجدول أصفارًا.</li>
+        <li><strong>العملات في الحلقة الخارجية:</strong> عندما ننتهي من العملة 1، ننتقل إلى 2 ولا نعود إلى 1. لذلك تظهر <code>1 + 2 + 2</code> مرة واحدة فقط، ولا تظهر <code>2 + 1 + 2</code> كحل آخر. هذا يعدّ التوافيق.</li>
+        <li><code>range(c, amount + 1)</code> تصاعديًا: نفس العملة يمكن أن تتكرر. سترى في الأخطاء الشائعة ماذا يحدث لو بدّلت الحلقتين.</li>
+        <li>الطرق الأربع: <code>5</code>، <code>2+2+1</code>، <code>2+1+1+1</code>، <code>1+1+1+1+1</code>.</li>
+      </ol>
+
+      <h3>مثال 4: جدول بُعدين (المسافة بين نصين)</h3>
+      <p>أقل عدد عمليات (إضافة حرف، أو حذف حرف، أو تبديل حرف) لتحويل نص إلى آخر. يُستخدم لمطابقة أسماء التجار المكتوبة بأخطاء إملائية.</p>
+      <div dir="ltr">$$dp[i][j] = \begin{cases} dp[i-1][j-1] & a_i = b_j \\ 1 + \min\big(dp[i-1][j],\; dp[i][j-1],\; dp[i-1][j-1]\big) & \text{otherwise} \end{cases}$$</div>
+<pre><code class="language-python">def edit_distance(a: str, b: str) -> int:
+    """dp[i][j] = edits to turn a[:i] into b[:j]. Time: O(m*n), Space: O(m*n)."""
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m + 1):
+        dp[i][0] = i                     # delete all i chars
+    for j in range(n + 1):
+        dp[0][j] = j                     # insert all j chars
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if a[i - 1] == b[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]          # no edit needed
+            else:
+                dp[i][j] = 1 + min(dp[i - 1][j],     # delete from a
+                                   dp[i][j - 1],     # insert into a
+                                   dp[i - 1][j - 1]) # replace
+    return dp[m][n]
+
+
+print(edit_distance("kitten", "sitting"))
+print(edit_distance("Vodafone Cash", "Vodafon Cash"))
+print(edit_distance("", "abc"))</code></pre>
+      <div class="output">3
+1
+3</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><strong>الحالة:</strong> <code>dp[i][j]</code> = أقل عدد عمليات لتحويل أول i حروف من a إلى أول j حروف من b.</li>
+        <li><code>[[0] * (n + 1) for _ in range(m + 1)]</code>: ننشئ كل صف على حدة. لا تكتب <code>[[0] * (n + 1)] * (m + 1)</code>، لأنها تنشئ صفًا واحدًا مكررًا (انظر الأخطاء الشائعة).</li>
+        <li><strong>حالات الأساس:</strong> الصف الأول والعمود الأول، أي التحويل من نص فارغ أو إليه.</li>
+        <li><code>a[i - 1]</code>: الجدول يبدأ من 1، أما النص فيبدأ من 0. هذا مصدر شائع لأخطاء الفرق بواحد.</li>
+        <li>كل خانة تحتاج الخانة التي فوقها، والتي على يسارها، والتي على قطرها. لذلك نملأ الجدول صفًا صفًا من اليسار إلى اليمين.</li>
+      </ol>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>خطأ 1: تبديل الحلقتين في عدّ الطرق</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def count_ways(coins: list[int], amount: int) -> int:
+    ways = [0] * (amount + 1)
+    ways[0] = 1
+    for s in range(1, amount + 1):   # amounts outer
+        for c in coins:              # coins inner
+            if c &lt;= s:
+                ways[s] += ways[s - c]
+    return ways[amount]
+
+print(count_ways([1, 2, 5], 5))  # 9  wrong!</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">def count_ways(coins: list[int], amount: int) -> int:
+    ways = [0] * (amount + 1)
+    ways[0] = 1
+    for c in coins:                  # coins outer
+        for s in range(c, amount + 1):
+            ways[s] += ways[s - c]
+    return ways[amount]
+
+print(count_ways([1, 2, 5], 5))  # 4</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> عندما يكون المبلغ في الحلقة الخارجية، نجرب كل العملات عند كل مبلغ. هكذا نعدّ <code>1+2+2</code> و <code>2+1+2</code> و <code>2+2+1</code> كثلاثة حلول مختلفة. هذا عدد <strong>الترتيبات</strong> (9)، وليس التوافيق (4). كلا العددين له استخدام، لكن يجب أن تعرف أي واحد تريد. هذا خطأ في الخطوة 1 من الوصفة: تعريف الحالة.</div>
+
+      <h3>خطأ 2: الحلقة التصاعدية في مسألة 0/1</h3>
+      <p>المطلوب: هل توجد مجموعة من الأرقام مجموعها <code>target</code>؟ وكل رقم يُستخدم <strong>مرة واحدة فقط</strong>.</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def can_sum(nums: list[int], target: int) -> bool:
+    ok = [False] * (target + 1)
+    ok[0] = True
+    for x in nums:
+        for s in range(x, target + 1):    # ascending
+            if ok[s - x]:
+                ok[s] = True
+    return ok[target]
+
+print(can_sum([5], 10))  # True  wrong! used 5 twice</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">def can_sum(nums: list[int], target: int) -> bool:
+    ok = [False] * (target + 1)
+    ok[0] = True
+    for x in nums:
+        for s in range(target, x - 1, -1):  # descending
+            if ok[s - x]:
+                ok[s] = True
+    return ok[target]
+
+print(can_sum([5], 10))  # False</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> مع الحلقة التصاعدية، عند <code>s = 5</code> يصبح <code>ok[5] = True</code>. بعد ذلك عند <code>s = 10</code> يقرأ الكود <code>ok[5]</code> الذي تغيّر <strong>في نفس الدورة</strong>، فيستخدم 5 مرتين. مع الحلقة التنازلية، نقرأ دائمًا قيمًا من قبل إضافة العنصر الحالي. القاعدة: <strong>تصاعدي = يمكن التكرار، تنازلي = مرة واحدة</strong>.</div>
+
+      <h3>أخطاء أخرى متكررة</h3>
+      <ul>
+        <li><strong>الجدول ثنائي الأبعاد بالضرب:</strong> <code>[[0] * n] * m</code> ينشئ m إشارة إلى نفس الصف. تعديل <code>dp[0][0]</code> يغيّر العمود كله. استخدم <code>[[0] * n for _ in range(m)]</code>.</li>
+        <li><strong>حالة غير كاملة:</strong> إذا كان الجواب يعتمد على معلومة لم تضعها في الحالة (مثل "هل أخذت العنصر السابق؟")، سيعطي الحل نتائج خاطئة. اسأل: هل هذه المعلومات تكفي لتحديد بقية المسألة؟</li>
+        <li><strong>نسيان حالة الأساس:</strong> <code>ways[0] = 1</code> بدونه يصبح كل شيء صفرًا.</li>
+        <li><strong><code>@cache</code> مع قائمة كمعامل:</strong> يظهر <code>TypeError: unhashable type: 'list'</code>. مرّر موقعًا أو <span class="en">tuple</span>.</li>
+        <li><strong><code>float('inf')</code> في جدول أعداد صحيحة:</strong> يعمل، لكنه يخلط الأنواع. استخدم <code>amount + 1</code> أو قيمة كبيرة معروفة.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>اكتب تعريف الحالة في تعليق</strong> فوق الجدول، مثل <code># dp[s] = fewest coins summing to s</code>. إذا لم تستطع كتابته في سطر واحد، فالحالة غير واضحة.</li>
+        <li><strong>ابدأ بالحل البدائي العودي</strong>، ثم أضف <code>@cache</code>، ثم حوّله إلى جدول إذا احتجت. هذا أسهل من كتابة الجدول من البداية.</li>
+        <li><strong>اسأل سؤال "آخر اختيار"</strong> لتجد الانتقال.</li>
+        <li><strong>املأ الجدول بيدك</strong> لمثال صغير قبل التشغيل، كما في عرض العملات.</li>
+        <li><strong>قلل الذاكرة في النهاية فقط</strong>، بعد أن يعمل الحل. إذا كان الانتقال يقرأ الصف السابق فقط، فاحفظ صفًا واحدًا.</li>
+        <li><strong>اختبر بالضغط</strong> مقابل الحل البدائي أو التراجع من الدرس 5، على مدخلات صغيرة عشوائية.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>إشارات في نص المسألة:</strong> "كم عدد الطرق؟" و "أقل تكلفة" و "أكبر ربح" و "هل يمكن الوصول؟" و "أطول تسلسل"، مع قيود متوسطة مثل <code>n ≤ 1000</code> أو <code>amount ≤ 10⁴</code>، تشير غالبًا إلى البرمجة الديناميكية. أما "أرجع كل الحلول" فتشير إلى التراجع.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+      <h3>العودية البدائية مقابل البرمجة الديناميكية</h3>
+      <p>عدد الاستدعاءات لحساب <code>climb(n)</code>. الرسم بمقياس لوغاريتمي.</p>
+      <div class="chart-box"><canvas id="dpChart"></canvas></div>
+
+      <h3>المسائل الكلاسيكية</h3>
+      <table>
+        <tr><th>المسألة</th><th>الحالة</th><th>الوقت</th><th>الذاكرة بعد التقليل</th></tr>
+        <tr><td>الدرج / <span class="en">Fibonacci</span></td><td><code>dp[i]</code></td><td class="en">O(n)</td><td class="en">O(1)</td></tr>
+        <tr><td>أقل عدد عملات</td><td><code>dp[s]</code></td><td class="en">O(amount · k)</td><td class="en">O(amount)</td></tr>
+        <tr><td>عدد طرق العملات</td><td><code>ways[s]</code></td><td class="en">O(amount · k)</td><td class="en">O(amount)</td></tr>
+        <tr><td>الحقيبة 0/1</td><td><code>dp[c]</code> بعد i عنصر</td><td class="en">O(n · C)</td><td class="en">O(C)</td></tr>
+        <tr><td>أطول تسلسل مشترك</td><td><code>dp[i][j]</code></td><td class="en">O(m · n)</td><td class="en">O(n)</td></tr>
+        <tr><td>المسافة بين نصين</td><td><code>dp[i][j]</code></td><td class="en">O(m · n)</td><td class="en">O(n)</td></tr>
+        <tr><td>أطول تسلسل متزايد</td><td><code>dp[i]</code></td><td><span class="en">O(n²)</span> أو <span class="en">O(n log n)</span></td><td class="en">O(n)</td></tr>
+      </table>
+
+      <h3>انتبه: متعدد الحدود الزائف</h3>
+      <p>تعقيد <span class="en">O(n × amount)</span> يبدو سريعًا، لكنه يعتمد على <strong>قيمة</strong> المبلغ، وليس على عدد العناصر فقط. مع 50 معاملة وفاتورة 15,000 قرش، يحتاج الجدول 750 ألف عملية، وهذا سريع. أما مع فاتورة مليار قرش، فيحتاج الجدول مليار خانة، وهذا مستحيل.</p>
+      <table>
+        <tr><th>الموقف</th><th>الأفضل</th></tr>
+        <tr><td>n صغير (≤ 25) والمبالغ كبيرة</td><td>التراجع مع التقليم (الدرس 5)</td></tr>
+        <tr><td>n كبير والمبالغ صغيرة أو متوسطة</td><td>البرمجة الديناميكية</td></tr>
+        <tr><td>الاثنان كبيران</td><td>قلّل المرشحين أولًا (نفس العميل، نفس الفترة)، أو اقبل حلًا تقريبيًا</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: مطابقة الفاتورة بالبرمجة الديناميكية</h2>
+      <p><strong>القصة:</strong> في الدرس 5 طابقنا الفاتورة مع عدة دفعات بالتراجع، والتعقيد في أسوأ حالة <span class="en">O(2ⁿ)</span>. الآن عند العميل 40 دفعة في الشهر، والتراجع قد يجرب أكثر من تريليون مجموعة. الحل: جدول يحفظ <strong>كل المبالغ التي يمكن الوصول إليها</strong>.</p>
+
+      <h3>طبّق الوصفة</h3>
+      <ol>
+        <li><strong>الحالة:</strong> <code>reachable[s]</code> = هل يوجد مجموعة من الدفعات التي رأيناها حتى الآن مجموعها s؟</li>
+        <li><strong>الانتقال:</strong> مع دفعة جديدة مبلغها a، يصبح s ممكنًا إذا كان <code>s - a</code> ممكنًا قبلها.</li>
+        <li><strong>الأساس:</strong> <code>reachable[0] = True</code>، أي لا نأخذ أي دفعة.</li>
+        <li><strong>الترتيب:</strong> الدفعات في الحلقة الخارجية، والمبالغ <strong>تنازليًا</strong>، لأن كل دفعة تُستخدم مرة واحدة (الخطأ 2).</li>
+        <li><strong>الجواب:</strong> <code>reachable[invoice]</code>. ولكي نعرف <em>أي</em> دفعات اخترنا، نحفظ لكل مبلغ الدفعة التي وصلت إليه أول مرة (<code>parent</code>)، ثم نمشي للخلف.</li>
+      </ol>
+<pre><code class="language-python">Payment = tuple[str, int]  # (transaction_id, amount_in_cents)
+
+
+def match_invoice_dp(payments: list[Payment], invoice_cents: int) -> list[str] | None:
+    """Subset sum with reconstruction.
+    Time: O(n * invoice), Space: O(invoice)."""
+    items = [p for p in payments if p[1] > 0]           # ignore refunds
+    reachable = [False] * (invoice_cents + 1)
+    reachable[0] = True
+    parent = [-1] * (invoice_cents + 1)                 # item index that first reached s
+
+    for i, (_, amount) in enumerate(items):
+        for s in range(invoice_cents, amount - 1, -1):  # descending: each item once
+            if not reachable[s] and reachable[s - amount]:
+                reachable[s] = True
+                parent[s] = i
+
+    if not reachable[invoice_cents]:
+        return None
+
+    chosen: list[str] = []
+    s = invoice_cents
+    while s > 0:                                        # walk back through parents
+        i = parent[s]
+        chosen.append(items[i][0])
+        s -= items[i][1]
+    return chosen[::-1]
+
+
+payments: list[Payment] = [
+    ("TX1", 12000),   # 120.00
+    ("TX2", 5000),    #  50.00
+    ("TX3", 7550),    #  75.50
+    ("TX4", 2450),    #  24.50
+    ("TX5", 5000),    #  50.00
+    ("TX6", -3000),   # refund, ignored
+]
+
+print(match_invoice_dp(payments, 15000))
+print(match_invoice_dp(payments, 17000))
+print(match_invoice_dp(payments, 100))</code></pre>
+      <div class="output">['TX2', 'TX3', 'TX4']
+['TX1', 'TX2']
+None</div>
+      <h4>الشرح</h4>
+      <ol>
+        <li><code>p[1] > 0</code>: المبالغ السالبة تكسر الجدول، لأن <code>s - amount</code> يصبح أكبر من s.</li>
+        <li><code>range(invoice_cents, amount - 1, -1)</code>: تنازليًا، حتى لا نستخدم نفس الدفعة مرتين. إذا كانت الدفعة أكبر من الفاتورة، يكون المجال فارغًا ولا يحدث شيء.</li>
+        <li><code>not reachable[s]</code>: نحفظ <code>parent</code> فقط عند أول وصول. لماذا هذا صحيح؟ عندما وصلنا إلى s بالدفعة i، كان <code>s - amount</code> ممكنًا <strong>بدفعات قبل i فقط</strong>. لذلك لا تتكرر أي دفعة في طريق الرجوع.</li>
+        <li><strong>الرجوع:</strong> 15000 جاء من <code>TX4</code>، فنطرح 2450 ونصل إلى 12550، وهذا جاء من <code>TX3</code>، فنصل إلى 5000، وهذا جاء من <code>TX2</code>، فنصل إلى 0.</li>
+        <li>نفس الجواب الذي وجده التراجع في الدرس 5، لكن الوقت الآن <span class="en">5 × 15000 = 75,000</span> عملية مهما كان شكل البيانات. ومع 40 دفعة يصبح 600 ألف عملية، بدل تريليون مجموعة.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>التوسيع:</strong> إذا أردت حدًّا لعدد الدفعات (مثل <code>max_parts</code> في الدرس 5)، أضف بُعدًا للحالة: <code>reachable[k][s]</code> = هل يمكن الوصول إلى s بـ k دفعة بالضبط؟ التعقيد يصبح <span class="en">O(n × K × invoice)</span>. هذه قاعدة عامة: <strong>كل قيد جديد يصبح بُعدًا جديدًا في الحالة</strong>.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+      <div class="quiz" data-explain="بدون تكرار المسائل الصغيرة، الحفظ لا يوفر شيئًا. وبدون البنية المثلى، لا يمكن بناء الجواب من أجوبة أصغر.">
+        <div class="q">1. ما الشرطان اللازمان للبرمجة الديناميكية؟</div>
+        <button class="option">قائمة مرتبة وقيود صغيرة</button>
+        <button class="option" data-correct="true">مسائل صغيرة تتكرر، وبنية مثلى</button>
+        <button class="option">عودية وحلقات متداخلة</button>
+        <button class="option">أرقام موجبة وذاكرة كبيرة</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="العملات في الخارج تعني أننا ننتهي من كل عملة ولا نعود إليها، فلا يُعدّ نفس الحل بترتيب مختلف.">
+        <div class="q">2. في عدّ طرق العملات، أي ترتيب للحلقات يعدّ التوافيق (الترتيب غير مهم)؟</div>
+        <button class="option">المبالغ في الخارج والعملات في الداخل</button>
+        <button class="option" data-correct="true">العملات في الخارج والمبالغ في الداخل</button>
+        <button class="option">لا فرق</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="التنازلي يقرأ قيمًا من قبل إضافة العنصر الحالي، فلا يُستخدم العنصر مرتين.">
+        <div class="q">3. في مسألة الحقيبة 0/1 بجدول من بُعد واحد، لماذا نمر على السعات تنازليًا؟</div>
+        <button class="option">لأنه أسرع</button>
+        <button class="option" data-correct="true">حتى لا يُستخدم نفس العنصر أكثر من مرة</button>
+        <button class="option">لأن Python تبدأ من النهاية</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الجشع يأخذ 4 ثم 1 ثم 1، أي 3 عملات. الأفضل 3 + 3، أي عملتان.">
+        <div class="q">4. العملات [1, 3, 4] والمبلغ 6. كم عملة تعطي الطريقة الجشعة، وكم الأفضل؟</div>
+        <button class="option">2 و 2</button>
+        <button class="option" data-correct="true">3 و 2</button>
+        <button class="option">3 و 3</button>
+        <button class="option">2 و 1</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الجدول لا يستخدم العودية، فلا يتأثر بحد العمق في Python (حوالي 1000).">
+        <div class="q">5. ما ميزة الجدول من الأسفل على @cache مع n = 100,000؟</div>
+        <button class="option">يعطي جوابًا مختلفًا</button>
+        <button class="option" data-correct="true">لا يرفع RecursionError لأنه لا يستخدم العودية</button>
+        <button class="option">تعقيده الزمني أقل دائمًا</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+      <p>قبل كل تمرين، اكتب الخطوات الخمس: الحالة بالكلمات، والانتقال، والأساس، والترتيب، ومكان الجواب.</p>
+
+      <h3>تمرين 1 (سهل): لص المنازل (<span class="en">House Robber</span>)</h3>
+      <p>اكتب دالة <code>rob(nums: list[int]) -> int</code>. كل رقم هو المال في منزل، ولا يمكنك أخذ المال من منزلين متجاورين. أرجع أكبر مبلغ. مثلًا <code>[2, 7, 9, 3, 1]</code> يعطي 12.</p>
+      <details><summary>💡 تلميح</summary><p>آخر اختيار: هل أخذت المنزل i أم لا؟ إذا أخذته، فلا يمكنك أخذ i - 1: <code>dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])</code>. تحتاج آخر قيمتين فقط.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def rob(nums: list[int]) -> int:
+    # dp[i] = best total using houses[:i+1]. Time: O(n), Space: O(1)
+    prev2, prev1 = 0, 0
+    for x in nums:
+        prev2, prev1 = prev1, max(prev1, prev2 + x)   # skip x, or take x
+    return prev1
+
+
+print(rob([2, 7, 9, 3, 1]))
+print(rob([1, 2, 3, 1]))
+print(rob([]))</code></pre>
+        <div class="output">12
+4
+0</div>
+        <p>الجواب <code>2 + 9 + 1 = 12</code>. الطريقة الجشعة "خذ الأكبر دائمًا" تأخذ 9، ثم لا تستطيع أخذ 7 أو 3، فتفشل في حالات كثيرة.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): أطول تسلسل مشترك (<span class="en">LCS</span>)</h3>
+      <p>اكتب دالة <code>lcs(a: str, b: str) -> int</code>. ترجع طول أطول تسلسل يظهر في النصين بنفس الترتيب، وليس بالضرورة متصلًا. مثلًا <code>"abcde"</code> و <code>"ace"</code> يعطي 3.</p>
+      <details><summary>💡 تلميح</summary><p>مثل المسافة بين نصين. إذا تساوى <code>a[i - 1]</code> و <code>b[j - 1]</code>، فالجواب <code>dp[i - 1][j - 1] + 1</code>. وإلا فاحذف حرفًا من أحد النصين: <code>max(dp[i - 1][j], dp[i][j - 1])</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def lcs(a: str, b: str) -> int:
+    # dp[i][j] = LCS length of a[:i] and b[:j]. Time: O(m*n), Space: O(m*n)
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if a[i - 1] == b[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+    return dp[m][n]
+
+
+print(lcs("abcde", "ace"))
+print(lcs("abc", "def"))</code></pre>
+        <div class="output">3
+0</div>
+        <p>حالات الأساس (الصف 0 والعمود 0) كلها صفر، لأن النص الفارغ لا يشترك في شيء. تحدٍّ إضافي: قلل الذاكرة إلى <span class="en">O(n)</span> بصفّين فقط.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): أطول تسلسل متزايد (<span class="en">LIS</span>)</h3>
+      <p>اكتب دالة <code>lis(nums: list[int]) -> int</code>. مثلًا <code>[10, 9, 2, 5, 3, 7, 101, 18]</code> يعطي 4، والتسلسل هو <code>2, 3, 7, 18</code>. الحل بتعقيد <span class="en">O(n²)</span> سهل. هل تصل إلى <span class="en">O(n log n)</span>؟</p>
+      <details><summary>💡 تلميح</summary><p>احفظ قائمة <code>tails</code>، حيث <code>tails[k]</code> = أصغر نهاية ممكنة لتسلسل متزايد طوله k + 1. هذه القائمة مرتبة دائمًا. لكل رقم، ابحث عن مكانه بـ <code>bisect_left</code> من الدرس 6.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from bisect import bisect_left
+
+
+def lis(nums: list[int]) -> int:
+    # tails[k] = smallest tail of an increasing subsequence of length k+1
+    # Time: O(n log n), Space: O(n)
+    tails: list[int] = []
+    for x in nums:
+        i = bisect_left(tails, x)
+        if i == len(tails):
+            tails.append(x)          # x extends the longest sequence
+        else:
+            tails[i] = x             # x is a smaller tail for length i+1
+    return len(tails)
+
+
+print(lis([10, 9, 2, 5, 3, 7, 101, 18]))
+print(lis([0, 1, 0, 3, 2, 3]))
+print(lis([7, 7, 7]))</code></pre>
+        <div class="output">4
+4
+1</div>
+        <p>هذا يجمع درسين: البرمجة الديناميكية تحدد ماذا نحفظ، والبحث الثنائي يحدّث الحالة بسرعة. ملاحظة: <code>tails</code> ليست التسلسل نفسه، وطولها فقط هو الجواب. واستخدمنا <code>bisect_left</code> لأن التسلسل يجب أن يكون متزايدًا تمامًا.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): الحقيبة 0/1 (توزيع الميزانية)</h3>
+      <p>عندك حملات تسويقية، ولكل حملة تكلفة <code>weights[i]</code> وربح متوقع <code>values[i]</code>، وميزانية <code>cap</code>. كل حملة تختارها مرة واحدة أو لا تختارها. اكتب دالة <code>knapsack(weights, values, cap) -> int</code> ترجع أكبر ربح.</p>
+      <details><summary>💡 تلميح</summary><p><code>dp[c]</code> = أكبر ربح بميزانية c. لكل حملة: <code>dp[c] = max(dp[c], dp[c - w] + v)</code>. وتذكّر الخطأ 2: كل حملة مرة واحدة، إذن الحلقة تنازلية.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def knapsack(weights: list[int], values: list[int], cap: int) -> int:
+    # dp[c] = best value with budget c. Time: O(n * cap), Space: O(cap)
+    dp = [0] * (cap + 1)
+    for w, v in zip(weights, values):
+        for c in range(cap, w - 1, -1):          # descending: each item once
+            dp[c] = max(dp[c], dp[c - w] + v)    # skip it, or take it
+    return dp[cap]
+
+
+print(knapsack([1, 3, 4, 5], [1, 4, 5, 7], 7))
+print(knapsack([10], [5], 5))</code></pre>
+        <div class="output">9
+0</div>
+        <p>الأفضل الحملتان بتكلفة 3 و 4، والربح <code>4 + 5 = 9</code>. الطريقة الجشعة "الأعلى ربحًا لكل جنيه" تختار الحملة بتكلفة 5 (ربحها 1.4 لكل جنيه) ثم الحملة بتكلفة 1، فيكون الربح 8 فقط. لو جعلت الحلقة تصاعدية، تصبح المسألة <span class="en">Unbounded Knapsack</span>، أي يمكن تكرار الحملة.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>البرمجة الديناميكية = احسب كل مسألة صغيرة مرة واحدة واحفظ جوابها.</li>
+        <li>شرطان: مسائل صغيرة تتكرر، وبنية مثلى.</li>
+        <li>الوصفة: الحالة بالكلمات، ثم الانتقال، ثم الأساس، ثم الترتيب، ثم مكان الجواب.</li>
+        <li>سؤال "ما آخر اختيار؟" يعطيك الانتقال.</li>
+        <li><code>@cache</code> أسهل طريقة للبداية، والجدول أفضل مع n كبير وعندما تريد تقليل الذاكرة.</li>
+        <li>إذا كان الانتقال يحتاج الصف السابق فقط، فاحفظ صفًا واحدًا أو متغيرين.</li>
+        <li>ترتيب الحلقات يغيّر المعنى: العملات في الخارج تعني توافيق. والحلقة التنازلية تعني أن كل عنصر يُستخدم مرة واحدة.</li>
+        <li>الجشع أسرع، لكنه يفشل غالبًا. لا تستخدمه بدون إثبات.</li>
+        <li>تعقيد <span class="en">O(n × amount)</span> متعدد حدود زائف: سريع مع مبالغ صغيرة، ومستحيل مع مبالغ ضخمة.</li>
+        <li>كل قيد جديد يصبح بُعدًا جديدًا في الحالة.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <ul>
+        <li><strong>الدرس 8 (الأخير): الرسوم البيانية (<span class="en">Graphs: BFS / DFS</span>)</strong>. ستتعلم كيف تمثل العلاقات بين الأشياء، مثل الحسابات والتحويلات بينها. وستتعلم أقصر طريق، واكتشاف المجموعات المتصلة، واكتشاف الحلقات، مثل حلقات التحويل المشبوهة.</li>
+        <li>للتدريب: حلّ 5 مسائل على <span class="en">LeetCode</span> بوسم <span class="en">Dynamic Programming</span>. قبل الكود، اكتب الخطوات الخمس في تعليق، ثم املأ الجدول بيدك لمثال صغير.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  // Code highlighting + copy buttons
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  // Mermaid diagrams
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  // Math formulas
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  // Chart: naive recursion calls vs DP steps for climb(n)
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var dc = document.getElementById("dpChart");
+  if (dc) {
+    var ns = [5, 10, 15, 20, 25, 30, 35, 40];
+    function naiveCalls(n) {
+      // calls(n) = 1 for n <= 2, else 1 + calls(n-1) + calls(n-2)
+      var a = 1, b = 1; // calls(1), calls(2)
+      if (n <= 2) { return 1; }
+      for (var i = 3; i <= n; i++) { var c = 1 + a + b; a = b; b = c; }
+      return b;
+    }
+    new Chart(dc, {
+      type: "line",
+      data: {
+        labels: ns.map(String),
+        datasets: [
+          { label: "عودية بدون حفظ ~ O(1.6ⁿ)", data: ns.map(naiveCalls), borderColor: "#ef4444", backgroundColor: "#ef4444", tension: 0.2 },
+          { label: "برمجة ديناميكية O(n)", data: ns, borderColor: "#10b981", backgroundColor: "#10b981", tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: { legend: { rtl: true }, tooltip: { rtl: true } },
+        scales: {
+          y: { type: "logarithmic", title: { display: true, text: "عدد الاستدعاءات (مقياس لوغاريتمي)" } },
+          x: { title: { display: true, text: "عدد الدرجات n" } }
+        }
+      }
+    });
+  }
+
+  // Steppers
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  // Quizzes
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  // Reading progress bar (fills from the right, RTL)
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

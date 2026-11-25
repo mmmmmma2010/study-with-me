@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>البحث الثنائي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif; font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text); }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero { background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981); color: #fff; padding: 48px 24px; text-align: center; }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 700px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 8px; flex-wrap: wrap; direction: ltr; justify-content: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; min-width: 54px; text-align: center; transition: all .3s; }
+  .box small { display: block; font-size: .7rem; opacity: .8; }
+  .box.mid { background: var(--warn); border-color: var(--warn); color: #fff; transform: scale(1.1); }
+  .box.out { opacity: .25; }
+  .box.found { background: var(--good); border-color: var(--good); color: #fff; transform: scale(1.1); }
+  .box.f { background: rgba(239,68,68,.15); border-color: var(--bad); }
+  .box.t { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .state { direction: ltr; text-align: center; font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); border-radius: 10px; padding: 8px; }
+  .legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: .9rem; color: var(--muted); }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: middle; margin-inline-end: 4px; }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--primary-soft); }
+  .card h4 { margin: 0 0 4px; color: var(--primary); }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>البحث الثنائي <span class="en">(Binary Search)</span></h1>
+  <p>ستتعلم كيف تجد ما تبحث عنه بين مليون عنصر في 20 خطوة فقط، وكيف تكتب الحدود بدون أخطاء، وكيف تبحث عن الجواب نفسه حتى لو لم تكن هناك قائمة.</p>
+  <div class="badges">
+    <span class="badge">الدرس 6 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 40 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 2 رأيت أن القسمة على 2 في كل خطوة تعطي <span class="en">O(log n)</span>. وفي الدرس 3 استخدمت ترتيب القائمة لتحذف عنصرًا في كل خطوة بالمؤشرين. البحث الثنائي يذهب أبعد من ذلك: هو يحذف <strong>نصف</strong> العناصر في كل خطوة.</div>
+      <p>الفكرة تبدو سهلة: انظر إلى العنصر في المنتصف، ثم احذف النصف الذي لا يمكن أن يكون فيه الجواب. لكن البحث الثنائي مشهور بأخطاء الحدود: حلقة لا تنتهي، أو جواب يزيد أو ينقص بواحد. لذلك سنتعلم <strong>قالبًا واحدًا</strong> مع ثابت واضح، ونستخدمه في كل المسائل.</p>
+      <p>الاستخدام الأقوى للبحث الثنائي ليس البحث في قائمة. هو <strong>البحث في مجال الجواب</strong> (<span class="en">Binary Search on the Answer</span>). مثلًا: "ما أقل حد يومي للتحويل يكفي لصرف كل الرواتب خلال 3 أيام؟". هنا لا توجد قائمة مرتبة، لكن الطريقة تعمل.</p>
+      <p>في هذا الدرس ستتعلم البحث الكلاسيكي، والحد الأدنى والحد الأعلى، ووحدة <code>bisect</code>، والبحث في مجال الجواب. وفي النهاية ستبني حاسبة لأقل سعة يومية لصرف الرواتب.</p>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">🔢 <strong>لعبة التخمين:</strong> صديقك اختار رقمًا بين 1 و 100، وبعد كل تخمين يقول لك "أكبر" أو "أصغر". إذا خمنت 1، ثم 2، ثم 3، فقد تحتاج 100 محاولة. أما إذا خمنت 50 دائمًا، ثم 25 أو 75، وهكذا، فتكفيك 7 محاولات على الأكثر، لأن كل إجابة تحذف نصف الأرقام الباقية.<br><br>
+      🛠️ <strong>من عالم البرمجة:</strong> تطبيقك كان يعمل قبل 64 نسخة، والآن فيه خطأ. لن تختبر كل نسخة. اختبر النسخة رقم 32. إذا كان الخطأ موجودًا فيها، فهو بدأ قبلها، وإلا فهو بدأ بعدها. بعد 6 اختبارات فقط تعرف النسخة التي سببت الخطأ. أداة <code>git bisect</code> تفعل هذا بالضبط.</div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>مجال البحث</td><td class="en">Search Space</td><td>كل الأماكن أو القيم التي قد يكون فيها الجواب، بين <code>lo</code> و <code>hi</code>.</td></tr>
+        <tr><td>المنتصف</td><td class="en">Midpoint</td><td><code>mid = (lo + hi) // 2</code>. النقطة التي نفحصها في كل خطوة.</td></tr>
+        <tr><td>الشرط</td><td class="en">Predicate</td><td>دالة ترجع <code>True</code> أو <code>False</code> لكل قيمة، مثل "هل <code>nums[i] >= target</code>؟".</td></tr>
+        <tr><td>الشرط الرتيب</td><td class="en">Monotonic Predicate</td><td>شرط قيمه <code>F F F T T T</code>: إذا صار <code>True</code> بقي <code>True</code>. هذا هو شرط البحث الثنائي الوحيد.</td></tr>
+        <tr><td>الحد الأدنى</td><td class="en">Lower Bound</td><td>أول موقع قيمته أكبر من أو تساوي الهدف. في <span class="en">Python</span> هو <code>bisect_left</code>.</td></tr>
+        <tr><td>الحد الأعلى</td><td class="en">Upper Bound</td><td>أول موقع قيمته أكبر تمامًا من الهدف. في <span class="en">Python</span> هو <code>bisect_right</code>.</td></tr>
+        <tr><td>مجال نصف مفتوح</td><td class="en">Half-open Interval [lo, hi)</td><td>يشمل <code>lo</code> ولا يشمل <code>hi</code>. مثل <code>range(lo, hi)</code>.</td></tr>
+        <tr><td>مجال مغلق</td><td class="en">Closed Interval [lo, hi]</td><td>يشمل الطرفين. يُستخدم في البحث الكلاسيكي مع <code>while lo &lt;= hi</code>.</td></tr>
+        <tr><td>البحث في مجال الجواب</td><td class="en">Binary Search on Answer</td><td>نبحث عن أصغر (أو أكبر) قيمة تحقق شرطًا، ولا نبحث في قائمة.</td></tr>
+        <tr><td>دالة الفحص</td><td class="en">Feasibility Check</td><td>دالة تجيب عن سؤال "هل هذه القيمة تكفي؟". غالبًا تمرّ على المدخلات بتعقيد <span class="en">O(n)</span>.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>لماذا هو سريع جدًا؟</h3>
+      <p>بعد k خطوة يبقى <span class="en">n / 2ᵏ</span> عنصر. نتوقف عندما يبقى عنصر واحد:</p>
+      <div dir="ltr">$$\frac{n}{2^k} = 1 \;\Rightarrow\; k = \log_2 n \qquad n = 10^6 \Rightarrow k \approx 20,\quad n = 10^9 \Rightarrow k \approx 30$$</div>
+
+      <h3>الفكرة الأهم: كل بحث ثنائي هو "أول <span class="en">True</span>"</h3>
+      <p>لا تفكر في البحث الثنائي على أنه "ابحث عن رقم". فكر فيه هكذا: عندك شرط قيمه <code>False</code> في البداية ثم <code>True</code> حتى النهاية، وأنت تبحث عن <strong>الحد الفاصل</strong>.</p>
+      <p>مثال: القائمة <code>[2, 5, 8, 12, 16, 23, 38]</code> والشرط <code>nums[i] >= 12</code>:</p>
+      <div class="mem"><div class="box f">2<small>F</small></div><div class="box f">5<small>F</small></div><div class="box f">8<small>F</small></div><div class="box t">12<small>T ← أول True</small></div><div class="box t">16<small>T</small></div><div class="box t">23<small>T</small></div><div class="box t">38<small>T</small></div></div>
+      <p>إذا فهمت هذا، فكل المسائل تصبح سؤالًا واحدًا: <strong>ما الشرط الرتيب في هذه المسألة؟</strong></p>
+
+      <h3>القالب الواحد</h3>
+<pre><code class="language-python">lo, hi = first_candidate, last_candidate_plus_one   # search space [lo, hi)
+while lo &lt; hi:
+    mid = (lo + hi) // 2
+    if condition(mid):      # True: answer is mid or to its left
+        hi = mid
+    else:                   # False: answer is strictly to the right
+        lo = mid + 1
+return lo                   # first index where condition is True (or hi if none)</code></pre>
+      <div class="callout tip">💡 <strong>الثابت (<span class="en">Invariant</span>):</strong> كل ما قبل <code>lo</code> قيمته <code>False</code>، وكل ما من <code>hi</code> وبعده قيمته <code>True</code>. كل دورة تصغّر المجال، لأن <code>mid &lt; hi</code> دائمًا، و <code>mid + 1 > lo</code> دائمًا. لذلك تنتهي الحلقة، وعندما يلتقي <code>lo</code> و <code>hi</code> نكون عند الحد الفاصل.</div>
+
+      <h3>ثلاثة استخدامات</h3>
+      <div class="steps-grid">
+        <div class="card"><h4>1. البحث عن قيمة</h4>هل الرقم موجود في قائمة مرتبة؟ وأين؟</div>
+        <div class="card"><h4>2. الحدود</h4>أول موقع ≥ x، وآخر موقع ≤ x، وعدد مرات ظهور x، وأين تضيف x مع الحفاظ على الترتيب.</div>
+        <div class="card"><h4>3. البحث في مجال الجواب</h4>أصغر سعة، أو أقل سرعة، أو أقل وقت يحقق شرطًا. القيم هي المجال، وليست قائمة.</div>
+      </div>
+
+      <h3>متى تستخدم البحث الثنائي؟</h3>
+      <div class="diagram mermaid">
+flowchart TD
+  A["اقرأ المسألة"] --> B{"هل البيانات مرتبة؟"}
+  B -->|"نعم"| C{"عملية بحث واحدة أم كثيرة؟"}
+  C -->|"كثيرة أو تحتاج حدودًا"| D["bisect على القائمة"]
+  C -->|"واحدة على بيانات صغيرة"| E["البحث الخطي يكفي"]
+  B -->|"لا"| F{"هل المطلوب أصغر أو أكبر قيمة تحقق شرطًا؟"}
+  F -->|"نعم"| G{"هل الشرط رتيب؟ إذا نجحت قيمة نجح ما بعدها"}
+  G -->|"نعم"| H["بحث ثنائي في مجال الجواب"]
+  G -->|"لا"| I["Greedy أو DP"]
+  F -->|"لا"| J{"بحث كثير في بيانات غير مرتبة؟"}
+  J -->|"نعم"| K["set أو dict - الدرس 4"]
+  J -->|"لا"| E
+      </div>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>البحث عن 23 خطوة بخطوة</h3>
+      <p>القائمة <code>[2, 5, 8, 12, 16, 23, 38, 56, 72, 91]</code> فيها 10 عناصر. نستخدم القالب مع الشرط <code>nums[mid] >= 23</code>. نبدأ بـ <code>lo = 0</code> و <code>hi = 10</code>.</p>
+      <div class="legend"><span><span class="dot" style="background:#f59e0b"></span>mid</span><span><span class="dot" style="background:#94a3b8;opacity:.4"></span>خارج المجال</span><span><span class="dot" style="background:#10b981"></span>الجواب</span></div>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: المجال [0, 10)</h4>
+          <div class="mem"><div class="box">2<small>0</small></div><div class="box">5<small>1</small></div><div class="box">8<small>2</small></div><div class="box">12<small>3</small></div><div class="box">16<small>4</small></div><div class="box mid">23<small>5</small></div><div class="box">38<small>6</small></div><div class="box">56<small>7</small></div><div class="box">72<small>8</small></div><div class="box">91<small>9</small></div></div>
+          <div class="state">mid = (0 + 10) // 2 = 5 → 23 >= 23 → True → hi = 5</div>
+          <p>الشرط صحيح. الجواب هو 5 أو موقع قبله، لذلك نحذف كل ما بعد 5. لاحظ أننا لم نتوقف رغم أننا وجدنا 23، لأن القالب يبحث عن <strong>أول</strong> موقع يحقق الشرط.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: المجال [0, 5)</h4>
+          <div class="mem"><div class="box">2<small>0</small></div><div class="box">5<small>1</small></div><div class="box mid">8<small>2</small></div><div class="box">12<small>3</small></div><div class="box">16<small>4</small></div><div class="box">23<small>5</small></div><div class="box out">38<small>6</small></div><div class="box out">56<small>7</small></div><div class="box out">72<small>8</small></div><div class="box out">91<small>9</small></div></div>
+          <div class="state">mid = (0 + 5) // 2 = 2 → 8 >= 23 → False → lo = 3</div>
+          <p>الشرط خاطئ. القائمة مرتبة، إذن كل ما قبل 2 أصغر من 23 أيضًا. نحذف 0 و 1 و 2.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: المجال [3, 5)</h4>
+          <div class="mem"><div class="box out">2<small>0</small></div><div class="box out">5<small>1</small></div><div class="box out">8<small>2</small></div><div class="box">12<small>3</small></div><div class="box mid">16<small>4</small></div><div class="box">23<small>5</small></div><div class="box out">38<small>6</small></div><div class="box out">56<small>7</small></div><div class="box out">72<small>8</small></div><div class="box out">91<small>9</small></div></div>
+          <div class="state">mid = (3 + 5) // 2 = 4 → 16 >= 23 → False → lo = 5</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: <code>lo == hi == 5</code> ✅</h4>
+          <div class="mem"><div class="box out">2<small>0</small></div><div class="box out">5<small>1</small></div><div class="box out">8<small>2</small></div><div class="box out">12<small>3</small></div><div class="box out">16<small>4</small></div><div class="box found">23<small>5</small></div><div class="box out">38<small>6</small></div><div class="box out">56<small>7</small></div><div class="box out">72<small>8</small></div><div class="box out">91<small>9</small></div></div>
+          <div class="state">lo == hi == 5 → nums[5] == 23 → found at index 5</div>
+          <p>3 مقارنات فقط بدل 6 في البحث الخطي. ومع مليون عنصر تكفي 20 مقارنة. لاحظ أن القالب يرجع موقعًا دائمًا، فيجب أن نتحقق أن <code>nums[lo] == target</code>.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+
+      <h3>البحث في مجال الجواب خطوة بخطوة</h3>
+      <p>عندك دفعات رواتب يجب صرفها بالترتيب: <code>[500, 300, 700, 200, 400, 600]</code>. ما أقل حد يومي يكفي لصرفها كلها خلال 3 أيام؟ لا توجد قائمة نبحث فيها، لكن هناك شرط رتيب: <strong>إذا كان حدٌّ ما يكفي، فكل حد أكبر منه يكفي أيضًا</strong>.</p>
+      <ul>
+        <li>أقل قيمة ممكنة: <code>700</code>، أي أكبر دفعة، لأن الدفعة لا تُقسم.</li>
+        <li>أكبر قيمة نحتاجها: <code>2700</code>، أي المجموع كله، فيكفي يوم واحد.</li>
+      </ul>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: جرّب 1700</h4>
+          <div class="state">lo = 700, hi = 2700 → mid = 1700</div>
+          <div class="state">day 1: 500+300+700+200 = 1700 | day 2: 400+600 = 1000 → 2 days ≤ 3 ✅</div>
+          <p>1700 يكفي، إذن الجواب 1700 أو أقل. <code>hi = 1700</code>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: جرّب 1200</h4>
+          <div class="state">lo = 700, hi = 1700 → mid = 1200</div>
+          <div class="state">day 1: 800 | day 2: 700+200 = 900 | day 3: 400+600 = 1000 → 3 days ≤ 3 ✅</div>
+          <p>1200 يكفي أيضًا. <code>hi = 1200</code>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: جرّب 950</h4>
+          <div class="state">lo = 700, hi = 1200 → mid = 950</div>
+          <div class="state">day 1: 800 | day 2: 900 | day 3: 400 | day 4: 600 → 4 days > 3 ❌</div>
+          <p>950 لا يكفي، إذن الجواب أكبر من 950. <code>lo = 951</code>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: بعد 11 فحصًا ✅</h4>
+          <div class="state">... 1075 ✅, 1013 ✅, 982 ❌, 998 ❌, 1006 ✅, 1002 ✅, 1000 ✅, 999 ❌ → lo = hi = 1000</div>
+          <p>الجواب 1000. جربنا 11 قيمة فقط من أصل 2001 قيمة ممكنة، لأن <span class="en">log₂ 2001 ≈ 11</span>. وكل فحص يمرّ على الدفعات مرة واحدة، فالتعقيد <span class="en">O(n log S)</span>، حيث S مجموع الدفعات.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: البحث الكلاسيكي (مجال مغلق)</h3>
+<pre><code class="language-python">def binary_search(nums: list[int], target: int) -> int:
+    """nums sorted ascending. Returns an index of target, or -1.
+    Time: O(log n), Space: O(1)."""
+    lo, hi = 0, len(nums) - 1          # closed interval [lo, hi]
+    while lo &lt;= hi:                     # interval not empty
+        mid = (lo + hi) // 2
+        if nums[mid] == target:
+            return mid
+        if nums[mid] &lt; target:
+            lo = mid + 1                 # target is to the right
+        else:
+            hi = mid - 1                 # target is to the left
+    return -1
+
+
+nums = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]
+print(binary_search(nums, 23))
+print(binary_search(nums, 7))
+print(binary_search([], 7))</code></pre>
+      <div class="output">5
+-1
+-1</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>hi = len(nums) - 1</code>: المجال مغلق، أي <code>hi</code> موقع صالح.</li>
+        <li><code>while lo &lt;= hi</code>: عندما يكون <code>lo == hi</code> يبقى عنصر واحد، ويجب أن نفحصه.</li>
+        <li><code>mid + 1</code> و <code>mid - 1</code>: فحصنا <code>mid</code>، فنحذفه من المجال. هذا يضمن أن الحلقة تنتهي.</li>
+        <li>هذا الشكل مناسب عندما تريد "هل القيمة موجودة؟" فقط. لكنه لا يعطيك <strong>أول</strong> ظهور عندما تتكرر القيمة. لذلك نحتاج القالب التالي.</li>
+      </ol>
+
+      <h3>مثال 2: الحد الأدنى ووحدة <code>bisect</code></h3>
+<pre><code class="language-python">from bisect import bisect_left, bisect_right
+
+
+def lower_bound(nums: list[int], target: int) -> int:
+    """First index i with nums[i] >= target (len(nums) if none)."""
+    lo, hi = 0, len(nums)              # half-open [lo, hi)
+    while lo &lt; hi:
+        mid = (lo + hi) // 2
+        if nums[mid] >= target:        # condition: F F F T T T
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
+
+nums = [1, 2, 2, 2, 5, 7]
+print(lower_bound(nums, 2), bisect_left(nums, 2))
+print(lower_bound(nums, 3), bisect_left(nums, 3))
+print(lower_bound(nums, 9))
+print("count of 2:", bisect_right(nums, 2) - bisect_left(nums, 2))</code></pre>
+      <div class="output">1 1
+4 4
+6
+count of 2: 3</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>hi = len(nums)</code>: المجال نصف مفتوح، فقد يكون الجواب "بعد آخر عنصر". هذا يحدث عندما تكون كل القيم أصغر من الهدف، كما مع <code>9</code>.</li>
+        <li><code>hi = mid</code> وليس <code>mid - 1</code>: الموقع <code>mid</code> يحقق الشرط، فقد يكون هو الجواب. لا نحذفه.</li>
+        <li><code>lower_bound(nums, 3)</code> يرجع 4: هذا هو المكان الذي تضيف فيه 3 مع الحفاظ على الترتيب، رغم أن 3 غير موجود.</li>
+        <li><code>bisect_left</code> هو نفس الدالة، لكنه مكتوب بلغة C، فهو أسرع. استخدمه في الكود الحقيقي.</li>
+        <li><code>bisect_right</code> يرجع أول موقع قيمته أكبر تمامًا من الهدف. الفرق بين الاثنين هو عدد مرات ظهور القيمة، ويُحسب بتعقيد <span class="en">O(log n)</span>.</li>
+      </ol>
+
+      <h3>مثال 3: البحث في مجال الجواب (الجذر التربيعي الصحيح)</h3>
+<pre><code class="language-python">from typing import Callable
+
+
+def first_true(lo: int, hi: int, pred: Callable[[int], bool]) -> int:
+    """Smallest x in [lo, hi] with pred(x) True.
+    pred must be monotonic (F..F T..T) and pred(hi) must be True."""
+    while lo &lt; hi:
+        mid = (lo + hi) // 2
+        if pred(mid):
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
+
+def isqrt(n: int) -> int:
+    """Largest x with x * x &lt;= n, without floats."""
+    # first x whose square is too big, minus one
+    return first_true(0, n + 1, lambda x: x * x > n) - 1
+
+
+print(isqrt(0), isqrt(15), isqrt(16), isqrt(10**18))</code></pre>
+      <div class="output">0 3 4 1000000000</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>first_true</code>: نفس القالب، لكنه يعمل على أي شرط وليس على قائمة. هذه الدالة وحدها تحل أغلب مسائل "مجال الجواب".</li>
+        <li><strong>الشرط:</strong> <code>x * x > n</code> رتيب. إذا كان مربع x أكبر من n، فمربع أي رقم أكبر من x أكبر أيضًا.</li>
+        <li><strong>المجال:</strong> <code>n + 1</code> يحقق الشرط دائمًا، فالشرط <code>pred(hi)</code> مضمون.</li>
+        <li><strong>نحسب "أول قيمة كبيرة جدًا" ثم نطرح 1.</strong> هذه طريقة آمنة لتحويل "آخر <span class="en">True</span>" إلى "أول <span class="en">True</span>"، وتجنّب الحلقة التي لا تنتهي (انظر الخطأ 1).</li>
+        <li>مع <code>10**18</code> نحتاج حوالي 60 دورة فقط. ولا نستخدم <code>float</code>، فلا توجد أخطاء تقريب. <span class="en">Python</span> لديه هذه الدالة جاهزة باسم <code>math.isqrt</code>.</li>
+      </ol>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>خطأ 1: حلقة لا تنتهي مع <code>lo = mid</code></h3>
+      <p>المطلوب: آخر موقع قيمته ≤ الهدف.</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def last_leq(nums: list[int], target: int) -> int:
+    lo, hi = 0, len(nums) - 1
+    while lo &lt; hi:
+        mid = (lo + hi) // 2
+        if nums[mid] &lt;= target:
+            lo = mid          # mid may equal lo
+        else:
+            hi = mid - 1
+    return lo
+
+# last_leq([1, 3], 5)  -> never ends!</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">from bisect import bisect_right
+
+def last_leq(nums: list[int], target: int) -> int:
+    # first index > target, minus one (-1 means none)
+    return bisect_right(nums, target) - 1
+
+print(last_leq([1, 3], 5))  # 1
+print(last_leq([1, 3], 0))  # -1</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> مع <code>lo = 0</code> و <code>hi = 1</code>، يكون <code>mid = 0</code>. الشرط صحيح، فيصبح <code>lo = mid = 0</code>، ولا يتغير شيء، فتتكرر نفس الدورة إلى الأبد. القسمة <code>//</code> تقرّب للأسفل، فقد يساوي <code>mid</code> قيمة <code>lo</code>. الحل الأفضل: حوّل "آخر <span class="en">True</span>" إلى "أول <span class="en">True</span> للشرط المعاكس، ناقص واحد". وإذا كان لا بد من <code>lo = mid</code>، فاستخدم <code>mid = (lo + hi + 1) // 2</code>.</div>
+
+      <h3>خطأ 2: البحث الثنائي على بيانات غير مرتبة</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">nums = [8, 2, 23, 5]          # NOT sorted
+print(binary_search(nums, 8))  # -1  wrong! 8 is at index 0</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">nums = [8, 2, 23, 5]
+print(nums.index(8))           # one search: O(n) -> 0
+
+sorted_nums = sorted(nums)     # many searches: sort once
+print(bisect_left(sorted_nums, 8))  # 2 (index in the sorted copy)</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> عند <code>mid = 1</code> القيمة 2 أصغر من 8، فيحذف البحث كل ما قبلها ومنه العدد 8 نفسه. حذف النصف صحيح فقط إذا كان الشرط رتيبًا. لاحظ أيضًا أن الترتيب يغيّر المواقع، كما في الخطأ 2 من الدرس 1. وإذا احتجت بحثًا كثيرًا بدون ترتيب، فالـ <span class="en">set</span> من الدرس 4 أسرع.</div>
+
+      <h3>أخطاء أخرى متكررة</h3>
+      <ul>
+        <li><strong>عدم التحقق من النتيجة:</strong> <code>bisect_left</code> يرجع موقعًا دائمًا. تحقق من <code>i &lt; len(nums) and nums[i] == target</code> قبل أن تقول "وجدته".</li>
+        <li><strong>خلط نوعي المجال:</strong> <code>hi = len(nums) - 1</code> مع <code>while lo &lt; hi</code> مع <code>hi = mid - 1</code>. اختر نوعًا واحدًا والتزم به. نصيحتي: المجال نصف المفتوح مع القالب الواحد.</li>
+        <li><strong>تجاوز الحد في لغات أخرى:</strong> في <span class="en">Java</span> و <span class="en">C++</span> قد يتجاوز <code>lo + hi</code> أكبر عدد صحيح. اكتب <code>lo + (hi - lo) // 2</code>. أما في <span class="en">Python</span> فالأعداد الصحيحة لا حد لها.</li>
+        <li><strong>مجال جواب خاطئ:</strong> إذا لم يكن <code>hi</code> يحقق الشرط مؤكدًا، فقد يرجع القالب <code>hi</code> وهو ليس جوابًا. اختر <code>hi</code> بحيث تعرف أنه يكفي.</li>
+        <li><strong>البحث على <code>float</code> بشرط <code>lo &lt; hi</code>:</strong> قد لا يلتقيان أبدًا بسبب التقريب. كرر عددًا ثابتًا من المرات، مثل <code>for _ in range(100)</code>، أو حوّل إلى أعداد صحيحة (القروش).</li>
+        <li><strong>التكلفة المخفية في <code>insort</code>:</strong> إيجاد المكان <span class="en">O(log n)</span>، لكن الإضافة في وسط القائمة تحرك العناصر، فتكلّف <span class="en">O(n)</span>.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>اكتب الشرط بالكلمات أولًا</strong>، مثل "أول حد يومي يكفي لإنهاء الصرف خلال D أيام". ثم تأكد أنه <code>F F F T T T</code>.</li>
+        <li><strong>استخدم قالبًا واحدًا دائمًا</strong> (<code>first_true</code>). كل مسألة "آخر قيمة" حوّلها إلى "أول قيمة" للشرط المعاكس ناقص واحد.</li>
+        <li><strong>استخدم <code>bisect</code> مع القوائم المرتبة.</strong> هو مختبر وسريع. ومنذ <span class="en">Python 3.10</span> يقبل المعامل <code>key=</code>.</li>
+        <li><strong>حدّد المجال بعناية:</strong> <code>lo</code> أصغر قيمة ممكنة للجواب، و <code>hi</code> قيمة تعرف أنها تكفي.</li>
+        <li><strong>اختبر الحالات الطرفية:</strong> قائمة فارغة، وعنصر واحد، والهدف أصغر من الكل، والهدف أكبر من الكل، وكل العناصر متساوية.</li>
+        <li><strong>اختبر بالضغط:</strong> قارن بالبحث الخطي على قوائم عشوائية صغيرة، كما تعلمت في الدرس 1. أخطاء البحث الثنائي تظهر غالبًا مع قوائم فيها عنصر أو عنصران.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>إشارات في نص المسألة:</strong> "مرتبة" مع قيود كبيرة مثل <code>n ≤ 10⁹</code> تشير إلى البحث الثنائي. وعبارات مثل "أقل قيمة ممكنة لـ..." و "أكبر قيمة ممكنة لـ..." و "أقل سعة" و "أقل سرعة" و "خلال D أيام" تشير غالبًا إلى البحث في مجال الجواب.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+      <h3>البحث الخطي مقابل البحث الثنائي</h3>
+      <p>عدد المقارنات في أسوأ حالة. الرسم بمقياس لوغاريتمي. مع مليار عنصر: مليار مقارنة مقابل 30.</p>
+      <div class="chart-box"><canvas id="searchChart"></canvas></div>
+
+      <h3>هل يستحق الترتيب التكلفة؟</h3>
+      <p>الترتيب يكلّف <span class="en">O(n log n)</span> مرة واحدة. إذا كنت ستبحث k مرة:</p>
+      <div dir="ltr">$$\underbrace{k \cdot n}_{\text{linear}} \quad \text{vs} \quad \underbrace{n \log n + k \log n}_{\text{sort + binary search}}$$</div>
+      <p>الترتيب يستحق عندما تكون k أكبر من <span class="en">log n</span> تقريبًا. مع مليون عنصر، تكفي حوالي 20 عملية بحث.</p>
+
+      <h3>مقارنة طرق البحث</h3>
+      <table>
+        <tr><th>الطريقة</th><th>التحضير</th><th>البحث</th><th>الذاكرة</th><th>تجد "أقرب قيمة"؟</th></tr>
+        <tr><td>بحث خطي</td><td>لا شيء</td><td class="en">O(n)</td><td class="en">O(1)</td><td>نعم، بتعقيد <span class="en">O(n)</span></td></tr>
+        <tr><td>ترتيب + بحث ثنائي</td><td class="en">O(n log n)</td><td class="en">O(log n)</td><td>لا إضافة مع الترتيب في المكان</td><td>✅ نعم، بتعقيد <span class="en">O(log n)</span></td></tr>
+        <tr><td><span class="en">set / dict</span></td><td class="en">O(n)</td><td class="en">O(1) avg</td><td class="en">O(n)</td><td>❌ لا</td></tr>
+      </table>
+      <div class="callout note">📝 <strong>متى تختار البحث الثنائي بدل <span class="en">set</span>؟</strong> عندما تحتاج الترتيب: أقرب قيمة، أو كل القيم بين a و b، أو "كم عنصرًا أصغر من x؟". وعندما تكون الذاكرة محدودة. أما سؤال "هل هو موجود؟" فقط، فالـ <span class="en">set</span> أسرع.</div>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: أقل حد يومي لصرف الرواتب</h2>
+      <p><strong>القصة:</strong> شركة تريد صرف رواتب موظفيها خلال <code>D</code> أيام على الأكثر. الدفعات في طابور ويجب صرفها <strong>بالترتيب</strong>، ولا تُقسم الدفعة الواحدة. البنك يحدد حدًّا يوميًا لمجموع التحويلات، وكلما زاد الحد زادت الرسوم. المطلوب: أقل حد يومي يكفي.</p>
+
+      <h3>طبّق الخطوات الست</h3>
+      <ol>
+        <li><strong>الفهم:</strong> المدخلات قائمة مبالغ (أعداد صحيحة)، و <code>max_days</code>. المخرجات أصغر حد يومي.</li>
+        <li><strong>الحالات الطرفية:</strong> يوم واحد (الجواب هو المجموع)، وأيام بعدد الدفعات أو أكثر (الجواب هو أكبر دفعة)، وقائمة فارغة.</li>
+        <li><strong>الحل البدائي:</strong> جرّب كل حد من أكبر دفعة إلى المجموع، بتعقيد <span class="en">O(n · S)</span>. هذا بطيء جدًا مع مبالغ كبيرة.</li>
+        <li><strong>التحسين:</strong> الشرط "هل هذا الحد يكفي؟" رتيب. لذلك نستخدم البحث الثنائي في مجال الجواب، مع دالة فحص جشعة (<span class="en">greedy</span>): املأ كل يوم قدر الإمكان.</li>
+        <li><strong>الكود:</strong> بالأسفل.</li>
+        <li><strong>الاختبار:</strong> 3 أيام، ويوم واحد، و 6 أيام.</li>
+      </ol>
+<pre><code class="language-python">def days_needed(payouts: list[int], capacity: int) -> int:
+    """Greedy: fill each day as much as possible. Time: O(n)."""
+    days, today = 1, 0
+    for amount in payouts:
+        if today + amount > capacity:   # doesn't fit -> start a new day
+            days += 1
+            today = 0
+        today += amount
+    return days
+
+
+def min_daily_capacity(payouts: list[int], max_days: int) -> int:
+    """Smallest daily limit that finishes within max_days.
+    Time: O(n log S), S = sum(payouts). Space: O(1)."""
+    if not payouts:
+        return 0
+    lo, hi = max(payouts), sum(payouts)   # hi always works (one day)
+    while lo &lt; hi:
+        mid = (lo + hi) // 2
+        if days_needed(payouts, mid) &lt;= max_days:   # feasible -> try smaller
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
+
+def schedule(payouts: list[int], capacity: int) -> list[list[int]]:
+    plan: list[list[int]] = [[]]
+    today = 0
+    for amount in payouts:
+        if today + amount > capacity:
+            plan.append([])
+            today = 0
+        plan[-1].append(amount)
+        today += amount
+    return plan
+
+
+payouts = [500, 300, 700, 200, 400, 600]   # in EGP, must be paid in order
+
+cap = min_daily_capacity(payouts, 3)
+print(cap)
+print(schedule(payouts, cap))
+print(min_daily_capacity(payouts, 1))
+print(min_daily_capacity(payouts, 6))</code></pre>
+      <div class="output">1000
+[[500, 300], [700, 200], [400, 600]]
+2700
+700</div>
+      <h4>الشرح</h4>
+      <ol>
+        <li><code>lo = max(payouts)</code>: أي حد أقل من أكبر دفعة لا يمكن أن يصرفها، لأن الدفعة لا تُقسم. هذا يضمن أيضًا أن <code>days_needed</code> صحيحة.</li>
+        <li><code>hi = sum(payouts)</code>: يكفي دائمًا، لأن كل الدفعات تُصرف في يوم واحد.</li>
+        <li><strong>لماذا الشرط رتيب؟</strong> زيادة الحد لا تزيد عدد الأيام أبدًا. إذن إذا كفى حدٌّ ما، كفى كل حد أكبر منه.</li>
+        <li><code>days_needed</code> جشعة: تملأ اليوم الحالي قدر الإمكان. هذا صحيح هنا، لأن تأجيل دفعة إلى الغد لا يقلل عدد الأيام أبدًا.</li>
+        <li>مع 6 أيام يكون الجواب 700، أي أكبر دفعة، وتكفي 5 أيام فعلًا.</li>
+        <li>التعقيد <span class="en">O(n log S)</span>. حتى لو كان المجموع مليار جنيه، يكفي حوالي 30 فحصًا.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>نمط عام:</strong> نفس الكود يحل مسائل كثيرة: أقل سعة لشاحنة تنقل الطرود خلال D أيام، وتقسيم قائمة إلى k أجزاء متصلة بأقل أكبر مجموع، وأقل سرعة لإنهاء عمل في وقت محدد. غيّر دالة الفحص فقط، واترك البحث الثنائي كما هو.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+      <div class="quiz" data-explain="كل خطوة تقسم المجال على 2. 2 أس 20 حوالي مليون، إذن 20 خطوة تكفي.">
+        <div class="q">1. كم مقارنة يحتاج البحث الثنائي في أسوأ حالة مع مليون عنصر؟</div>
+        <button class="option">1,000</button>
+        <button class="option">500,000</button>
+        <button class="option" data-correct="true">حوالي 20</button>
+        <button class="option">1</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="البحث الثنائي يحتاج شرطًا رتيبًا فقط: F F F ثم T T T. القائمة المرتبة حالة خاصة من ذلك.">
+        <div class="q">2. ما الشرط الوحيد الضروري للبحث الثنائي؟</div>
+        <button class="option">أن تكون البيانات قائمة</button>
+        <button class="option" data-correct="true">أن يكون الشرط رتيبًا: إذا صار True بقي True</button>
+        <button class="option">أن تكون القيم أعدادًا صحيحة</button>
+        <button class="option">ألا تتكرر القيم</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="bisect_left يرجع أول موقع ≥ 2، وهو 1. bisect_right يرجع أول موقع أكبر من 2، وهو 4.">
+        <div class="q">3. nums = [1, 2, 2, 2, 5]. ما قيمة bisect_left(nums, 2) و bisect_right(nums, 2)؟</div>
+        <button class="option">(1, 3)</button>
+        <button class="option" data-correct="true">(1, 4)</button>
+        <button class="option">(2, 3)</button>
+        <button class="option">(0, 4)</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="عندما hi = lo + 1، القسمة للأسفل تجعل mid = lo. إذا كان الشرط صحيحًا وكتبنا lo = mid، فلا يتغير المجال.">
+        <div class="q">4. لماذا قد لا تنتهي حلقة فيها lo = mid و mid = (lo + hi) // 2؟</div>
+        <button class="option">لأن Python بطيئة</button>
+        <button class="option" data-correct="true">لأن mid قد يساوي lo، فلا يصغر المجال</button>
+        <button class="option">لأن hi قد يصبح سالبًا</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الحد الأكبر لا يزيد عدد الأيام أبدًا. إذا كفى حدٌّ ما كفى كل ما هو أكبر منه، فالشرط رتيب.">
+        <div class="q">5. في مشروع الرواتب، لماذا يمكن استخدام البحث الثنائي رغم أنه لا توجد قائمة مرتبة نبحث فيها؟</div>
+        <button class="option">لأن الدفعات مرتبة</button>
+        <button class="option" data-correct="true">لأن الشرط "هل الحد يكفي؟" رتيب في الحد</button>
+        <button class="option">لأن عدد الأيام صغير</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+      <p>قبل كل تمرين، اكتب الشرط الرتيب بالكلمات، وحدد <code>lo</code> و <code>hi</code>.</p>
+
+      <h3>تمرين 1 (سهل): موقع الإضافة</h3>
+      <p>اكتب دالة <code>search_insert(nums: list[int], target: int) -> int</code>. ترجع موقع <code>target</code> إذا وُجد في قائمة مرتبة بدون تكرار، أو الموقع الذي يجب أن يُضاف فيه. لا تستخدم <code>bisect</code>.</p>
+      <details><summary>💡 تلميح</summary><p>الموقع في الحالتين هو أول موقع قيمته ≥ <code>target</code>. ابدأ بالمجال <code>[0, len(nums))</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def search_insert(nums: list[int], target: int) -> int:
+    # Time: O(log n), Space: O(1)
+    lo, hi = 0, len(nums)
+    while lo &lt; hi:
+        mid = (lo + hi) // 2
+        if nums[mid] >= target:
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
+
+print(search_insert([1, 3, 5, 6], 5))
+print(search_insert([1, 3, 5, 6], 2))
+print(search_insert([1, 3, 5, 6], 7))</code></pre>
+        <div class="output">2
+1
+4</div>
+        <p>هذا هو <code>lower_bound</code> نفسه. لاحظ أن <code>hi = len(nums)</code> هو الذي يسمح بالجواب 4، أي بعد آخر عنصر.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): أول وآخر ظهور</h3>
+      <p>اكتب دالة <code>search_range(nums: list[int], target: int) -> tuple[int, int]</code>. ترجع أول وآخر موقع للقيمة في قائمة مرتبة، أو <code>(-1, -1)</code>. المطلوب <span class="en">O(log n)</span> حتى لو تكررت القيمة مليون مرة.</p>
+      <details><summary>💡 تلميح</summary><p>أول ظهور هو <code>bisect_left</code>. وآخر ظهور هو <code>bisect_right - 1</code>. لا تنسَ أن تتحقق أن القيمة موجودة.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from bisect import bisect_left, bisect_right
+
+
+def search_range(nums: list[int], target: int) -> tuple[int, int]:
+    # Time: O(log n), Space: O(1)
+    left = bisect_left(nums, target)
+    if left == len(nums) or nums[left] != target:
+        return (-1, -1)
+    return (left, bisect_right(nums, target) - 1)
+
+
+print(search_range([5, 7, 7, 8, 8, 10], 8))
+print(search_range([5, 7, 7, 8, 8, 10], 6))
+print(search_range([], 0))</code></pre>
+        <div class="output">(3, 4)
+(-1, -1)
+(-1, -1)</div>
+        <p>لو وجدت القيمة ثم مشيت يمينًا ويسارًا لتجد أول وآخر ظهور، يصبح التعقيد <span class="en">O(n)</span> عندما تتكرر القيمة كثيرًا. بحثان ثنائيان يبقيان <span class="en">O(log n)</span>.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): أقل سرعة للأكل (<span class="en">Koko Eating Bananas</span>)</h3>
+      <p>عندك أكوام موز <code>piles</code>، وتأكل <code>k</code> موزة في الساعة من كوم واحد. إذا كان الكوم أقل من k، تنهيه وتنتظر حتى نهاية الساعة. اكتب دالة <code>min_eating_speed(piles: list[int], h: int) -> int</code> ترجع أقل سرعة k تنهي بها كل الأكوام خلال <code>h</code> ساعة.</p>
+      <details><summary>💡 تلميح</summary><p>الوقت اللازم لكوم p هو <code>ceil(p / k)</code>، ويُكتب بأعداد صحيحة <code>(p + k - 1) // k</code>. المجال من 1 إلى <code>max(piles)</code>. الشرط: "هل مجموع الساعات ≤ h؟"، وهو رتيب.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def min_eating_speed(piles: list[int], h: int) -> int:
+    # Time: O(n log M), M = max(piles). Assumes len(piles) &lt;= h.
+    def hours(k: int) -> int:
+        return sum((p + k - 1) // k for p in piles)   # integer ceil
+
+    lo, hi = 1, max(piles)        # speed max(piles) finishes in len(piles) hours
+    while lo &lt; hi:
+        mid = (lo + hi) // 2
+        if hours(mid) &lt;= h:
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
+
+print(min_eating_speed([3, 6, 7, 11], 8))
+print(min_eating_speed([30, 11, 23, 4, 20], 5))
+print(min_eating_speed([30, 11, 23, 4, 20], 6))</code></pre>
+        <div class="output">4
+30
+23</div>
+        <p>نفس شكل مشروع الرواتب بالضبط، والذي تغيّر هو دالة الفحص فقط. استخدمنا <code>(p + k - 1) // k</code> بدل <code>math.ceil(p / k)</code> لنتجنب <code>float</code>.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): البحث في قائمة مرتبة ومُدارة</h3>
+      <p>قائمة مرتبة تم تدويرها عند نقطة لا تعرفها، مثل <code>[4, 5, 6, 7, 0, 1, 2]</code>. القيم غير مكررة. اكتب دالة <code>search_rotated(nums: list[int], target: int) -> int</code> ترجع موقع القيمة أو <code>-1</code>، بتعقيد <span class="en">O(log n)</span>.</p>
+      <details><summary>💡 تلميح</summary><p>القائمة كلها ليست مرتبة، لكن عند أي <code>mid</code> يكون <strong>أحد النصفين على الأقل</strong> مرتبًا. إذا كان <code>nums[lo] &lt;= nums[mid]</code> فالنصف الأيسر مرتب. تحقق هل الهدف داخل النصف المرتب: إذا كان داخله فابحث فيه، وإلا فابحث في النصف الآخر.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def search_rotated(nums: list[int], target: int) -> int:
+    # Time: O(log n), Space: O(1)
+    lo, hi = 0, len(nums) - 1
+    while lo &lt;= hi:
+        mid = (lo + hi) // 2
+        if nums[mid] == target:
+            return mid
+        if nums[lo] &lt;= nums[mid]:                 # left half is sorted
+            if nums[lo] &lt;= target &lt; nums[mid]:
+                hi = mid - 1
+            else:
+                lo = mid + 1
+        else:                                      # right half is sorted
+            if nums[mid] &lt; target &lt;= nums[hi]:
+                lo = mid + 1
+            else:
+                hi = mid - 1
+    return -1
+
+
+print(search_rotated([4, 5, 6, 7, 0, 1, 2], 0))
+print(search_rotated([4, 5, 6, 7, 0, 1, 2], 3))
+print(search_rotated([1], 1))</code></pre>
+        <div class="output">4
+-1
+0</div>
+        <p>هنا لا يوجد شرط رتيب على القائمة كلها، لكن في كل خطوة نستطيع أن نحدد بأمان أي نصف نحذفه. وهذا هو جوهر البحث الثنائي: <strong>معلومة واحدة عند <code>mid</code> تكفي لحذف النصف</strong>. استخدمنا <code>&lt;=</code> في <code>nums[lo] &lt;= nums[mid]</code> لحالة <code>lo == mid</code>.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>البحث الثنائي يحذف نصف المجال في كل خطوة، فالتعقيد <span class="en">O(log n)</span>: مليون عنصر يحتاج 20 خطوة.</li>
+        <li>الشرط الوحيد هو الرتابة: <code>F F F T T T</code>. القائمة المرتبة حالة خاصة.</li>
+        <li>فكّر دائمًا في "أول <span class="en">True</span>"، واستخدم قالبًا واحدًا: <code>while lo &lt; hi</code>، و <code>hi = mid</code>، و <code>lo = mid + 1</code>.</li>
+        <li>الثابت: ما قبل <code>lo</code> قيمته <span class="en">False</span>، وما من <code>hi</code> وبعده قيمته <span class="en">True</span>.</li>
+        <li><code>bisect_left</code> أول موقع ≥ x، و <code>bisect_right</code> أول موقع > x، والفرق بينهما عدد مرات الظهور.</li>
+        <li>حوّل "آخر <span class="en">True</span>" إلى "أول <span class="en">True</span> للشرط المعاكس ناقص 1"، حتى تتجنب الحلقة التي لا تنتهي.</li>
+        <li>البحث في مجال الجواب: حدّد <code>lo</code> و <code>hi</code>، واكتب دالة فحص، وابحث عن أصغر قيمة تكفي. التعقيد <span class="en">O(n log Range)</span>.</li>
+        <li>تحقق دائمًا من النتيجة، واختبر القوائم الفارغة والصغيرة جدًا.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <ul>
+        <li><strong>الدرس 7: البرمجة الديناميكية (<span class="en">Dynamic Programming</span>)</strong>. ستحوّل التراجع الأُسّي من الدرس 5 إلى حل سريع، بحفظ نتائج المسائل الصغيرة المتكررة. وستحل مسألة مطابقة الفاتورة بتعقيد <span class="en">O(n × invoice)</span>.</li>
+        <li>الدرس 8: الرسوم البيانية (<span class="en">Graphs: BFS / DFS</span>).</li>
+        <li>للتدريب: حلّ 5 مسائل على <span class="en">LeetCode</span> بوسم <span class="en">Binary Search</span>، ثلاث منها على مجال الجواب. قبل الكود، اكتب الشرط الرتيب بالكلمات وحدد <code>lo</code> و <code>hi</code>.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  // Code highlighting + copy buttons
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  // Mermaid diagrams
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  // Math formulas
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  // Chart: linear vs binary search comparisons
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var sc = document.getElementById("searchChart");
+  if (sc) {
+    var sizes = [10, 1000, 100000, 10000000, 1000000000];
+    new Chart(sc, {
+      type: "line",
+      data: {
+        labels: sizes.map(function (n) { return n.toLocaleString("en-US"); }),
+        datasets: [
+          { label: "البحث الخطي O(n)", data: sizes, borderColor: "#ef4444", backgroundColor: "#ef4444", tension: 0.2 },
+          { label: "البحث الثنائي O(log n)", data: sizes.map(function (n) { return Math.ceil(Math.log2(n + 1)); }), borderColor: "#10b981", backgroundColor: "#10b981", tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: { legend: { rtl: true }, tooltip: { rtl: true } },
+        scales: {
+          y: { type: "logarithmic", title: { display: true, text: "عدد المقارنات (مقياس لوغاريتمي)" } },
+          x: { title: { display: true, text: "حجم البيانات n" } }
+        }
+      }
+    });
+  }
+
+  // Steppers
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  // Quizzes
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  // Reading progress bar (fills from the right, RTL)
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

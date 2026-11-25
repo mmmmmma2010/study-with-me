@@ -252,5 +252,125 @@ window.STUDY_CATALOG = [
         tags: ["Passive: present & past", "English B2 level"]
       }
     ]
+  },
+  {
+    id: "problem-solving",
+    folder: "Problem Solving",
+    title: "حل المشكلات البرمجية",
+    titleEn: "Problem Solving",
+    subtitle: "من منهجية الحل إلى البرمجة الديناميكية والرسوم البيانية",
+    description:
+      "سلسلة عملية من 8 دروس لتعلم مهارات حل المشكلات البرمجية وتحليل التعقيد، المؤشران، الـ Hashing، العودية، البحث الثنائي، البرمجة الديناميكية، والرسوم البيانية بلغة Python.",
+    icon: "🧩",
+    accent: "#2563eb",
+    gradient: "linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981)",
+    level: "متوسط",
+    language: "العربية + Python",
+    items: [
+      {
+        id: "ps-1",
+        order: 1,
+        subfolder: "",
+        file: "Problem Solving/درس: منهجية حل المشكلات البرمجية.html",
+        title: "منهجية حل المشكلات البرمجية",
+        titleEn: "Problem Solving Framework",
+        description: "ستتعلم طريقة من 6 خطوات تساعدك على حل أي مسألة برمجية بثقة، بدل التخمين.",
+        duration: "30 دقيقة",
+        durationMinutes: 30,
+        level: "متوسط",
+        tags: ["Framework", "Python", "الدرس 1 من 8"]
+      },
+      {
+        id: "ps-2",
+        order: 2,
+        subfolder: "",
+        file: "Problem Solving/درس 2: تحليل التعقيد (Big-O).html",
+        title: "تحليل التعقيد (Big-O Notation)",
+        titleEn: "Big-O Notation",
+        description: "ستتعلم في هذا الدرس كيف تعرف سرعة أي كود وحجم الذاكرة التي يحتاجها قبل أن تشغّله.",
+        duration: "35 دقيقة",
+        durationMinutes: 35,
+        level: "متوسط",
+        tags: ["Big-O", "Complexity", "الدرس 2 من 8"]
+      },
+      {
+        id: "ps-3",
+        order: 3,
+        subfolder: "",
+        file: "Problem Solving/درس 3: المؤشران والنافذة المنزلقة.html",
+        title: "المؤشران والنافذة المنزلقة",
+        titleEn: "Two Pointers & Sliding Window",
+        description: "ستتعلم كيف تحوّل حلولًا بتعقيد O(n²) إلى O(n) عندما تحرّك مؤشرين بذكاء بدل تجربة كل الاحتمالات.",
+        duration: "40 دقيقة",
+        durationMinutes: 40,
+        level: "متوسط",
+        tags: ["Two Pointers", "Sliding Window", "الدرس 3 من 8"]
+      },
+      {
+        id: "ps-4",
+        order: 4,
+        subfolder: "",
+        file: "Problem Solving/درس 4: الـ Hashing والعدّ.html",
+        title: "الـ Hashing والعدّ",
+        titleEn: "Hashing & Counting",
+        description: "ستتعلم كيف يعمل dict و set من الداخل، ولماذا البحث فيهما سريع، وخمسة أنماط تحل بها عددًا كبيرًا من المسائل.",
+        duration: "40 دقيقة",
+        durationMinutes: 40,
+        level: "متوسط",
+        tags: ["Hashing", "Counting", "الدرس 4 من 8"]
+      },
+      {
+        id: "ps-5",
+        order: 5,
+        subfolder: "",
+        file: "Problem Solving/درس 5: العودية والتراجع.html",
+        title: "العودية والتراجع",
+        titleEn: "Recursion & Backtracking",
+        description: "ستتعلم كيف تكتب دالة تستدعي نفسها بثقة، وكيف تجرّب كل الاختيارات الممكنة بقالب واحد، وكيف توقف البحث مبكرًا عندما لا يفيد.",
+        duration: "45 دقيقة",
+        durationMinutes: 45,
+        level: "متوسط",
+        tags: ["Recursion", "Backtracking", "الدرس 5 من 8"]
+      },
+      {
+        id: "ps-6",
+        order: 6,
+        subfolder: "",
+        file: "Problem Solving/درس 6: البحث الثنائي.html",
+        title: "البحث الثنائي",
+        titleEn: "Binary Search",
+        description: "ستتعلم كيف تجد ما تبحث عنه بين مليون عنصر في 20 خطوة فقط، وكيف تكتب الحدود بدون أخطاء، وكيف تبحث عن الجواب نفسه حتى لو لم تكن هناك قائمة.",
+        duration: "40 دقيقة",
+        durationMinutes: 40,
+        level: "متوسط",
+        tags: ["Binary Search", "Python", "الدرس 6 من 8"]
+      },
+      {
+        id: "ps-7",
+        order: 7,
+        subfolder: "",
+        file: "Problem Solving/درس 7: البرمجة الديناميكية.html",
+        title: "البرمجة الديناميكية",
+        titleEn: "Dynamic Programming",
+        description: "ستتعلم كيف تحوّل حلولًا أُسّية إلى حلول سريعة، لأنك تحفظ جواب كل مسألة صغيرة ولا تحسبه مرتين، وستتعلم وصفة من خمس خطوات تبني بها أي حل.",
+        duration: "45 دقيقة",
+        durationMinutes: 45,
+        level: "متوسط",
+        tags: ["Dynamic Programming", "Memoization", "الدرس 7 من 8"]
+      },
+      {
+        id: "ps-8",
+        order: 8,
+        subfolder: "",
+        file: "Problem Solving/درس 8: الرسوم البيانية (BFS -DFS).html",
+        title: "الرسوم البيانية (Graphs: BFS & DFS)",
+        titleEn: "Graphs: BFS & DFS",
+        description: "ستتعلم كيف تمثل العلاقات بين الأشياء، وكيف تجد أقصر طريق، والمجموعات المتصلة، والحلقات، وترتيب الاعتماديات، وأرخص مسار عندما يكون لكل خطوة تكلفة.",
+        duration: "50 دقيقة",
+        durationMinutes: 50,
+        level: "متوسط",
+        tags: ["Graphs", "BFS", "DFS", "الدرس 8 من 8"]
+      }
+    ]
   }
 ];

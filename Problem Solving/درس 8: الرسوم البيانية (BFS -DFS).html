@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الرسوم البيانية: BFS و DFS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif; font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text); }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero { background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981); color: #fff; padding: 48px 24px; text-align: center; }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 700px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 8px; flex-wrap: wrap; direction: ltr; justify-content: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; min-width: 54px; text-align: center; transition: all .3s; }
+  .box small { display: block; font-size: .7rem; opacity: .8; }
+  .box.empty { border-style: dashed; color: var(--muted); }
+  .box.cur { background: var(--warn); border-color: var(--warn); color: #fff; transform: scale(1.1); }
+  .box.new { background: var(--primary); color: #fff; transform: scale(1.08); }
+  .box.done { background: rgba(16,185,129,.25); border-color: var(--good); }
+  .box.gray { background: #9ca3af; border-color: #6b7280; color: #fff; }
+  .box.black { background: #1f2937; border-color: #111827; color: #fff; }
+  .box.cycle { background: var(--bad); border-color: var(--bad); color: #fff; transform: scale(1.1); }
+  .rowlabel { direction: rtl; font-weight: 700; color: var(--muted); align-self: center; }
+  .state { direction: ltr; text-align: center; font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); border-radius: 10px; padding: 8px; }
+  .legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: .9rem; color: var(--muted); }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: middle; margin-inline-end: 4px; }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--primary-soft); }
+  .card h4 { margin: 0 0 4px; color: var(--primary); }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>الرسوم البيانية <span class="en">(Graphs: BFS &amp; DFS)</span></h1>
+  <p>ستتعلم كيف تمثل العلاقات بين الأشياء، وكيف تجد أقصر طريق، والمجموعات المتصلة، والحلقات، وترتيب الاعتماديات، وأرخص مسار عندما يكون لكل خطوة تكلفة.</p>
+  <div class="badges">
+    <span class="badge">الدرس 8 من 8 (الأخير)</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 50 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">خريطة السلسلة والخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في الدرس 2 تعلمت أن <code>deque</code> هو الطابور الصحيح. وفي الدرس 4 استخدمت <code>dict</code> و <code>set</code> للحفظ والبحث السريع. وفي الدرس 5 تعلمت العودية والتراجع. هذا الدرس يجمع الثلاثة: الطابور هو أساس <span class="en">BFS</span>، والعودية أو المكدس أساس <span class="en">DFS</span>، والـ <span class="en">set</span> يحفظ ما زرناه.</div>
+      <p>الرسم البياني (<span class="en">Graph</span>) هو طريقة لتمثيل <strong>أشياء وعلاقات بينها</strong>. الحسابات والتحويلات بينها، والخدمات والاعتماديات بينها، والمدن والطرق بينها، وخانات الخريطة وجيرانها. كلها رسوم بيانية.</p>
+      <p>لماذا يهمك هذا؟ لأن مسائل كثيرة لا تبدو مسائل رسوم بيانية في البداية. "هل هذه الحسابات مرتبطة ببعضها؟" و "بأي ترتيب نشغّل الخدمات؟" و "هل توجد حلقة تحويلات تعود إلى نفس الحساب؟". كل هذه أسئلة عن رسم بياني.</p>
+      <p>في هذا الدرس ستتعلم طرق التمثيل، والبحث بالعرض (<span class="en">BFS</span>)، والبحث بالعمق (<span class="en">DFS</span>)، واكتشاف الحلقات، والترتيب الطوبولوجي، وخوارزمية <span class="en">Dijkstra</span>. وفي النهاية ستبني نظامًا يكشف شبكات الاحتيال من الأجهزة وأرقام الهواتف المشتركة.</p>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">💧 <strong>البحث بالعرض (<span class="en">BFS</span>):</strong> ارمِ حجرًا في بحيرة. الموجة تصل أولًا إلى كل النقاط على بعد متر واحد، ثم إلى كل النقاط على بعد مترين، وهكذا. لذلك أول مرة تصل فيها الموجة إلى نقطة هي <strong>أقصر مسافة</strong> إليها.<br><br>
+      🕳️ <strong>البحث بالعمق (<span class="en">DFS</span>):</strong> تخيّل مستكشفًا في كهف. يأخذ أول ممر ويمشي فيه إلى آخره. عندما يصل إلى نهاية مسدودة، يرجع إلى آخر مفترق ويجرب الممر التالي. هذا هو التراجع من الدرس 5 بالضبط.<br><br>
+      🏦 <strong>من عالم المدفوعات:</strong> الحسابات هي <strong>العقد</strong>، والتحويلات هي <strong>الحواف</strong>. إذا خرج المال من حساب ثم رجع إليه بعد عدة تحويلات، فهذه <strong>حلقة</strong>، وقد تكون علامة على غسيل أموال.</div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>العقدة</td><td class="en">Node / Vertex (V)</td><td>شيء واحد، مثل حساب أو خدمة أو خانة.</td></tr>
+        <tr><td>الحافة</td><td class="en">Edge (E)</td><td>علاقة بين عقدتين، مثل تحويل أو اعتمادية.</td></tr>
+        <tr><td>غير موجّه</td><td class="en">Undirected</td><td>العلاقة في الاتجاهين، مثل "يشتركان في جهاز".</td></tr>
+        <tr><td>موجّه</td><td class="en">Directed</td><td>العلاقة لها اتجاه، مثل "A حوّل إلى B".</td></tr>
+        <tr><td>موزون</td><td class="en">Weighted</td><td>لكل حافة تكلفة، مثل رسوم التحويل.</td></tr>
+        <tr><td>الجيران</td><td class="en">Neighbors / Adjacent</td><td>العقد المتصلة مباشرة بعقدة ما.</td></tr>
+        <tr><td>الدرجة</td><td class="en">Degree</td><td>عدد جيران العقدة.</td></tr>
+        <tr><td>قائمة الجوار</td><td class="en">Adjacency List</td><td>قاموس من كل عقدة إلى قائمة جيرانها. التمثيل الأكثر استخدامًا.</td></tr>
+        <tr><td>مصفوفة الجوار</td><td class="en">Adjacency Matrix</td><td>جدول V × V، والخانة <code>[i][j]</code> تقول هل توجد حافة.</td></tr>
+        <tr><td>المكوّن المتصل</td><td class="en">Connected Component</td><td>مجموعة عقد يمكن الوصول من أي واحدة منها إلى الأخرى.</td></tr>
+        <tr><td>الحلقة</td><td class="en">Cycle</td><td>مسار يبدأ من عقدة وينتهي عندها.</td></tr>
+        <tr><td>رسم موجّه بلا حلقات</td><td class="en">DAG</td><td>رسم موجّه لا توجد فيه أي حلقة، مثل الاعتماديات الصحيحة.</td></tr>
+        <tr><td>الترتيب الطوبولوجي</td><td class="en">Topological Sort</td><td>ترتيب العقد بحيث تأتي كل عقدة قبل العقد التي تعتمد عليها.</td></tr>
+        <tr><td>درجة الدخول</td><td class="en">In-degree</td><td>عدد الحواف الداخلة إلى عقدة في رسم موجّه.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>ثلاث طرق للتمثيل</h3>
+      <p>هذا هو الرسم الذي سنستخدمه في أغلب الدرس (غير موجّه):</p>
+      <div class="diagram mermaid">
+graph LR
+  A --- B
+  A --- C
+  B --- D
+  C --- E
+  D --- F
+  E --- F
+      </div>
+      <table>
+        <tr><th>التمثيل</th><th>شكله في <span class="en">Python</span></th><th>متى تستخدمه؟</th></tr>
+        <tr><td>قائمة الحواف</td><td><code>[("A","B"), ("A","C"), ...]</code></td><td>هكذا تصلك البيانات غالبًا. حوّلها إلى قائمة جوار.</td></tr>
+        <tr><td>قائمة الجوار</td><td><code>{"A": ["B","C"], "B": ["A","D"], ...}</code></td><td>✅ الخيار الافتراضي، خاصة عندما تكون الحواف قليلة.</td></tr>
+        <tr><td>مصفوفة الجوار</td><td><code>[[0,1,1,0,0,0], ...]</code></td><td>رسوم صغيرة كثيفة، أو عندما تسأل كثيرًا "هل توجد حافة بين i و j؟".</td></tr>
+        <tr><td>شبكة ضمنية</td><td><code>grid[r][c]</code> وجيرانها الأربعة</td><td>الخرائط والصور. لا تبني الرسم، احسب الجيران عند الحاجة.</td></tr>
+      </table>
+
+      <h3><span class="en">BFS</span> و <span class="en">DFS</span>: نفس الكود تقريبًا، والفرق في هيكل البيانات</h3>
+      <div class="steps-grid">
+        <div class="card"><h4><span class="en">BFS</span>: طابور <code>deque</code></h4>أول من دخل أول من يخرج. يزور العقد طبقة بعد طبقة حسب المسافة. <strong>يجد أقصر طريق</strong> في رسم غير موزون.</div>
+        <div class="card"><h4><span class="en">DFS</span>: مكدس أو عودية</h4>آخر من دخل أول من يخرج. يذهب في العمق أولًا. مناسب للمكونات، والحلقات، والترتيب الطوبولوجي، وكل المسارات.</div>
+        <div class="card"><h4>المشترك: <code>seen</code></h4>كلاهما يحفظ العقد التي زارها، حتى لا يدور في حلقة إلى الأبد، ولا يزور العقدة مرتين.</div>
+      </div>
+
+      <h3>لماذا التعقيد <span class="en">O(V + E)</span>؟</h3>
+      <p>كل عقدة تدخل الطابور أو المكدس مرة واحدة، فهذا <span class="en">O(V)</span>. وعند زيارة كل عقدة نمرّ على جيرانها. مجموع الجيران لكل العقد في رسم غير موجّه هو:</p>
+      <div dir="ltr">$$\sum_{v \in V} \deg(v) = 2E \;\Rightarrow\; O(V) + O(2E) = O(V + E)$$</div>
+      <p>كل حافة تُرى مرتين، مرة من كل طرف. وهذا هو أفضل ما يمكن، لأنك يجب أن ترى الرسم كله مرة واحدة على الأقل.</p>
+
+      <h3>أي خوارزمية تختار؟</h3>
+      <div class="diagram mermaid">
+flowchart TD
+  A["ما السؤال؟"] --> B{"أقصر طريق؟"}
+  B -->|"نعم"| C{"هل للحواف أوزان؟"}
+  C -->|"لا: نعد الخطوات"| D["BFS"]
+  C -->|"نعم وغير سالبة"| E["Dijkstra مع heapq"]
+  B -->|"لا"| F{"مجموعات متصلة؟"}
+  F -->|"نعم"| G["BFS أو DFS أو Union-Find"]
+  F -->|"لا"| H{"ترتيب حسب الاعتماديات؟"}
+  H -->|"نعم"| I["Topological Sort - Kahn"]
+  H -->|"لا"| J{"هل توجد حلقة؟"}
+  J -->|"رسم موجّه"| K["DFS بثلاثة ألوان"]
+  J -->|"كل المسارات"| L["DFS مع تراجع - الدرس 5"]
+      </div>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3><span class="en">BFS</span> من A خطوة بخطوة</h3>
+      <p>نحفظ الطابور، والمسافة لكل عقدة رأيناها. <strong>نضع العقدة في <code>seen</code> عندما نضيفها إلى الطابور</strong>، وليس عندما نخرجها.</p>
+      <div class="legend"><span><span class="dot" style="background:#f59e0b"></span>العقدة الحالية</span><span><span class="dot" style="background:#2563eb"></span>أُضيفت الآن</span><span><span class="dot" style="background:#10b981;opacity:.5"></span>انتهت</span></div>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: البداية</h4>
+          <div class="mem"><span class="rowlabel">الطابور:</span><div class="box new">A<small>d=0</small></div></div>
+          <div class="state">queue = [A] | dist = {A: 0}</div>
+          <p>نبدأ من A ومسافتها 0.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: نخرج A</h4>
+          <div class="mem"><span class="rowlabel">الحالية:</span><div class="box cur">A<small>d=0</small></div><span class="rowlabel">الطابور:</span><div class="box new">B<small>d=1</small></div><div class="box new">C<small>d=1</small></div></div>
+          <div class="state">neighbors of A: B, C → dist = {A:0, B:1, C:1}</div>
+          <p>كل جيران A على بعد خطوة واحدة. هذه <strong>الطبقة 1</strong>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: نخرج B</h4>
+          <div class="mem"><div class="box done">A</div><span class="rowlabel">الحالية:</span><div class="box cur">B<small>d=1</small></div><span class="rowlabel">الطابور:</span><div class="box">C<small>d=1</small></div><div class="box new">D<small>d=2</small></div></div>
+          <div class="state">neighbors of B: A (seen), D → dist[D] = dist[B] + 1 = 2</div>
+          <p>A موجود في <code>seen</code>، فنتجاهله. هذا ما يمنع الرجوع إلى الخلف.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: نخرج C</h4>
+          <div class="mem"><div class="box done">A</div><div class="box done">B</div><span class="rowlabel">الحالية:</span><div class="box cur">C<small>d=1</small></div><span class="rowlabel">الطابور:</span><div class="box">D<small>d=2</small></div><div class="box new">E<small>d=2</small></div></div>
+          <div class="state">neighbors of C: A (seen), E → dist[E] = 2</div>
+          <p>انتهت الطبقة 1 كلها قبل أن نبدأ الطبقة 2. هذا ما يجعل <span class="en">BFS</span> يجد أقصر طريق.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: نخرج D</h4>
+          <div class="mem"><div class="box done">A</div><div class="box done">B</div><div class="box done">C</div><span class="rowlabel">الحالية:</span><div class="box cur">D<small>d=2</small></div><span class="rowlabel">الطابور:</span><div class="box">E<small>d=2</small></div><div class="box new">F<small>d=3</small></div></div>
+          <div class="state">neighbors of D: B (seen), F → dist[F] = 3, parent[F] = D</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 6: نخرج E ثم F ✅</h4>
+          <div class="mem"><div class="box done">A<small>0</small></div><div class="box done">B<small>1</small></div><div class="box done">C<small>1</small></div><div class="box done">D<small>2</small></div><div class="box done">E<small>2</small></div><div class="box done">F<small>3</small></div></div>
+          <div class="state">E → F already seen (no update) | F → nothing new | queue empty</div>
+          <p>F وصلت من D بمسافة 3. عندما نصل إليها من E، لا نغيّر شيئًا، لأن أول وصول هو الأقصر دائمًا. أقصر طريق: <code>A → B → D → F</code>.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+
+      <h3>اكتشاف الحلقة في رسم موجّه: ثلاثة ألوان</h3>
+      <p>في الرسم الموجّه لا يكفي أن نعرف "هل زرنا العقدة؟". نحتاج أن نعرف <strong>هل هي في المسار الحالي؟</strong> لذلك نستخدم ثلاثة ألوان:</p>
+      <ul>
+        <li><strong>أبيض:</strong> لم نزرها بعد.</li>
+        <li><strong>رمادي:</strong> بدأنا زيارتها ولم ننتهِ، أي هي في المسار الحالي.</li>
+        <li><strong>أسود:</strong> انتهينا منها ومن كل ما بعدها.</li>
+      </ul>
+      <div class="diagram mermaid">
+graph LR
+  A --> B
+  B --> C
+  C --> A
+  C --> D
+      </div>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: نزور A</h4>
+          <div class="mem"><div class="box gray">A</div><div class="box">B</div><div class="box">C</div><div class="box">D</div></div>
+          <div class="state">path = [A]</div>
+          <p>A رمادية: نحن داخلها الآن.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: A → B</h4>
+          <div class="mem"><div class="box gray">A</div><div class="box gray">B</div><div class="box">C</div><div class="box">D</div></div>
+          <div class="state">path = [A, B]</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: B → C</h4>
+          <div class="mem"><div class="box gray">A</div><div class="box gray">B</div><div class="box gray">C</div><div class="box">D</div></div>
+          <div class="state">path = [A, B, C]</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: C → A ← حلقة! 🚨</h4>
+          <div class="mem"><div class="box cycle">A</div><div class="box cycle">B</div><div class="box cycle">C</div><div class="box">D</div></div>
+          <div class="state">A is GRAY → back edge → cycle = [A, B, C, A]</div>
+          <p>وصلنا إلى عقدة رمادية، أي عقدة ما زالت في المسار الحالي. إذن يوجد طريق يرجع إلى بدايته. لو كانت A <strong>سوداء</strong>، لكان معنى ذلك أننا انتهينا منها في فرع آخر، وهذا ليس حلقة.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: بناء قائمة الجوار وأقصر طريق بـ <span class="en">BFS</span></h3>
+<pre><code class="language-python">from collections import defaultdict, deque
+
+Graph = dict[str, list[str]]
+
+
+def build_graph(edges: list[tuple[str, str]]) -> Graph:
+    """Undirected adjacency list. Time: O(V + E)."""
+    graph: defaultdict[str, list[str]] = defaultdict(list)
+    for a, b in edges:
+        graph[a].append(b)
+        graph[b].append(a)          # undirected: both directions
+    return dict(graph)              # plain dict: reads won't create keys
+
+
+def shortest_path(graph: Graph, start: str, goal: str) -> list[str] | None:
+    """Fewest edges from start to goal. Time: O(V + E), Space: O(V)."""
+    parent: dict[str, str | None] = {start: None}   # doubles as 'seen'
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        if node == goal:
+            path: list[str] = []
+            while node is not None:                  # walk back to start
+                path.append(node)
+                node = parent[node]
+            return path[::-1]
+        for nxt in graph.get(node, []):
+            if nxt not in parent:                    # mark when ENQUEUED
+                parent[nxt] = node
+                queue.append(nxt)
+    return None
+
+
+edges = [("A", "B"), ("A", "C"), ("B", "D"), ("C", "E"), ("D", "F"), ("E", "F")]
+graph = build_graph(edges)
+print(graph)
+print(shortest_path(graph, "A", "F"))
+print(shortest_path(graph, "A", "Z"))</code></pre>
+      <div class="output">{'A': ['B', 'C'], 'B': ['A', 'D'], 'C': ['A', 'E'], 'D': ['B', 'F'], 'E': ['C', 'F'], 'F': ['D', 'E']}
+['A', 'B', 'D', 'F']
+None</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>defaultdict(list)</code>: نبني القوائم بدون فحص المفتاح (الدرس 4). ثم نحوّله إلى <code>dict</code> عادي، حتى لا تُنشئ القراءة مفاتيح جديدة بالخطأ.</li>
+        <li><code>graph[b].append(a)</code>: الرسم غير موجّه، فنضيف الحافة في الاتجاهين. في الرسم الموجّه نحذف هذا السطر.</li>
+        <li><code>parent</code>: قاموس واحد يعمل كـ <code>seen</code>، ويحفظ من أين جئنا لكل عقدة، فنعيد بناء المسار في النهاية. هذه نفس فكرة <code>parent</code> في الدرس 7.</li>
+        <li><code>deque.popleft()</code>: <span class="en">O(1)</span>. لا تستخدم <code>list.pop(0)</code> (الخطأ 1 في الدرس 2).</li>
+        <li><code>graph.get(node, [])</code>: العقدة <code>"Z"</code> غير موجودة، فلا يحدث <code>KeyError</code>.</li>
+      </ol>
+
+      <h3>مثال 2: ترتيب الزيارة في <span class="en">BFS</span> و <span class="en">DFS</span></h3>
+<pre><code class="language-python">from collections import deque
+
+graph = {
+    "A": ["B", "C"], "B": ["A", "D"], "C": ["A", "E"],
+    "D": ["B", "F"], "E": ["C", "F"], "F": ["D", "E"],
+}
+
+
+def bfs_order(graph: dict[str, list[str]], start: str) -> list[str]:
+    seen = {start}
+    order: list[str] = []
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()               # FIFO: oldest first
+        order.append(node)
+        for nxt in graph.get(node, []):
+            if nxt not in seen:
+                seen.add(nxt)
+                queue.append(nxt)
+    return order
+
+
+def dfs_order(graph: dict[str, list[str]], start: str) -> list[str]:
+    seen: set[str] = set()
+    order: list[str] = []
+
+    def visit(node: str) -> None:            # recursion = implicit stack
+        seen.add(node)
+        order.append(node)
+        for nxt in graph.get(node, []):
+            if nxt not in seen:
+                visit(nxt)                   # go deep before trying siblings
+
+    visit(start)
+    return order
+
+
+print(bfs_order(graph, "A"))
+print(dfs_order(graph, "A"))</code></pre>
+      <div class="output">['A', 'B', 'C', 'D', 'E', 'F']
+['A', 'B', 'D', 'F', 'E', 'C']</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><span class="en">BFS</span> يزور A، ثم الطبقة 1 (B و C)، ثم الطبقة 2 (D و E)، ثم F.</li>
+        <li><span class="en">DFS</span> يذهب من A إلى B، ثم D، ثم F، ثم E، ثم C. يصل إلى C في النهاية رغم أنها جارة A مباشرة.</li>
+        <li>لهذا السبب <span class="en">DFS</span> <strong>لا</strong> يعطي أقصر طريق (انظر الخطأ 1).</li>
+        <li>العودية في <code>dfs_order</code> تحتاج إطارًا لكل مستوى. مع سلسلة من 100,000 عقدة يظهر <code>RecursionError</code> (الدرس 5). استخدم مكدسًا يدويًا كما في المثال التالي.</li>
+      </ol>
+
+      <h3>مثال 3: عدّ المكونات المتصلة بمكدس يدوي</h3>
+<pre><code class="language-python">def count_components(n: int, edges: list[tuple[int, int]]) -> int:
+    """Nodes are 0..n-1. Time: O(V + E), Space: O(V + E)."""
+    graph: list[list[int]] = [[] for _ in range(n)]
+    for a, b in edges:
+        graph[a].append(b)
+        graph[b].append(a)
+
+    seen = [False] * n
+    components = 0
+    for start in range(n):
+        if seen[start]:
+            continue
+        components += 1                  # a new, unexplored group
+        seen[start] = True
+        stack = [start]                  # explicit stack: no recursion limit
+        while stack:
+            node = stack.pop()
+            for nxt in graph[node]:
+                if not seen[nxt]:
+                    seen[nxt] = True
+                    stack.append(nxt)
+    return components
+
+
+print(count_components(5, [(0, 1), (1, 2), (3, 4)]))
+print(count_components(4, []))</code></pre>
+      <div class="output">2
+4</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li>عندما تكون العقد أرقامًا من 0 إلى n − 1، تكون القائمة أسرع وأخف من القاموس (الدرس 4).</li>
+        <li><code>for start in range(n)</code>: نجرب كل عقدة كبداية. إذا لم نزرها من قبل، فهي بداية مكوّن جديد.</li>
+        <li><code>stack.pop()</code>: نأخذ من النهاية، فنذهب في العمق. لو استبدلت المكدس بـ <code>deque</code> و <code>popleft</code>، يصبح الكود <span class="en">BFS</span>، وتبقى النتيجة نفسها.</li>
+        <li><code>count_components(4, [])</code>: بدون حواف، كل عقدة مكوّن مستقل.</li>
+      </ol>
+
+      <h3>مثال 4: اكتشاف حلقة تحويلات في رسم موجّه</h3>
+<pre><code class="language-python">WHITE, GRAY, BLACK = 0, 1, 2
+
+
+def find_cycle(graph: dict[str, list[str]]) -> list[str] | None:
+    """Return one directed cycle as a path, or None. Time: O(V + E)."""
+    color: dict[str, int] = {}
+    path: list[str] = []
+
+    def visit(node: str) -> list[str] | None:
+        color[node] = GRAY                       # on the current path
+        path.append(node)
+        for nxt in graph.get(node, []):
+            state = color.get(nxt, WHITE)
+            if state == GRAY:                    # back edge -> cycle
+                return path[path.index(nxt):] + [nxt]
+            if state == WHITE:
+                found = visit(nxt)
+                if found:
+                    return found
+        path.pop()
+        color[node] = BLACK                      # fully explored, safe
+        return None
+
+    for node in list(graph):
+        if color.get(node, WHITE) == WHITE:
+            found = visit(node)
+            if found:
+                return found
+    return None
+
+
+transfers = {"A": ["B"], "B": ["C"], "C": ["A", "D"], "D": []}
+diamond = {"A": ["B", "C"], "B": ["D"], "C": ["D"], "D": []}
+print(find_cycle(transfers))
+print(find_cycle(diamond))</code></pre>
+      <div class="output">['A', 'B', 'C', 'A']
+None</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>GRAY</code>: العقدة في المسار الحالي. إذا وصلنا إليها من جديد، فقد رجعنا إلى الخلف، وهذه حلقة.</li>
+        <li><code>path[path.index(nxt):]</code>: الحلقة هي جزء المسار من أول ظهور لـ <code>nxt</code> حتى الآن.</li>
+        <li><code>BLACK</code>: انتهينا من العقدة وكل ما بعدها، ولم نجد حلقة. إذا وصلنا إليها من فرع آخر، فهذا ليس حلقة.</li>
+        <li>في <code>diamond</code> نصل إلى D مرتين (من B ومن C)، لكنها سوداء في المرة الثانية، لذلك النتيجة <code>None</code>. سترى في الخطأ 2 ماذا يحدث لو استخدمت <code>seen</code> فقط.</li>
+      </ol>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>خطأ 1: استخدام <span class="en">DFS</span> لأقصر طريق</h3>
+      <p>الرسم: <code>A—B</code> و <code>B—C</code> و <code>C—D</code> و <code>A—D</code>. أقصر طريق من A إلى D هو خطوة واحدة.</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def path_dfs(graph, start, goal):
+    seen = {start}
+    path = [start]
+    def visit(node):
+        if node == goal:
+            return True
+        for nxt in graph.get(node, []):
+            if nxt not in seen:
+                seen.add(nxt)
+                path.append(nxt)
+                if visit(nxt):
+                    return True
+                path.pop()
+        return False
+    return path if visit(start) else None
+
+g = build_graph([("A","B"), ("B","C"),
+                 ("C","D"), ("A","D")])
+print(path_dfs(g, "A", "D"))
+# ['A', 'B', 'C', 'D']  not shortest!</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python"># shortest_path from Example 1 (BFS)
+
+g = build_graph([("A","B"), ("B","C"),
+                 ("C","D"), ("A","D")])
+print(shortest_path(g, "A", "D"))
+# ['A', 'D']</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> <span class="en">DFS</span> يأخذ أول ممر ويمشي فيه إلى آخره، فيصل إلى D من الطريق الطويل. وبعد أن يضع D في <code>seen</code>، لن يجرب الطريق القصير أبدًا. أما <span class="en">BFS</span> فيزور كل العقد على بعد خطوة واحدة قبل أي عقدة على بعد خطوتين، فأول وصول هو الأقصر دائمًا.</div>
+
+      <h3>خطأ 2: اكتشاف الحلقة في رسم موجّه بـ <code>seen</code> فقط</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def has_cycle(graph):
+    seen = set()
+    def visit(node):
+        if node in seen:
+            return True          # "seen before" != cycle
+        seen.add(node)
+        return any(visit(n) for n in graph.get(node, []))
+    return any(visit(n) for n in list(graph)
+               if n not in seen)
+
+diamond = {"A": ["B", "C"], "B": ["D"],
+           "C": ["D"], "D": []}
+print(has_cycle(diamond))  # True  wrong!</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">def has_cycle(graph):
+    on_path, done = set(), set()
+    def visit(node):
+        if node in on_path:
+            return True          # back to current path
+        if node in done:
+            return False         # finished elsewhere
+        on_path.add(node)
+        found = any(visit(n) for n in graph.get(node, []))
+        on_path.remove(node)
+        done.add(node)
+        return found
+    return any(visit(n) for n in list(graph))
+
+print(has_cycle(diamond))  # False</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> نصل إلى D من B، ثم نصل إليها من C. الكود الأول يقول "رأيتها من قبل، إذن توجد حلقة". لكن لا يوجد طريق يرجع من D إلى A. الحلقة تعني الرجوع إلى عقدة <strong>في المسار الحالي</strong> (رمادية)، وليس إلى أي عقدة زرناها. الكود الصحيح يستخدم مجموعتين بدل الألوان الثلاثة، والفكرة واحدة. ملاحظة: في الرسم <strong>غير الموجّه</strong> القاعدة مختلفة، وتتجاهل فيها الحافة التي جئت منها (<code>parent</code>).</div>
+
+      <h3>أخطاء أخرى متكررة</h3>
+      <ul>
+        <li><strong>نسيان <code>seen</code>:</strong> في أي رسم فيه حلقة، يدور البحث إلى الأبد، أو يظهر <code>RecursionError</code>.</li>
+        <li><strong>وضع العقدة في <code>seen</code> عند الإخراج في <span class="en">BFS</span>:</strong> النتيجة صحيحة، لكن نفس العقدة قد تدخل الطابور مرات كثيرة. في رسم كثيف يصبح الطابور ضخمًا جدًا. ضعها في <code>seen</code> عند الإضافة.</li>
+        <li><strong>نسيان الاتجاه الثاني:</strong> في الرسم غير الموجّه، إذا أضفت <code>graph[a].append(b)</code> فقط، فلن تصل من b إلى a.</li>
+        <li><strong>القراءة من <code>defaultdict</code> أثناء البحث:</strong> <code>graph[node]</code> لعقدة غير موجودة يضيفها إلى الرسم، ويغيّر حجمه أثناء المرور عليه. استخدم <code>.get(node, [])</code>.</li>
+        <li><strong>نسيان العقد بلا حواف:</strong> إذا بنيت العقد من الحواف فقط، فالعقدة المعزولة لا تظهر. ابنِ العقد من قائمة كاملة.</li>
+        <li><strong><span class="en">BFS</span> على رسم موزون:</strong> <span class="en">BFS</span> يعدّ الخطوات، ولا يجمع التكاليف. مع الرسوم استخدم <span class="en">Dijkstra</span> (تمرين 4).</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>ارسم الرسم أولًا</strong> لمثال صغير. حدد: ما العقد؟ ما الحواف؟ هل هي موجّهة؟ هل هي موزونة؟</li>
+        <li><strong>ابدأ بقائمة الجوار</strong> إلا إذا كان عندك سبب قوي لغيرها.</li>
+        <li><strong>اختر <span class="en">BFS</span> لأقصر طريق</strong>، واختر <span class="en">DFS</span> للمكونات والحلقات والترتيب.</li>
+        <li><strong>استخدم مكدسًا يدويًا</strong> عندما قد يكون العمق كبيرًا (أكثر من بضعة آلاف).</li>
+        <li><strong>اجعل <code>seen</code> هو نفسه <code>parent</code> أو <code>dist</code></strong>، فتوفّر هيكلًا كاملًا.</li>
+        <li><strong>في الشبكات</strong> اكتب قائمة الاتجاهات مرة واحدة: <code>((1,0), (-1,0), (0,1), (0,-1))</code>، وتحقق من الحدود قبل القراءة.</li>
+        <li><strong>اختبر:</strong> رسمًا فارغًا، وعقدة واحدة، وعقدًا معزولة، وحلقة ذاتية <code>A → A</code>، وأكثر من مكوّن.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>إشارات في نص المسألة:</strong> "أقل عدد خطوات" و "أقرب" و "أقصر طريق" تشير إلى <span class="en">BFS</span>. و "مرتبطة" و "مجموعات" و "جزر" تشير إلى المكونات. و "يعتمد على" و "قبل" و "ترتيب التنفيذ" تشير إلى الترتيب الطوبولوجي. و "أرخص" و "أقل تكلفة" مع أوزان تشير إلى <span class="en">Dijkstra</span>.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+      <h3>ذاكرة قائمة الجوار مقابل المصفوفة</h3>
+      <p>رسم متفرق: كل عقدة لها 5 جيران في المتوسط، كما في أغلب الرسوم الحقيقية. الرسم بمقياس لوغاريتمي. مع 100,000 حساب تحتاج المصفوفة 10 مليارات خانة.</p>
+      <div class="chart-box"><canvas id="memChart"></canvas></div>
+
+      <h3>مقارنة التمثيلات</h3>
+      <table>
+        <tr><th>العملية</th><th>قائمة الجوار</th><th>مصفوفة الجوار</th><th>قائمة الحواف</th></tr>
+        <tr><td>الذاكرة</td><td class="en">O(V + E)</td><td class="en">O(V²)</td><td class="en">O(E)</td></tr>
+        <tr><td>هل توجد حافة بين u و v؟</td><td><span class="en">O(deg u)</span>، أو <span class="en">O(1)</span> مع <span class="en">set</span></td><td class="en">O(1)</td><td class="en">O(E)</td></tr>
+        <tr><td>المرور على جيران u</td><td class="en">O(deg u)</td><td class="en">O(V)</td><td class="en">O(E)</td></tr>
+        <tr><td><span class="en">BFS / DFS</span> كاملًا</td><td class="en">O(V + E)</td><td class="en">O(V²)</td><td>—</td></tr>
+      </table>
+
+      <h3>الخوارزميات</h3>
+      <table>
+        <tr><th>الخوارزمية</th><th>المسألة</th><th>الوقت</th><th>الذاكرة</th><th>شرط</th></tr>
+        <tr><td><span class="en">BFS</span></td><td>أقصر طريق بعدد الخطوات</td><td class="en">O(V + E)</td><td class="en">O(V)</td><td>بدون أوزان</td></tr>
+        <tr><td><span class="en">DFS</span></td><td>المكونات والحلقات والمسارات</td><td class="en">O(V + E)</td><td class="en">O(V)</td><td>انتبه لعمق العودية</td></tr>
+        <tr><td><span class="en">Kahn</span></td><td>الترتيب الطوبولوجي</td><td class="en">O(V + E)</td><td class="en">O(V)</td><td>رسم موجّه بلا حلقات</td></tr>
+        <tr><td><span class="en">Dijkstra</span></td><td>أرخص طريق</td><td class="en">O((V + E) log V)</td><td class="en">O(V)</td><td>أوزان غير سالبة</td></tr>
+        <tr><td><span class="en">Union-Find</span></td><td>المكونات مع إضافة حواف باستمرار</td><td>شبه <span class="en">O(1)</span> لكل عملية</td><td class="en">O(V)</td><td>لا يدعم حذف الحواف</td></tr>
+      </table>
+      <div class="callout note">📝 <strong>الشبكة رسم أيضًا:</strong> خريطة بحجم R × C فيها <span class="en">V = R·C</span> عقدة، ولكل عقدة 4 حواف على الأكثر. إذن <span class="en">BFS</span> عليها <span class="en">O(R·C)</span>. ولا تحتاج أن تبني قائمة الجوار، فاحسب الجيران عند الحاجة.</div>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: كشف شبكات الاحتيال</h2>
+      <p><strong>القصة:</strong> المحتالون يفتحون حسابات كثيرة بأسماء مختلفة، لكنهم غالبًا يستخدمون نفس الأجهزة أو نفس أرقام الهواتف. إذا اشترك حسابان في جهاز أو رقم، فهما مرتبطان. والارتباط ينتقل: إذا كان ACC1 مرتبطًا بـ ACC2، و ACC2 مرتبطًا بـ ACC3، فالثلاثة في نفس الشبكة، حتى لو لم يشترك ACC1 و ACC3 في أي شيء مباشرة. المطلوب: كل شبكة فيها 3 حسابات أو أكثر.</p>
+
+      <h3>طبّق الخطوات الست</h3>
+      <ol>
+        <li><strong>الفهم:</strong> المدخلات أزواج <code>(account, identifier)</code>، والمعرّف جهاز أو رقم هاتف. المخرجات قوائم الحسابات في كل شبكة كبيرة.</li>
+        <li><strong>الحالات الطرفية:</strong> حساب وحده، وجهاز يستخدمه 1000 حساب، وحساب بأكثر من معرّف.</li>
+        <li><strong>الحل البدائي:</strong> قارن كل زوج حسابات، وكرر حتى لا يتغير شيء. هذا <span class="en">O(n²)</span> أو أسوأ.</li>
+        <li><strong>التحسين:</strong> جمّع الحسابات حسب المعرّف (نمط التجميع من الدرس 4)، ثم ابنِ رسمًا، ثم جد المكونات المتصلة بـ <span class="en">BFS</span>.</li>
+        <li><strong>الكود:</strong> بالأسفل.</li>
+        <li><strong>الاختبار:</strong> سلسلة من 4 حسابات، وزوج صغير، وحساب وحده.</li>
+      </ol>
+<pre><code class="language-python">from collections import defaultdict, deque
+
+Link = tuple[str, str]  # (account_id, identifier) e.g. a device or a phone
+
+
+def fraud_rings(links: list[Link], min_size: int = 3) -> list[list[str]]:
+    """Accounts sharing any identifier (directly or through a chain) form a ring.
+    Time: O(V + L) where L = len(links), Space: O(V + L)."""
+    # 1) group accounts by identifier (Lesson 4: grouping pattern)
+    by_identifier: defaultdict[str, list[str]] = defaultdict(list)
+    for account, ident in links:
+        by_identifier[ident].append(account)
+
+    # 2) connect accounts that share an identifier
+    graph: defaultdict[str, set[str]] = defaultdict(set)
+    for accounts in by_identifier.values():
+        hub = accounts[0]
+        for other in accounts[1:]:           # star, not all pairs: O(k) edges, not O(k^2)
+            graph[hub].add(other)
+            graph[other].add(hub)
+
+    # 3) connected components with BFS
+    seen: set[str] = set()
+    rings: list[list[str]] = []
+    for start in sorted({a for a, _ in links}):   # every account, even isolated ones
+        if start in seen:
+            continue
+        seen.add(start)
+        component: list[str] = []
+        queue = deque([start])
+        while queue:
+            node = queue.popleft()
+            component.append(node)
+            for nxt in graph.get(node, ()):          # .get: don't create keys
+                if nxt not in seen:
+                    seen.add(nxt)
+                    queue.append(nxt)
+        if len(component) >= min_size:
+            rings.append(sorted(component))
+    return rings
+
+
+links: list[Link] = [
+    ("ACC1", "device:D1"), ("ACC2", "device:D1"),    # ACC1 - ACC2
+    ("ACC2", "phone:010"), ("ACC3", "phone:010"),    # ACC2 - ACC3
+    ("ACC3", "device:D7"), ("ACC4", "device:D7"),    # ACC3 - ACC4
+    ("ACC5", "device:D2"), ("ACC6", "device:D2"),    # a small pair
+    ("ACC7", "device:D9"),                            # alone
+]
+
+print(fraud_rings(links))
+print(fraud_rings(links, min_size=2))</code></pre>
+      <div class="output">[['ACC1', 'ACC2', 'ACC3', 'ACC4']]
+[['ACC1', 'ACC2', 'ACC3', 'ACC4'], ['ACC5', 'ACC6']]</div>
+      <h4>الشرح</h4>
+      <ol>
+        <li><strong>التجميع أولًا:</strong> <code>by_identifier</code> يحوّل "من يستخدم هذا الجهاز؟" إلى بحث <span class="en">O(1)</span>.</li>
+        <li><strong>الحواف على شكل نجمة:</strong> إذا استخدم 1000 حساب نفس الجهاز، فربط كل زوج يعطي حوالي 500 ألف حافة. ربط كل حساب بالحساب الأول (<code>hub</code>) يعطي 999 حافة فقط، والمكونات تبقى نفسها. هذا تحسين حقيقي يوفّر الذاكرة.</li>
+        <li><strong><code>set</code> للجيران:</strong> إذا اشترك حسابان في جهاز ورقم معًا، لا تتكرر الحافة.</li>
+        <li><strong>الربط غير المباشر:</strong> ACC1 و ACC4 لا يشتركان في أي شيء، لكن <span class="en">BFS</span> وجد السلسلة <code>ACC1 → ACC2 → ACC3 → ACC4</code>. هذا ما لا تكشفه المقارنة المباشرة.</li>
+        <li><code>sorted(...)</code>: ترتيب ثابت للنتيجة، حتى يكون التقرير والاختبارات قابلة للتكرار.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>في الأنظمة الحقيقية:</strong> الحسابات والأجهزة تصل باستمرار، فإعادة البحث كله مع كل حساب جديد مكلفة. هنا تُستخدم <span class="en">Union-Find</span> (<span class="en">Disjoint Set Union</span>)، التي تدمج المجموعات مع كل رابط جديد بتكلفة شبه ثابتة. ولاكتشاف حلقات التحويل (<span class="en">round-tripping</span>)، طبّق <code>find_cycle</code> من المثال 4 على رسم التحويلات الموجّه. والنظامان معًا يعطيان صورة قوية للمخاطر.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+      <div class="quiz" data-explain="BFS يزور العقد طبقة بعد طبقة حسب المسافة، فأول وصول إلى عقدة هو أقصر طريق إليها.">
+        <div class="q">1. أي خوارزمية تجد أقل عدد خطوات بين حسابين في رسم غير موزون؟</div>
+        <button class="option">DFS</button>
+        <button class="option" data-correct="true">BFS</button>
+        <button class="option">Binary Search</button>
+        <button class="option">Topological Sort</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="كل عقدة تدخل الطابور مرة واحدة: O(V). وكل حافة تُرى من طرفيها: O(E).">
+        <div class="q">2. ما تعقيد BFS مع قائمة الجوار؟</div>
+        <button class="option">O(V²)</button>
+        <button class="option" data-correct="true">O(V + E)</button>
+        <button class="option">O(E log V)</button>
+        <button class="option">O(V × E)</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="إذا وضعناها في seen عند الإخراج، فقد يضيفها أكثر من جار إلى الطابور قبل أن نخرجها، فيكبر الطابور بلا فائدة.">
+        <div class="q">3. في BFS، لماذا نضع العقدة في seen عند إضافتها إلى الطابور وليس عند إخراجها؟</div>
+        <button class="option">لأن هذا يغيّر المسافات</button>
+        <button class="option" data-correct="true">حتى لا تدخل نفس العقدة الطابور أكثر من مرة</button>
+        <button class="option">لأن deque لا يقبل التكرار</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الرمادي يعني أن العقدة في المسار الحالي. الوصول إليها يعني أن هناك طريقًا يرجع إلى الخلف، وهذه حلقة. الأسود يعني أننا انتهينا منها، وليس حلقة.">
+        <div class="q">4. في DFS على رسم موجّه، وصلنا إلى عقدة لونها رمادي. ماذا يعني ذلك؟</div>
+        <button class="option">لا شيء، نتجاهلها</button>
+        <button class="option" data-correct="true">توجد حلقة</button>
+        <button class="option">العقدة معزولة</button>
+        <button class="option">انتهى البحث</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="BFS يعدّ الحواف فقط ويتجاهل الأوزان. مع رسوم غير سالبة نحتاج Dijkstra، الذي يخرج دائمًا العقدة الأرخص من heapq.">
+        <div class="q">5. لكل تحويل رسوم مختلفة (غير سالبة). كيف تجد أرخص طريق؟</div>
+        <button class="option">BFS</button>
+        <button class="option">DFS مع أول طريق</button>
+        <button class="option" data-correct="true">Dijkstra مع heapq</button>
+        <button class="option">Topological Sort</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+      <p>قبل كل تمرين، أجب: ما العقد؟ ما الحواف؟ هل هي موجّهة أو موزونة؟ ما السؤال: طريق، أم مكونات، أم ترتيب، أم حلقة؟</p>
+
+      <h3>تمرين 1 (سهل): عدد الجزر</h3>
+      <p>اكتب دالة <code>num_islands(grid: list[str]) -> int</code>. كل <code>"1"</code> أرض، وكل <code>"0"</code> ماء. الجزيرة أرض متصلة أفقيًا أو عموديًا.</p>
+      <details><summary>💡 تلميح</summary><p>الشبكة رسم ضمني: كل خانة أرض عقدة، وجيرانها الأربعة حوافها. عدّ المكونات كما في المثال 3. احفظ الخانات المزورة كـ <span class="en">tuple</span> في <span class="en">set</span>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def num_islands(grid: list[str]) -> int:
+    # Time: O(R*C), Space: O(R*C)
+    if not grid:
+        return 0
+    rows, cols = len(grid), len(grid[0])
+    seen: set[tuple[int, int]] = set()
+    count = 0
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] != "1" or (r, c) in seen:
+                continue
+            count += 1
+            seen.add((r, c))
+            stack = [(r, c)]
+            while stack:
+                x, y = stack.pop()
+                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    nx, ny = x + dx, y + dy
+                    if (0 &lt;= nx &lt; rows and 0 &lt;= ny &lt; cols
+                            and grid[nx][ny] == "1" and (nx, ny) not in seen):
+                        seen.add((nx, ny))
+                        stack.append((nx, ny))
+    return count
+
+
+print(num_islands(["11000", "11000", "00100", "00011"]))
+print(num_islands(["111", "010", "111"]))
+print(num_islands([]))</code></pre>
+        <div class="output">3
+1
+0</div>
+        <p>تحقق من الحدود <strong>قبل</strong> القراءة من <code>grid</code>. في <span class="en">Python</span>، الموقع السالب مثل <code>grid[-1]</code> لا يرفع خطأ، بل يقرأ آخر صف، فيعطي نتيجة خاطئة بدون أي رسالة.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): ترتيب تشغيل الخدمات</h3>
+      <p>اكتب دالة <code>build_order(services: list[str], deps: list[tuple[str, str]]) -> list[str] | None</code>. كل زوج <code>(before, after)</code> يعني أن <code>before</code> يجب أن يعمل قبل <code>after</code>. أرجع ترتيبًا صحيحًا، أو <code>None</code> إذا كانت هناك اعتمادية دائرية.</p>
+      <details><summary>💡 تلميح</summary><p>خوارزمية <span class="en">Kahn</span>: احسب درجة الدخول لكل خدمة. ضع في الطابور كل خدمة درجتها 0، أي لا تعتمد على أي شيء. عندما تخرج خدمة، أنقص درجة كل خدمة تعتمد عليها. إذا بقيت خدمات لم تخرج، فهناك حلقة.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from collections import deque
+
+
+def build_order(services: list[str], deps: list[tuple[str, str]]) -> list[str] | None:
+    # Kahn's algorithm. Time: O(V + E), Space: O(V + E)
+    graph: dict[str, list[str]] = {s: [] for s in services}
+    indegree: dict[str, int] = {s: 0 for s in services}
+    for before, after in deps:
+        graph[before].append(after)
+        indegree[after] += 1
+
+    queue = deque(s for s in services if indegree[s] == 0)
+    order: list[str] = []
+    while queue:
+        s = queue.popleft()
+        order.append(s)
+        for nxt in graph[s]:
+            indegree[nxt] -= 1
+            if indegree[nxt] == 0:       # all its dependencies are done
+                queue.append(nxt)
+    return order if len(order) == len(services) else None
+
+
+services = ["api", "db", "auth", "payments"]
+deps = [("db", "auth"), ("db", "payments"), ("auth", "api"), ("payments", "api")]
+print(build_order(services, deps))
+print(build_order(["a", "b"], [("a", "b"), ("b", "a")]))</code></pre>
+        <div class="output">['db', 'auth', 'payments', 'api']
+None</div>
+        <p>الخدمات داخل الحلقة لا تصل درجتها إلى 0 أبدًا، فلا تدخل الطابور. لذلك يكفي فحص <code>len(order) == len(services)</code> لاكتشاف الحلقة. هذه طريقة ثانية لاكتشاف الحلقات، ولا تحتاج عودية.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): المسافة إلى أقرب منفذ دفع</h3>
+      <p>عندك خريطة: <code>"O"</code> منفذ دفع، و <code>"."</code> شارع، و <code>"#"</code> مبنى لا يمكن عبوره. اكتب دالة <code>nearest_outlet(grid: list[str]) -> list[list[int]]</code> ترجع لكل خانة عدد الخطوات إلى أقرب منفذ، و <code>-1</code> للمباني والخانات التي لا يمكن الوصول إليها.</p>
+      <details><summary>💡 تلميح</summary><p>لا تشغّل <span class="en">BFS</span> من كل خانة، فهذا <span class="en">O((R·C)²)</span>. شغّل <strong><span class="en">BFS</span> واحدًا من كل المنافذ معًا</strong> (<span class="en">multi-source BFS</span>): ضعها كلها في الطابور بمسافة 0 في البداية. استخدم جدول المسافات نفسه كـ <code>seen</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from collections import deque
+
+
+def nearest_outlet(grid: list[str]) -> list[list[int]]:
+    # Multi-source BFS. Time: O(R*C), Space: O(R*C)
+    rows, cols = len(grid), len(grid[0])
+    dist = [[-1] * cols for _ in range(rows)]      # -1 doubles as "not seen"
+    queue: deque[tuple[int, int]] = deque()
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == "O":
+                dist[r][c] = 0
+                queue.append((r, c))               # all sources start together
+
+    while queue:
+        r, c = queue.popleft()
+        for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nr, nc = r + dr, c + dc
+            if (0 &lt;= nr &lt; rows and 0 &lt;= nc &lt; cols
+                    and grid[nr][nc] != "#" and dist[nr][nc] == -1):
+                dist[nr][nc] = dist[r][c] + 1
+                queue.append((nr, nc))
+    return dist
+
+
+city = [
+    "O..#",
+    "...#",
+    "#..O",
+]
+for row in nearest_outlet(city):
+    print(row)</code></pre>
+        <div class="output">[0, 1, 2, -1]
+[1, 2, 2, -1]
+[-1, 2, 1, 0]</div>
+        <p>لماذا يعمل؟ كأن هناك عقدة وهمية متصلة بكل المنافذ، ونحن نبدأ منها. الموجات من كل المنافذ تتقدم معًا، فأول موجة تصل إلى خانة هي من أقرب منفذ. لاحظ <code>[[-1] * cols for _ in range(rows)]</code> وليس الضرب (الدرس 7).</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): أرخص طريق تحويل (<span class="en">Dijkstra</span>)</h3>
+      <p>لكل تحويل بين جهتين رسوم بالقروش. اكتب دالة <code>cheapest_route(graph, start, goal)</code> ترجع <code>(أقل تكلفة، المسار)</code>، أو <code>None</code>. الرسوم غير سالبة.</p>
+      <details><summary>💡 تلميح</summary><p>مثل <span class="en">BFS</span>، لكن استبدل الطابور بـ <code>heapq</code>، وأخرج دائمًا العقدة ذات أقل تكلفة حتى الآن. عندما تجد طريقًا أرخص إلى جار، حدّث تكلفته وأضفه إلى الـ <span class="en">heap</span>. وتجاهل العناصر القديمة التي تكلفتها أكبر من أفضل تكلفة معروفة.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">import heapq
+
+Weighted = dict[str, list[tuple[str, int]]]   # node -> [(neighbor, fee_cents)]
+
+
+def cheapest_route(graph: Weighted, start: str, goal: str) -> tuple[int, list[str]] | None:
+    # Dijkstra. Time: O((V + E) log V), Space: O(V)
+    best: dict[str, int] = {start: 0}
+    parent: dict[str, str | None] = {start: None}
+    heap: list[tuple[int, str]] = [(0, start)]
+    while heap:
+        cost, node = heapq.heappop(heap)          # cheapest known node
+        if node == goal:
+            path: list[str] = []
+            cur: str | None = node
+            while cur is not None:
+                path.append(cur)
+                cur = parent[cur]
+            return cost, path[::-1]
+        if cost > best[node]:
+            continue                              # stale entry: a cheaper one was processed
+        for nxt, fee in graph.get(node, []):
+            new_cost = cost + fee
+            if nxt not in best or new_cost &lt; best[nxt]:
+                best[nxt] = new_cost
+                parent[nxt] = node
+                heapq.heappush(heap, (new_cost, nxt))
+    return None
+
+
+routes: Weighted = {
+    "Wallet": [("Bank_A", 500), ("Bank_B", 100)],
+    "Bank_B": [("Bank_A", 150), ("Merchant", 900)],
+    "Bank_A": [("Merchant", 200)],
+}
+
+print(cheapest_route(routes, "Wallet", "Merchant"))
+print(cheapest_route(routes, "Merchant", "Wallet"))</code></pre>
+        <div class="output">(450, ['Wallet', 'Bank_B', 'Bank_A', 'Merchant'])
+None</div>
+        <p><span class="en">BFS</span> كان سيختار <code>Wallet → Bank_A → Merchant</code>، لأنه خطوتان فقط، لكن تكلفته 700. أما <span class="en">Dijkstra</span> فوجد طريقًا من 3 خطوات بتكلفة 450. لماذا يجب أن تكون الرسوم غير سالبة؟ لأن الخوارزمية تفترض أن العقدة التي تخرج من الـ <span class="en">heap</span> لن تصبح أرخص بعد ذلك. ومع حافة سالبة ينهار هذا الافتراض، وهذه نفس فكرة الرتابة في الدرسين 3 و 6.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>الرسم البياني = عقد وحواف. اسأل دائمًا: هل هو موجّه؟ هل هو موزون؟</li>
+        <li>قائمة الجوار هي التمثيل الافتراضي، وذاكرتها <span class="en">O(V + E)</span>.</li>
+        <li><span class="en">BFS</span> يستخدم <code>deque</code>، ويزور طبقة بعد طبقة، ويجد أقصر طريق بعدد الخطوات.</li>
+        <li><span class="en">DFS</span> يستخدم العودية أو مكدسًا، ويذهب في العمق. مناسب للمكونات والحلقات والترتيب.</li>
+        <li>كلاهما <span class="en">O(V + E)</span>، وكلاهما يحتاج <code>seen</code>. في <span class="en">BFS</span> ضع العقدة فيه عند الإضافة إلى الطابور.</li>
+        <li>الحلقة في الرسم الموجّه = الوصول إلى عقدة رمادية، أي عقدة في المسار الحالي، وليس أي عقدة زرناها.</li>
+        <li>الترتيب الطوبولوجي (<span class="en">Kahn</span>) يرتب الاعتماديات، ويكتشف الحلقات في نفس الوقت.</li>
+        <li><span class="en">BFS</span> من عدة مصادر يحسب المسافة إلى أقرب مصدر في مرور واحد.</li>
+        <li>مع الأوزان غير السالبة استخدم <span class="en">Dijkstra</span> مع <code>heapq</code>.</li>
+        <li>الشبكات رسوم ضمنية، فاحسب الجيران عند الحاجة وتحقق من الحدود.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>🎓 خريطة السلسلة والخطوة التالية</h2>
+      <p>أنهيت الدروس الثمانية. هذا الجدول يلخص كل نمط والإشارات التي تدل عليه. احفظه بجانبك عندما تحل أي مسألة جديدة.</p>
+      <table>
+        <tr><th>الدرس</th><th>النمط</th><th>إشارات في نص المسألة</th><th>التعقيد المعتاد</th></tr>
+        <tr><td>1</td><td>منهجية الخطوات الست</td><td>كل مسألة</td><td>—</td></tr>
+        <tr><td>2</td><td>تحليل التعقيد</td><td>القيود: <code>n ≤ 10⁵</code> تعني <span class="en">O(n log n)</span> على الأكثر</td><td>—</td></tr>
+        <tr><td>3</td><td>المؤشران والنافذة</td><td>مرتبة، زوج، جزء متصل، أطول، أقصر</td><td class="en">O(n)</td></tr>
+        <tr><td>4</td><td><span class="en">Hashing</span> والعدّ</td><td>تكرار، كم مرة، جمّع، هل رأيته؟</td><td class="en">O(n)</td></tr>
+        <tr><td>5</td><td>العودية والتراجع</td><td>كل الحلول، ترتيبات، مجموعات، <code>n ≤ 20</code></td><td class="en">O(2ⁿ) / O(n!)</td></tr>
+        <tr><td>6</td><td>البحث الثنائي</td><td>مرتبة، أقل قيمة تكفي، خلال D أيام</td><td class="en">O(log n) / O(n log R)</td></tr>
+        <tr><td>7</td><td>البرمجة الديناميكية</td><td>كم عدد الطرق، أقل تكلفة، أكبر ربح</td><td class="en">O(n · state)</td></tr>
+        <tr><td>8</td><td>الرسوم البيانية</td><td>مرتبطة، أقصر طريق، يعتمد على، حلقة</td><td class="en">O(V + E)</td></tr>
+      </table>
+
+      <h3>خطة تدريب لأربعة أسابيع</h3>
+      <ul>
+        <li><strong>الأسبوع 1:</strong> الدروس 3 و 4. حلّ 15 مسألة سهلة، وطبّق الخطوات الست كتابةً في كل مسألة.</li>
+        <li><strong>الأسبوع 2:</strong> الدروس 5 و 6. حلّ 12 مسألة، ونصفها من نوع البحث في مجال الجواب.</li>
+        <li><strong>الأسبوع 3:</strong> الدرسان 7 و 8. حلّ 12 مسألة. املأ جدول البرمجة الديناميكية بيدك، وارسم الرسم قبل الكود.</li>
+        <li><strong>الأسبوع 4:</strong> مسائل <strong>مختلطة بدون وسوم</strong>. هذا هو الاختبار الحقيقي: أن تعرف النمط بنفسك. خصص 45 دقيقة لكل مسألة، كأنها مقابلة.</li>
+      </ul>
+
+      <h3>مواضيع للتعمق بعد السلسلة</h3>
+      <ul>
+        <li><span class="en">Heaps</span> و <code>heapq</code>: أكبر k عناصر، ودمج قوائم مرتبة.</li>
+        <li><span class="en">Union-Find</span>: المكونات مع بيانات تتغير باستمرار.</li>
+        <li><span class="en">Greedy</span>: متى يكون الاختيار الأفضل الآن صحيحًا، وكيف تثبت ذلك.</li>
+        <li><span class="en">Trie</span>: البحث بالبادئة، مثل الإكمال التلقائي.</li>
+        <li><span class="en">Monotonic Stack</span>: "أول عنصر أكبر على اليمين".</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>أنهيت السلسلة 🎉 تعلّم خطوة بخطوة 🚀</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  // Code highlighting + copy buttons
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  // Mermaid diagrams
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  // Math formulas
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  // Chart: adjacency matrix vs adjacency list memory (sparse graph, avg degree 5)
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var mc = document.getElementById("memChart");
+  if (mc) {
+    var sizes = [10, 100, 1000, 10000, 100000];
+    new Chart(mc, {
+      type: "line",
+      data: {
+        labels: sizes.map(function (n) { return n.toLocaleString("en-US"); }),
+        datasets: [
+          { label: "مصفوفة الجوار V²", data: sizes.map(function (v) { return v * v; }), borderColor: "#ef4444", backgroundColor: "#ef4444", tension: 0.2 },
+          { label: "قائمة الجوار V + 2E", data: sizes.map(function (v) { return v + 2 * (5 * v / 2) * 2; }), borderColor: "#10b981", backgroundColor: "#10b981", tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: { legend: { rtl: true }, tooltip: { rtl: true } },
+        scales: {
+          y: { type: "logarithmic", title: { display: true, text: "عدد الخانات في الذاكرة (مقياس لوغاريتمي)" } },
+          x: { title: { display: true, text: "عدد العقد V" } }
+        }
+      }
+    });
+  }
+
+  // Steppers
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  // Quizzes
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  // Reading progress bar (fills from the right, RTL)
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

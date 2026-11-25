@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منهجية حل المشكلات البرمجية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+    font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text);
+  }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981);
+    color: #fff; padding: 48px 24px; text-align: center;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 700px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box.hl { background: var(--primary); color: #fff; transform: scale(1.1); }
+  .box.found { background: var(--good); border-color: var(--good); color: #fff; transform: scale(1.1); }
+  .box small { display: block; font-size: .7rem; opacity: .75; }
+  .seen { direction: ltr; text-align: center; font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); border-radius: 10px; padding: 8px; }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--primary-soft); }
+  .card h4 { margin: 0 0 4px; color: var(--primary); }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>منهجية حل المشكلات البرمجية <span class="en">(Problem Solving Framework)</span></h1>
+  <p>ستتعلم طريقة من 6 خطوات تساعدك على حل أي مسألة برمجية بثقة، بدل التخمين.</p>
+  <div class="badges">
+    <span class="badge">الدرس 1 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 30 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>مستوى الدرس:</strong> اخترت لك مستوى متوسطًا، ولغة <span class="en">Python</span>، ومسألة واحدة نتابعها في كل الدرس. هذا الدرس هو الأول في سلسلة من 8 دروس.</div>
+      <p>حل المشكلات (Problem Solving) مهارة، وليس حفظًا للحلول. أغلب المبرمجين يقرؤون المسألة ثم يبدؤون الكتابة فورًا. بعد ذلك يضيعون الوقت في إصلاح أخطاء كان من السهل تجنبها.</p>
+      <p>لماذا يهمك هذا؟ لأنك ستواجه مسائل جديدة كل يوم في العمل وفي المقابلات التقنية. الحلول المحفوظة لا تساعدك أمام مسألة لم ترها من قبل. أما الطريقة المنظمة فتساعدك في كل مسألة.</p>
+      <p>في هذا الدرس سنحل مسألة واحدة اسمها <span class="en">Two Sum</span> بطريقة منظمة. ستبدأ بحل بطيء وصحيح، ثم تحسّنه، ثم تختبره. بعد ذلك ستطبّق نفس الخطوات على مسألة من عالم المدفوعات.</p>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">🩺 فكّر في الطبيب الجيد. هو لا يكتب الدواء في أول دقيقة. أولًا يسمع منك، ثم يسألك أسئلة، ثم يفحصك. بعدها يختار العلاج، ثم يطلب منك العودة ليرى هل نجح العلاج.<br><br>
+      حل المشكلات البرمجية يشبه ذلك تمامًا: <strong>افهم ← اسأل ← جرّب حلًا بسيطًا ← حسّن ← نفّذ ← تحقّق</strong>. المبرمج الذي يكتب الكود مباشرة يشبه طبيبًا يكتب الدواء قبل أن يسمع الشكوى.</div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>المدخلات</td><td class="en">Input</td><td>البيانات التي تأخذها الدالة.</td></tr>
+        <tr><td>المخرجات</td><td class="en">Output</td><td>النتيجة التي يجب أن ترجعها الدالة.</td></tr>
+        <tr><td>القيود</td><td class="en">Constraints</td><td>حدود المسألة، مثل حجم القائمة وأكبر قيمة ممكنة.</td></tr>
+        <tr><td>الحالات الطرفية</td><td class="en">Edge Cases</td><td>مدخلات غريبة أو متطرفة، مثل قائمة فارغة أو أرقام سالبة.</td></tr>
+        <tr><td>الحل البدائي</td><td class="en">Brute Force</td><td>حل بسيط يجرب كل الاحتمالات. غالبًا هو صحيح لكنه بطيء.</td></tr>
+        <tr><td>التعقيد الزمني</td><td class="en">Time Complexity</td><td>كيف يزيد وقت التنفيذ عندما يكبر حجم المدخلات.</td></tr>
+        <tr><td>التعقيد المكاني</td><td class="en">Space Complexity</td><td>كم ذاكرة إضافية يحتاج الحل.</td></tr>
+        <tr><td>عنق الزجاجة</td><td class="en">Bottleneck</td><td>الجزء الأبطأ في الحل. تحسينه يحسّن الحل كله.</td></tr>
+        <tr><td>النمط</td><td class="en">Pattern</td><td>طريقة حل معروفة تتكرر في مسائل كثيرة، مثل <span class="en">Hashing</span>.</td></tr>
+        <tr><td>اختبار الضغط</td><td class="en">Stress Testing</td><td>مقارنة الحل السريع بالحل البدائي على آلاف المدخلات العشوائية.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+      <p>المسألة التي سنتابعها في كل الدرس هي <strong><span class="en">Two Sum</span></strong>:</p>
+      <div class="callout note">📝 <strong>المسألة:</strong> عندك قائمة أرقام <code>nums</code> ورقم <code>target</code>. أرجع موقعي (<span class="en">indices</span>) رقمين مجموعهما يساوي <code>target</code>. إذا لم يوجد زوج كهذا، أرجع <code>None</code>.</div>
+
+      <h3>الخطوات الست</h3>
+      <div class="steps-grid">
+        <div class="card"><h4>1. افهم المسألة</h4>أعد كتابة المسألة بكلماتك. حدد المدخلات والمخرجات والقيود.</div>
+        <div class="card"><h4>2. أمثلة وحالات طرفية</h4>اكتب أمثلة صغيرة بيدك، ومعها حالات غريبة.</div>
+        <div class="card"><h4>3. حل بدائي</h4>ابدأ بأي حل صحيح، حتى لو كان بطيئًا.</div>
+        <div class="card"><h4>4. حسّن الحل</h4>ابحث عن العمل البطيء أو المكرر. اختر نمطًا مناسبًا.</div>
+        <div class="card"><h4>5. اكتب الكود</h4>اكتب كودًا نظيفًا بأسماء واضحة.</div>
+        <div class="card"><h4>6. اختبر وراجع</h4>تتبّع الكود بيدك، وجرّب الحالات الطرفية، واحسب التعقيد.</div>
+      </div>
+
+      <h3>الخطوة 1: افهم المسألة</h3>
+      <p>لماذا تبدأ بالفهم؟ لأن حل مسألة خاطئة بإتقان ما زال حلًا خاطئًا. اسأل نفسك هذه الأسئلة قبل أن تكتب أي كود:</p>
+      <ul>
+        <li>هل القائمة مرتبة (<span class="en">sorted</span>)؟ في مسألتنا: لا.</li>
+        <li>هل يمكن أن تكون الأرقام سالبة أو مكررة؟ نعم.</li>
+        <li>هل يمكن استخدام نفس العنصر مرتين؟ لا.</li>
+        <li>ماذا نرجع إذا كان هناك أكثر من جواب؟ أي جواب صحيح.</li>
+        <li>ما حجم القائمة؟ لنقل حتى <code>100,000</code> عنصر.</li>
+      </ul>
+
+      <h3>الخطوة 2: أمثلة وحالات طرفية</h3>
+      <table>
+        <tr><th>المدخلات</th><th>المخرجات</th><th>لماذا هذا المثال؟</th></tr>
+        <tr><td class="en">[3, 8, 4, 6, 1], 10</td><td class="en">(2, 3)</td><td>مثال عادي.</td></tr>
+        <tr><td class="en">[5, 5], 10</td><td class="en">(0, 1)</td><td>رقم مكرر.</td></tr>
+        <tr><td class="en">[5], 10</td><td class="en">None</td><td>لا يجوز استخدام نفس العنصر مرتين.</td></tr>
+        <tr><td class="en">[], 0</td><td class="en">None</td><td>قائمة فارغة.</td></tr>
+        <tr><td class="en">[-3, 7, 2], 4</td><td class="en">(0, 1)</td><td>أرقام سالبة.</td></tr>
+      </table>
+
+      <h3>الخطوة 3: الحل البدائي</h3>
+      <p>جرّب كل زوج ممكن. هذا الحل سهل، وغالبًا يكون صحيحًا. وفائدته الكبرى أنه يصبح مرجعًا (<span class="en">reference</span>) تختبر به الحل السريع لاحقًا.</p>
+
+      <h3>الخطوة 4: التحسين بطريقة <span class="en">BUD</span></h3>
+      <p>ابحث في الحل البدائي عن ثلاثة أشياء:</p>
+      <ul>
+        <li><strong><span class="en">B</span>ottleneck</strong> (عنق الزجاجة): ما الجزء الأبطأ؟ عندنا هو الحلقة الداخلية التي تبحث عن الرقم المكمل.</li>
+        <li><strong><span class="en">U</span>nnecessary work</strong> (عمل غير ضروري): هل نحسب شيئًا لا نحتاجه؟</li>
+        <li><strong><span class="en">D</span>uplicated work</strong> (عمل مكرر): هل نبحث في نفس الأرقام مرة بعد مرة؟ نعم.</li>
+      </ul>
+      <p>الفكرة الأساسية: لكل رقم <code>x</code> نحتاج الرقم <code>target - x</code>. لذلك السؤال الحقيقي هو: <strong>هل رأيت هذا الرقم من قبل؟</strong> وأسرع طريقة للإجابة عن سؤال "هل رأيته؟" هي القاموس (<span class="en">dict</span>)، لأن البحث فيه يأخذ وقتًا ثابتًا تقريبًا.</p>
+
+      <h3>كيف تختار النمط المناسب؟</h3>
+      <p>هذه الأسئلة توجّهك إلى نمط الحل. سنشرح كل نمط في درس مستقل.</p>
+      <div class="diagram mermaid">
+flowchart TD
+  A["اقرأ المسألة والقيود"] --> B{"هل المدخلات مرتبة؟"}
+  B -->|"نعم"| C["Two Pointers أو Binary Search"]
+  B -->|"لا"| D{"هل تحتاج بحثًا سريعًا: هل رأيت هذا من قبل؟"}
+  D -->|"نعم"| E["Hashing: dict أو set"]
+  D -->|"لا"| F{"هل تبحث في جزء متصل من القائمة؟"}
+  F -->|"نعم"| G["Sliding Window أو Prefix Sum"]
+  F -->|"لا"| H{"هل تحتاج كل التركيبات الممكنة؟"}
+  H -->|"نعم"| I["Backtracking"]
+  H -->|"لا"| J{"هل تتكرر نفس المسائل الصغيرة؟"}
+  J -->|"نعم"| K["Dynamic Programming"]
+  J -->|"لا"| L["Greedy أو Graphs"]
+      </div>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> هذه الشجرة ليست قانونًا. هي نقطة بداية. المسائل الصعبة تجمع أكثر من نمط.</div>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+      <p>هذا المخطط يوضح الطريقة كاملة. لاحظ أن الطريقة فيها رجوع للخلف. إذا فشل الاختبار، تعود إلى الفهم أو إلى التحسين.</p>
+      <div class="diagram mermaid">
+flowchart LR
+  A["1. افهم"] --> B["2. أمثلة"]
+  B --> C["3. حل بدائي"]
+  C --> D["4. حسّن"]
+  D --> E["5. اكتب الكود"]
+  E --> F{"6. هل نجح الاختبار؟"}
+  F -->|"نعم"| G["احسب التعقيد وراجع"]
+  F -->|"خطأ في الفهم"| A
+  F -->|"بطيء جدًا"| D
+      </div>
+
+      <h3>تتبّع الحل السريع خطوة بخطوة</h3>
+      <p>المدخلات: <code>nums = [3, 8, 4, 6, 1]</code> و <code>target = 10</code>. القاموس <code>seen</code> يحفظ كل رقم رأيناه وموقعه.</p>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: العنصر 3</h4>
+          <div class="mem"><div class="box hl">3<small>i=0</small></div><div class="box">8<small>i=1</small></div><div class="box">4<small>i=2</small></div><div class="box">6<small>i=3</small></div><div class="box">1<small>i=4</small></div></div>
+          <p>نحتاج <code>10 - 3 = 7</code>. هل 7 موجود في <code>seen</code>؟ لا. نضيف 3 إلى القاموس.</p>
+          <div class="seen">seen = {3: 0}</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: العنصر 8</h4>
+          <div class="mem"><div class="box">3<small>i=0</small></div><div class="box hl">8<small>i=1</small></div><div class="box">4<small>i=2</small></div><div class="box">6<small>i=3</small></div><div class="box">1<small>i=4</small></div></div>
+          <p>نحتاج <code>10 - 8 = 2</code>. هل 2 موجود؟ لا. نضيف 8.</p>
+          <div class="seen">seen = {3: 0, 8: 1}</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: العنصر 4</h4>
+          <div class="mem"><div class="box">3<small>i=0</small></div><div class="box">8<small>i=1</small></div><div class="box hl">4<small>i=2</small></div><div class="box">6<small>i=3</small></div><div class="box">1<small>i=4</small></div></div>
+          <p>نحتاج <code>10 - 4 = 6</code>. هل 6 موجود؟ لا، لم نصل إليه بعد. نضيف 4.</p>
+          <div class="seen">seen = {3: 0, 8: 1, 4: 2}</div>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: العنصر 6 ← وجدنا الجواب 🎉</h4>
+          <div class="mem"><div class="box">3<small>i=0</small></div><div class="box">8<small>i=1</small></div><div class="box found">4<small>i=2</small></div><div class="box found">6<small>i=3</small></div><div class="box">1<small>i=4</small></div></div>
+          <p>نحتاج <code>10 - 6 = 4</code>. هل 4 موجود؟ نعم، في الموقع 2. نرجع <code>(2, 3)</code> ونتوقف. لم نحتج أن نصل إلى العنصر الأخير.</p>
+          <div class="seen">seen = {3: 0, 8: 1, 4: 2} → return (2, 3)</div>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+      <div class="callout note">📝 <strong>لماذا البحث في القاموس سريع؟</strong> القاموس يحوّل المفتاح إلى رقم باستخدام دالة <span class="en">hash</span>. هذا الرقم يحدد مكان المفتاح في الذاكرة مباشرة. لذلك لا يمرّ القاموس على كل العناصر، ويأخذ البحث في المتوسط وقتًا ثابتًا <span class="en">O(1)</span>.</div>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: الحل البدائي <span class="en">O(n²)</span></h3>
+<pre><code class="language-python">def two_sum_brute(nums: list[int], target: int) -> tuple[int, int] | None:
+    """Try every pair (i, j) with i &lt; j."""
+    n = len(nums)
+    for i in range(n):
+        for j in range(i + 1, n):  # start after i: never reuse the same element
+            if nums[i] + nums[j] == target:
+                return (i, j)
+    return None
+
+
+print(two_sum_brute([3, 8, 4, 6, 1], 10))
+print(two_sum_brute([5], 10))</code></pre>
+      <div class="output">(2, 3)
+None</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>-> tuple[int, int] | None</code>: الدالة ترجع زوج مواقع، أو <code>None</code> إذا لم تجد جوابًا.</li>
+        <li><code>for i in range(n)</code>: نختار الرقم الأول.</li>
+        <li><code>range(i + 1, n)</code>: نختار الرقم الثاني بعد الأول دائمًا. هكذا لا نستخدم نفس العنصر مرتين، ولا نكرر نفس الزوج.</li>
+        <li>إذا كان المجموع يساوي <code>target</code>، نرجع الموقعين فورًا.</li>
+        <li><code>return None</code>: جربنا كل الأزواج ولم نجد جوابًا.</li>
+      </ol>
+      <p>عدد الأزواج التي نجربها في أسوأ حالة:</p>
+      <div dir="ltr">$$\binom{n}{2} = \frac{n(n-1)}{2} \approx \frac{n^2}{2}$$</div>
+      <p>إذا كان <code>n = 100,000</code>، فهذا يعني حوالي 5 مليارات عملية. هذا بطيء جدًا في <span class="en">Python</span>.</p>
+
+      <h3>مثال 2: الحل المحسّن باستخدام <span class="en">dict</span> بتعقيد <span class="en">O(n)</span></h3>
+<pre><code class="language-python">def two_sum(nums: list[int], target: int) -> tuple[int, int] | None:
+    """One pass: for each number, ask 'have I seen its complement?'"""
+    seen: dict[int, int] = {}  # value -> index
+    for i, num in enumerate(nums):
+        need = target - num
+        if need in seen:           # check BEFORE storing num
+            return (seen[need], i)
+        seen[num] = i
+    return None
+
+
+print(two_sum([3, 8, 4, 6, 1], 10))
+print(two_sum([5, 5], 10))
+print(two_sum([5], 10))
+print(two_sum([], 0))</code></pre>
+      <div class="output">(2, 3)
+(0, 1)
+None
+None</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>seen: dict[int, int] = {}</code>: قاموس يحفظ كل رقم رأيناه (المفتاح) وموقعه (القيمة).</li>
+        <li><code>enumerate(nums)</code>: يعطينا الموقع والقيمة معًا.</li>
+        <li><code>need = target - num</code>: الرقم الذي يكمل الرقم الحالي.</li>
+        <li><code>if need in seen</code>: نبحث في القاموس بوقت ثابت تقريبًا. هذا السطر حلّ محل الحلقة الداخلية كلها.</li>
+        <li><code>seen[num] = i</code>: نضيف الرقم الحالي <strong>بعد</strong> البحث. لو أضفناه قبل البحث، يمكن أن يطابق الرقم نفسه.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>الموازنة:</strong> كسبنا وقتًا (من <span class="en">O(n²)</span> إلى <span class="en">O(n)</span>)، لكن دفعنا ذاكرة إضافية <span class="en">O(n)</span> للقاموس. هذه الموازنة بين الوقت والذاكرة (<span class="en">Time-Space Trade-off</span>) تتكرر كثيرًا.</div>
+
+      <h3>مثال 3: اختبار الضغط (<span class="en">Stress Testing</span>) كما يفعل المحترفون</h3>
+      <p>كيف تتأكد أن الحل السريع صحيح؟ قارنه بالحل البدائي على مئات المدخلات العشوائية الصغيرة. الحل البدائي بسيط، لذلك نثق به كمرجع.</p>
+<pre><code class="language-python">import random
+
+
+def two_sum_brute(nums: list[int], target: int) -> tuple[int, int] | None:
+    n = len(nums)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if nums[i] + nums[j] == target:
+                return (i, j)
+    return None
+
+
+def two_sum(nums: list[int], target: int) -> tuple[int, int] | None:
+    seen: dict[int, int] = {}
+    for i, num in enumerate(nums):
+        need = target - num
+        if need in seen:
+            return (seen[need], i)
+        seen[num] = i
+    return None
+
+
+def is_valid(nums: list[int], target: int, answer: tuple[int, int]) -> bool:
+    """A valid answer: two different positions whose values sum to target."""
+    i, j = answer
+    return i &lt; j and nums[i] + nums[j] == target
+
+
+def stress_test(rounds: int = 500) -> None:
+    random.seed(42)  # same random inputs every run
+    for _ in range(rounds):
+        n = random.randint(0, 8)  # small inputs, includes the empty list
+        nums = [random.randint(-5, 5) for _ in range(n)]
+        target = random.randint(-10, 10)
+
+        slow = two_sum_brute(nums, target)
+        fast = two_sum(nums, target)
+
+        # Both must agree on whether an answer exists
+        if (slow is None) != (fast is None):
+            print("Mismatch:", nums, target, slow, fast)
+            return
+        # The fast answer may differ from slow, but it must be valid
+        if fast is not None and not is_valid(nums, target, fast):
+            print("Invalid answer:", nums, target, fast)
+            return
+    print(f"All {rounds} tests passed")
+
+
+stress_test()</code></pre>
+      <div class="output">All 500 tests passed</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>random.seed(42)</code>: نثبّت العشوائية. هكذا تحصل على نفس المدخلات في كل تشغيل، وتستطيع إعادة أي خطأ.</li>
+        <li><code>random.randint(0, 8)</code>: نستخدم قوائم صغيرة. القوائم الصغيرة تكشف الحالات الطرفية، ومنها القائمة الفارغة.</li>
+        <li><code>randint(-5, 5)</code>: مجال ضيق يعني أرقامًا مكررة كثيرة وأرقامًا سالبة. هذا يكشف الأخطاء بسرعة.</li>
+        <li><strong>ملاحظة مهمة:</strong> لا نقارن <code>slow == fast</code>. الحلّان قد يرجعان زوجين مختلفين، وكلاهما صحيح. لذلك نتحقق من شيئين: هل يتفقان على وجود جواب؟ وهل جواب الحل السريع صحيح؟</li>
+        <li>إذا ظهر خطأ، نطبع المدخلات التي سببته. بعدها تتتبعها بيدك.</li>
+      </ol>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>خطأ 1: استخدام نفس العنصر مرتين</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def two_sum(nums: list[int], target: int):
+    seen: dict[int, int] = {}
+    for i, num in enumerate(nums):
+        seen[num] = i          # stored first!
+        need = target - num
+        if need in seen:
+            return (seen[need], i)
+    return None
+
+print(two_sum([5], 10))  # (0, 0)  wrong!</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">def two_sum(nums: list[int], target: int):
+    seen: dict[int, int] = {}
+    for i, num in enumerate(nums):
+        need = target - num
+        if need in seen:       # check first
+            return (seen[need], i)
+        seen[num] = i          # then store
+    return None
+
+print(two_sum([5], 10))  # None</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> عندما نضيف 5 قبل البحث، يجد الكود 5 في القاموس، ويرجع <code>(0, 0)</code>. هذا يعني أننا جمعنا العنصر مع نفسه. ترتيب سطرين فقط غيّر صحة الحل.</div>
+
+      <h3>خطأ 2: الترتيب الذي يضيّع المواقع الأصلية</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def two_sum(nums: list[int], target: int):
+    nums.sort()   # changes the input AND loses indices
+    left, right = 0, len(nums) - 1
+    while left &lt; right:
+        total = nums[left] + nums[right]
+        if total == target:
+            return (left, right)  # indices of the SORTED list
+        if total &lt; target:
+            left += 1
+        else:
+            right -= 1
+    return None</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">def two_sum(nums: list[int], target: int):
+    # keep (value, original_index) pairs
+    pairs = sorted((v, i) for i, v in enumerate(nums))
+    left, right = 0, len(pairs) - 1
+    while left &lt; right:
+        total = pairs[left][0] + pairs[right][0]
+        if total == target:
+            i, j = pairs[left][1], pairs[right][1]
+            return (min(i, j), max(i, j))
+        if total &lt; target:
+            left += 1
+        else:
+            right -= 1
+    return None</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> المسألة تطلب مواقع القائمة الأصلية. بعد الترتيب، تتغير المواقع. والأسوأ أن <code>nums.sort()</code> يغيّر قائمة المستخدم نفسها. هذا خطأ في <strong>الخطوة 1</strong> (الفهم)، وليس في الكود.</div>
+
+      <h3>أخطاء أخرى متكررة</h3>
+      <ul>
+        <li><strong>نسيان الحالات الطرفية:</strong> قائمة فارغة، عنصر واحد، كل العناصر متساوية.</li>
+        <li><strong>التحسين قبل الصحة:</strong> حل سريع وخاطئ لا قيمة له. اكتب حلًا صحيحًا أولًا.</li>
+        <li><strong>تجاهل القيود:</strong> إذا كان <code>n ≤ 20</code>، فالحل البدائي قد يكون كافيًا تمامًا.</li>
+        <li><strong>الكتابة دون تتبّع:</strong> تتبّع الكود بيدك على مثال صغير قبل التشغيل.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>اكتب المسألة بكلماتك</strong> في تعليق قبل الكود. إذا لم تستطع، فأنت لم تفهمها بعد.</li>
+        <li><strong>اقرأ القيود أولًا.</strong> هي تخبرك بالتعقيد المطلوب (انظر الجدول في القسم التالي).</li>
+        <li><strong>قل الحل البدائي بصوت مرتفع</strong> في المقابلة، حتى لو لم تكتبه. هذا يُظهر أنك تفهم المسألة.</li>
+        <li><strong>اسأل: ما المعلومة التي أحسبها مرة بعد مرة؟</strong> احفظها في <span class="en">dict</span> أو <span class="en">set</span> أو مصفوفة.</li>
+        <li><strong>استخدم أسماء واضحة</strong> مثل <code>need</code> و <code>seen</code>، وليس <code>x</code> و <code>d</code>.</li>
+        <li><strong>احتفظ بالحل البدائي</strong> لاختبار الضغط.</li>
+        <li><strong>إذا علقت لأكثر من 10 دقائق</strong>، جرّب مثالًا أصغر، أو حلّ نسخة أبسط من المسألة.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>نصيحة:</strong> بعد كل مسألة، اكتب سطرًا واحدًا: "ما الفكرة التي فتحت الحل؟". بعد 50 مسألة ستملك دفترًا بالأنماط، وهذا أقوى من حفظ الحلول.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+      <h3>كم عملية يحتاج كل حل؟</h3>
+      <p>الرسم بمقياس لوغاريتمي. كل خط في المحور العمودي يعني ضرب الرقم في 100. لاحظ أن الفرق يكبر بسرعة كلما زاد <code>n</code>.</p>
+      <div class="chart-box"><canvas id="perfChart"></canvas></div>
+
+      <h3>اقرأ القيود لتعرف التعقيد المطلوب</h3>
+      <p>قاعدة تقريبية: <span class="en">Python</span> ينفذ حوالي 10 ملايين عملية بسيطة في الثانية. لغة <span class="en">C++</span> تنفذ حوالي 100 مليون. استخدم هذا الجدول لتعرف التعقيد الذي تحتاجه:</p>
+      <table>
+        <tr><th>حجم المدخلات <span class="en">n</span></th><th>التعقيد المقبول</th><th>أنماط شائعة</th></tr>
+        <tr><td class="en">n ≤ 10</td><td class="en">O(n!)</td><td>تجربة كل الترتيبات</td></tr>
+        <tr><td class="en">n ≤ 20</td><td class="en">O(2ⁿ)</td><td><span class="en">Backtracking</span>، كل المجموعات الجزئية</td></tr>
+        <tr><td class="en">n ≤ 500</td><td class="en">O(n³)</td><td>ثلاث حلقات متداخلة، بعض مسائل <span class="en">DP</span></td></tr>
+        <tr><td class="en">n ≤ 5,000</td><td class="en">O(n²)</td><td>حلقتان متداخلتان، الحل البدائي</td></tr>
+        <tr><td class="en">n ≤ 10⁶</td><td class="en">O(n log n) / O(n)</td><td>الترتيب، <span class="en">Hashing</span>، <span class="en">Two Pointers</span></td></tr>
+        <tr><td class="en">n > 10⁸</td><td class="en">O(log n) / O(1)</td><td><span class="en">Binary Search</span>، معادلة رياضية</td></tr>
+      </table>
+
+      <h3>مقارنة حلول <span class="en">Two Sum</span></h3>
+      <table>
+        <tr><th>الحل</th><th>الوقت</th><th>الذاكرة</th><th>متى تستخدمه؟</th></tr>
+        <tr><td>البدائي</td><td class="en">O(n²)</td><td class="en">O(1)</td><td>قوائم صغيرة جدًا، أو كمرجع للاختبار، أو عندما تكون الذاكرة محدودة جدًا.</td></tr>
+        <tr><td>الترتيب + مؤشران</td><td class="en">O(n log n)</td><td class="en">O(n)</td><td>عندما تكون القائمة مرتبة أصلًا. عندها تكون الذاكرة <span class="en">O(1)</span>.</td></tr>
+        <tr><td><span class="en">dict</span></td><td class="en">O(n)</td><td class="en">O(n)</td><td>الخيار الافتراضي لقائمة غير مرتبة.</td></tr>
+      </table>
+      <div class="callout note">📝 <strong>متى لا تحتاج التحسين؟</strong> إذا كانت المدخلات صغيرة دائمًا، فالحل البسيط أفضل لأنه أسهل في القراءة والصيانة. التحسين له تكلفة: كود أطول واحتمال أكبر للأخطاء.</div>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: مطابقة المدفوعات مع فاتورة</h2>
+      <p><strong>القصة:</strong> عميل دفع فاتورة على دفعتين. عندك قائمة معاملات (<span class="en">transactions</span>)، ولكل معاملة رقم ومبلغ. ابحث عن معاملتين مجموعهما يساوي مبلغ الفاتورة بالضبط.</p>
+
+      <h3>طبّق الخطوات الست</h3>
+      <ol>
+        <li><strong>الفهم:</strong> المدخلات قائمة <code>(id, amount)</code> ومبلغ الفاتورة. المخرجات رقما المعاملتين، أو <code>None</code>.</li>
+        <li><strong>الحالات الطرفية:</strong> مبالغ صفرية أو سالبة (مثل المبالغ المستردة <span class="en">refunds</span>)، ومبالغ مكررة، وكسور عشرية.</li>
+        <li><strong>الحل البدائي:</strong> جرّب كل زوج. هذا بطيء مع آلاف المعاملات.</li>
+        <li><strong>التحسين:</strong> هي نفس مسألة <span class="en">Two Sum</span>. نستخدم <span class="en">dict</span>.</li>
+        <li><strong>الكود:</strong> نخزّن المبالغ بالقروش كأعداد صحيحة (<span class="en">int</span>). لماذا؟ لأن <code>0.1 + 0.2</code> في <span class="en">Python</span> لا يساوي <code>0.3</code> بالضبط.</li>
+        <li><strong>الاختبار:</strong> مثال فيه جواب، ومثال ليس فيه جواب.</li>
+      </ol>
+<pre><code class="language-python">Payment = tuple[str, int]  # (transaction_id, amount_in_cents)
+
+
+def match_payments(payments: list[Payment], invoice_cents: int) -> tuple[str, str] | None:
+    """Find two payments whose amounts sum exactly to the invoice."""
+    seen: dict[int, str] = {}  # amount -> first transaction id with that amount
+    for tx_id, amount in payments:
+        if amount &lt;= 0:
+            continue  # skip refunds and invalid amounts
+        need = invoice_cents - amount
+        if need in seen:
+            return (seen[need], tx_id)
+        seen.setdefault(amount, tx_id)  # keep the earliest transaction
+    return None
+
+
+payments: list[Payment] = [
+    ("TX1", 15000),   # 150.00
+    ("TX2", 25050),   # 250.50
+    ("TX3", 9950),    # 99.50
+    ("TX4", 40000),   # 400.00
+    ("TX5", -5000),   # refund, ignored
+]
+
+print(match_payments(payments, 35000))  # 350.00
+print(match_payments(payments, 100))    # 1.00
+print(0.1 + 0.2 == 0.3)                 # why we use cents</code></pre>
+      <div class="output">('TX2', 'TX3')
+None
+False</div>
+      <h4>الشرح</h4>
+      <ol>
+        <li><code>Payment = tuple[str, int]</code>: اسم مختصر للنوع يجعل الكود أوضح.</li>
+        <li><code>if amount &lt;= 0: continue</code>: قرار جاء من الخطوة 2. المبالغ المستردة لا تُحسب دفعة.</li>
+        <li><code>seen.setdefault(amount, tx_id)</code>: إذا تكرر نفس المبلغ، نحتفظ بأول معاملة فقط.</li>
+        <li>السطر الأخير يوضح لماذا لا نستخدم <span class="en">float</span> مع المال.</li>
+      </ol>
+      <div class="callout tip">💡 <strong>لاحظ:</strong> المسألة الحقيقية بدت جديدة، لكنها <span class="en">Two Sum</span> في ثوب مختلف. هذه هي قيمة التفكير بالأنماط.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+      <div class="quiz" data-explain="الفهم أولًا. حل مسألة خاطئة بإتقان ما زال حلًا خاطئًا.">
+        <div class="q">1. ما أول شيء تفعله عندما تقرأ مسألة جديدة؟</div>
+        <button class="option">تكتب الكود فورًا</button>
+        <button class="option">تبحث عن الحل على الإنترنت</button>
+        <button class="option" data-correct="true">تعيد كتابة المسألة بكلماتك وتحدد المدخلات والمخرجات والقيود</button>
+        <button class="option">تختار أسرع خوارزمية تعرفها</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="مع n = 100,000 يحتاج O(n²) حوالي 5 مليارات عملية، وهذا بطيء جدًا. نحتاج O(n log n) أو O(n).">
+        <div class="q">2. القيود تقول n ≤ 100,000. أي تعقيد تحتاج؟</div>
+        <button class="option">O(2ⁿ)</button>
+        <button class="option">O(n²)</button>
+        <button class="option" data-correct="true">O(n log n) أو O(n)</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="إذا أضفت الرقم قبل البحث، قد يطابق نفسه. مثلًا [5] مع target = 10 يرجع (0, 0).">
+        <div class="q">3. في حل Two Sum بالقاموس، لماذا نبحث عن need قبل إضافة num؟</div>
+        <button class="option">لأن هذا أسرع</button>
+        <button class="option" data-correct="true">حتى لا نستخدم نفس العنصر مرتين</button>
+        <button class="option">لأن القاموس لا يقبل التكرار</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="الحل البدائي بسيط، لذلك نثق به كمرجع. نقارن به الحل السريع على مدخلات عشوائية كثيرة.">
+        <div class="q">4. ما الفائدة الأساسية من الاحتفاظ بالحل البدائي بعد كتابة الحل السريع؟</div>
+        <button class="option">نستخدمه في الإنتاج</button>
+        <button class="option" data-correct="true">نستخدمه مرجعًا في اختبار الضغط</button>
+        <button class="option">لا فائدة منه، نحذفه</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="تمثيل float للأرقام العشرية غير دقيق، فـ 0.1 + 0.2 لا يساوي 0.3 بالضبط. القروش كأعداد صحيحة دقيقة دائمًا.">
+        <div class="q">5. لماذا خزّنا المبالغ بالقروش كـ int في المشروع؟</div>
+        <button class="option">لأن int يستهلك ذاكرة أقل</button>
+        <button class="option">لأن dict لا يقبل float</button>
+        <button class="option" data-correct="true">لأن float غير دقيق مع الكسور العشرية، والمقارنة بالمساواة تفشل</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+      <p>طبّق الخطوات الست في كل تمرين. اكتب الأمثلة والحالات الطرفية قبل الكود.</p>
+
+      <h3>تمرين 1 (سهل): هل يوجد تكرار؟</h3>
+      <p>اكتب دالة <code>has_duplicate(nums: list[int]) -> bool</code> ترجع <code>True</code> إذا ظهر أي رقم أكثر من مرة.</p>
+      <details><summary>💡 تلميح</summary><p>الحل البدائي يقارن كل زوج بتعقيد <span class="en">O(n²)</span>. أي هيكل بيانات يجيب عن سؤال "هل رأيته من قبل؟" بسرعة؟</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def has_duplicate(nums: list[int]) -> bool:
+    seen: set[int] = set()
+    for num in nums:
+        if num in seen:
+            return True   # stop early
+        seen.add(num)
+    return False
+
+
+print(has_duplicate([1, 2, 3, 1]))
+print(has_duplicate([1, 2, 3]))
+print(has_duplicate([]))</code></pre>
+        <div class="output">True
+False
+False</div>
+        <p>نستخدم <span class="en">set</span> لأننا نحتاج القيم فقط، لا المواقع. الوقت <span class="en">O(n)</span> والذاكرة <span class="en">O(n)</span>. يوجد حل أقصر هو <code>len(set(nums)) != len(nums)</code>، لكنه لا يتوقف مبكرًا عند أول تكرار.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): أول حرف غير مكرر</h3>
+      <p>اكتب دالة <code>first_unique(text: str) -> int</code> ترجع موقع أول حرف لا يتكرر في النص، أو <code>-1</code> إذا لم يوجد.</p>
+      <details><summary>💡 تلميح</summary><p>استخدم مرورين على النص. في المرور الأول، احسب عدد ظهور كل حرف.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from collections import Counter
+
+
+def first_unique(text: str) -> int:
+    counts = Counter(text)            # pass 1: count each char
+    for i, ch in enumerate(text):     # pass 2: find first with count 1
+        if counts[ch] == 1:
+            return i
+    return -1
+
+
+print(first_unique("paymob"))
+print(first_unique("aabbcd"))
+print(first_unique("aabb"))</code></pre>
+        <div class="output">0
+4
+-1</div>
+        <p>مروران على النص يعني <span class="en">O(n)</span>، وهذا أفضل بكثير من <span class="en">O(n²)</span>. هذا نمط مهم: احسب المعلومة مرة واحدة، ثم استخدمها.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): الكلمات المتجانسة (<span class="en">Anagrams</span>)</h3>
+      <p>اكتب دالة <code>is_anagram(a: str, b: str) -> bool</code>. ترجع <code>True</code> إذا كانت الكلمتان تحتويان نفس الحروف بنفس العدد، مثل <code>"listen"</code> و <code>"silent"</code>.</p>
+      <details><summary>💡 تلميح</summary><p>هناك حلّان: الترتيب بتعقيد <span class="en">O(n log n)</span>، أو العدّ بتعقيد <span class="en">O(n)</span>. ابدأ بالتحقق من الطول.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">from collections import Counter
+
+
+def is_anagram(a: str, b: str) -> bool:
+    if len(a) != len(b):   # quick exit
+        return False
+    return Counter(a) == Counter(b)
+
+
+print(is_anagram("listen", "silent"))
+print(is_anagram("rat", "car"))</code></pre>
+        <div class="output">True
+False</div>
+        <p>فحص الطول أولًا يوفّر وقتًا في حالات كثيرة. <code>Counter</code> هو <span class="en">dict</span> يعدّ ظهور كل عنصر.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): عدد القوائم الجزئية التي مجموعها <span class="en">k</span></h3>
+      <p>اكتب دالة <code>count_subarrays(nums: list[int], k: int) -> int</code>. ترجع عدد القوائم الجزئية المتصلة (<span class="en">subarrays</span>) التي مجموعها يساوي <code>k</code>. الأرقام قد تكون سالبة.</p>
+      <details><summary>💡 تلميح</summary><p>الحل البدائي يجرب كل بداية وكل نهاية. للتحسين، استخدم المجموع التراكمي (<span class="en">Prefix Sum</span>). مجموع الجزء من <code>i</code> إلى <code>j</code> يساوي <code>prefix[j] - prefix[i]</code>. الآن السؤال هو: كم مرة رأيت <code>prefix - k</code> من قبل؟ أليس هذا مثل <span class="en">Two Sum</span>؟</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def count_subarrays(nums: list[int], k: int) -> int:
+    count = 0
+    prefix = 0
+    seen: dict[int, int] = {0: 1}   # prefix sum -> how many times seen
+    for num in nums:
+        prefix += num
+        count += seen.get(prefix - k, 0)
+        seen[prefix] = seen.get(prefix, 0) + 1
+    return count
+
+
+print(count_subarrays([1, 1, 1], 2))
+print(count_subarrays([1, 2, 3], 3))
+print(count_subarrays([1, -1, 0], 0))</code></pre>
+        <div class="output">2
+2
+3</div>
+        <p><code>{0: 1}</code> يمثل "مجموعًا فارغًا" قبل البداية، حتى نعدّ القوائم الجزئية التي تبدأ من الموقع 0. لا يمكن استخدام <span class="en">Sliding Window</span> هنا بسبب الأرقام السالبة. لاحظ أن هذه المسألة هي <span class="en">Two Sum</span> على المجاميع التراكمية. الوقت <span class="en">O(n)</span>.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>حل المشكلات مهارة لها خطوات واضحة، وليس حفظًا للحلول.</li>
+        <li>الخطوات الست: افهم، أمثلة، حل بدائي، حسّن، اكتب الكود، اختبر.</li>
+        <li>القيود تخبرك بالتعقيد المطلوب قبل أن تبدأ.</li>
+        <li>الحل البدائي الصحيح أهم من حل سريع خاطئ، وهو مرجعك في الاختبار.</li>
+        <li>استخدم <span class="en">BUD</span> للتحسين: عنق الزجاجة، والعمل غير الضروري، والعمل المكرر.</li>
+        <li>سؤال "هل رأيت هذا من قبل؟" يعني غالبًا <span class="en">dict</span> أو <span class="en">set</span>.</li>
+        <li>أغلب التحسينات تبادل ذاكرة بوقت.</li>
+        <li>ترتيب سطرين قد يغيّر صحة الحل، لذلك تتبّع الكود بيدك.</li>
+        <li>اختبار الضغط يكشف أخطاء لا تكشفها أمثلتك اليدوية.</li>
+        <li>مسائل كثيرة تبدو جديدة، لكنها نمط معروف في ثوب مختلف.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <ul>
+        <li><strong>الدرس 2: تحليل التعقيد (<span class="en">Big-O</span>)</strong>: كيف تحسب تعقيد أي كود بدقة، ومعنى أفضل وأسوأ ومتوسط حالة.</li>
+        <li>الدرس 3: <span class="en">Two Pointers</span> و <span class="en">Sliding Window</span>.</li>
+        <li>الدرس 4: <span class="en">Hashing</span> والعدّ بعمق أكبر.</li>
+        <li>للتدريب: حلّ 5 مسائل سهلة على <span class="en">LeetCode</span> بوسم <span class="en">Hash Table</span>، وطبّق الخطوات الست في كل مسألة.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  // Code highlighting + copy buttons
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  // Mermaid diagrams
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  // Math formulas
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  // Charts
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var perf = document.getElementById("perfChart");
+  if (perf) {
+    var sizes = [10, 100, 1000, 10000, 100000];
+    new Chart(perf, {
+      type: "line",
+      data: {
+        labels: sizes.map(function (n) { return n.toLocaleString("en-US"); }),
+        datasets: [
+          { label: "الحل البدائي O(n²)", data: sizes.map(function (n) { return n * n; }), borderColor: "#ef4444", backgroundColor: "#ef4444", tension: 0.2 },
+          { label: "الترتيب O(n log n)", data: sizes.map(function (n) { return Math.round(n * Math.log2(n)); }), borderColor: "#f59e0b", backgroundColor: "#f59e0b", tension: 0.2 },
+          { label: "القاموس O(n)", data: sizes, borderColor: "#10b981", backgroundColor: "#10b981", tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: { legend: { rtl: true }, tooltip: { rtl: true } },
+        scales: {
+          y: { type: "logarithmic", title: { display: true, text: "عدد العمليات (مقياس لوغاريتمي)" } },
+          x: { title: { display: true, text: "حجم المدخلات n" } }
+        }
+      }
+    });
+  }
+
+  // Steppers
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  // Quizzes
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  // Reading progress bar (fills from the right, RTL)
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>

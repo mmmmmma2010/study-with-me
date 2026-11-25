@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المؤشران والنافذة المنزلقة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+  :root {
+    --primary: #2563eb; --primary-soft: rgba(37,99,235,.1);
+    --good: #10b981; --bad: #ef4444; --warn: #f59e0b;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+    --muted: #64748b; --border: #e2e8f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1120; --card: #111827; --text: #e5e7eb; --muted: #94a3b8; --border: #1f2937; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif; font-size: 18px; line-height: 1.9; background: var(--bg); color: var(--text); }
+  #progress { position: fixed; top: 0; right: 0; height: 4px; width: 0; background: var(--primary); z-index: 100; }
+  .hero { background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #10b981); color: #fff; padding: 48px 24px; text-align: center; }
+  .hero h1 { margin: 0 0 8px; font-size: 2.2rem; font-weight: 800; }
+  .hero p { margin: 0; opacity: .9; }
+  .badges { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); padding: 4px 14px; border-radius: 999px; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; max-width: 1200px; margin: auto; padding: 24px; }
+  .toc { position: sticky; top: 20px; align-self: start; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .toc h3 { margin-top: 0; }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 8px; font-size: .95rem; }
+  .toc a:hover { background: var(--primary-soft); color: var(--primary); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; } }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; }
+  section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary-soft); padding-bottom: 8px; }
+  .en, :not(pre) > code { direction: ltr; unicode-bidi: isolate; }
+  :not(pre) > code { font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
+  pre { direction: ltr; text-align: left; position: relative; border-radius: 12px; overflow: auto; margin: 16px 0; }
+  pre code { font-family: 'JetBrains Mono', monospace; font-size: .9rem; line-height: 1.6; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: #334155; color: #fff; border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: .8rem; }
+  .output { direction: ltr; text-align: left; background: #022c22; color: #a7f3d0; padding: 12px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: .9rem; white-space: pre-wrap; }
+  .output::before { content: "الناتج المتوقع:"; display: block; direction: rtl; text-align: right; color: #6ee7b7; font-family: 'Cairo', sans-serif; margin-bottom: 4px; }
+  .callout { border-inline-start: 5px solid; padding: 12px 16px; border-radius: 10px; margin: 16px 0; }
+  .callout.tip { border-color: var(--good); background: rgba(16,185,129,.1); }
+  .callout.warning { border-color: var(--warn); background: rgba(245,158,11,.1); }
+  .callout.note { border-color: var(--primary); background: var(--primary-soft); }
+  .analogy { background: rgba(168,85,247,.1); border: 2px dashed #a855f7; border-radius: 14px; padding: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: right; vertical-align: top; }
+  th { background: var(--primary-soft); }
+  .diagram { direction: ltr; text-align: center; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; background: #fff; }
+  .chart-box { direction: ltr; max-width: 700px; margin: 16px auto; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare .bad h4 { color: var(--bad); } .compare .good h4 { color: var(--good); }
+  .stepper { border: 2px solid var(--primary-soft); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .step { display: none; animation: fade .4s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .step-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .btn { background: var(--primary); color: #fff; border: 0; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .mem { display: flex; gap: 10px; flex-wrap: wrap; direction: ltr; justify-content: center; margin: 12px 0; }
+  .box { border: 2px solid var(--primary); border-radius: 10px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; min-width: 60px; text-align: center; transition: all .3s; }
+  .box small { display: block; font-size: .7rem; opacity: .8; }
+  .box.l { background: var(--primary); color: #fff; transform: scale(1.08); }
+  .box.r { background: var(--warn); border-color: var(--warn); color: #fff; transform: scale(1.08); }
+  .box.win { background: rgba(16,185,129,.25); border-color: var(--good); }
+  .box.found { background: var(--good); border-color: var(--good); color: #fff; transform: scale(1.1); }
+  .box.out { opacity: .3; }
+  .state { direction: ltr; text-align: center; font-family: 'JetBrains Mono', monospace; background: var(--primary-soft); border-radius: 10px; padding: 8px; }
+  .quiz { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 16px 0; }
+  .quiz .q { font-weight: 700; margin-bottom: 8px; }
+  .option { display: block; width: 100%; text-align: right; margin: 6px 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; font-size: 1rem; }
+  .option:hover:not(:disabled) { border-color: var(--primary); }
+  .option.correct { background: rgba(16,185,129,.2); border-color: var(--good); }
+  .option.wrong { background: rgba(239,68,68,.2); border-color: var(--bad); }
+  .feedback { margin-top: 8px; font-weight: 600; }
+  details { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .katex-display { direction: ltr; }
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--primary-soft); }
+  .card h4 { margin: 0 0 4px; color: var(--primary); }
+  .legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: .9rem; color: var(--muted); }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: middle; margin-inline-end: 4px; }
+  footer { text-align: center; color: var(--muted); padding: 24px; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1>المؤشران والنافذة المنزلقة <span class="en">(Two Pointers &amp; Sliding Window)</span></h1>
+  <p>ستتعلم كيف تحوّل حلولًا بتعقيد O(n²) إلى O(n) عندما تحرّك مؤشرين بذكاء بدل تجربة كل الاحتمالات.</p>
+  <div class="badges">
+    <span class="badge">الدرس 3 من 8</span>
+    <span class="badge">المستوى: متوسط</span>
+    <span class="badge">اللغة: Python</span>
+    <span class="badge">وقت القراءة: 40 دقيقة</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc">
+    <h3>📚 محتوى الدرس</h3>
+    <a href="#intro">مقدمة</a>
+    <a href="#analogy">تشبيه من الحياة</a>
+    <a href="#terms">المصطلحات الأساسية</a>
+    <a href="#concepts">المفاهيم الأساسية</a>
+    <a href="#inside">كيف يعمل من الداخل</a>
+    <a href="#code">أمثلة الكود</a>
+    <a href="#mistakes">الأخطاء الشائعة</a>
+    <a href="#best">أفضل الممارسات</a>
+    <a href="#perf">الأداء والموازنات</a>
+    <a href="#project">مشروع تطبيقي</a>
+    <a href="#quiz">اختبر نفسك</a>
+    <a href="#exercises">تمارين</a>
+    <a href="#summary">الخلاصة</a>
+    <a href="#next">الخطوة التالية</a>
+  </nav>
+
+  <main>
+    <section id="intro">
+      <h2>مقدمة</h2>
+      <div class="callout note">📝 <strong>تذكير:</strong> في تمرين 4 من الدرس 2 رأيت حلقة <code>while</code> داخل حلقة <code>for</code>، وكان تعقيدها <span class="en">O(n)</span> وليس <span class="en">O(n²)</span>. السبب أن المؤشر <code>left</code> يتحرك للأمام فقط. هذه الفكرة هي أساس هذا الدرس كله.</div>
+      <p>الحل البدائي لكثير من المسائل يجرب كل زوج <code>(i, j)</code>، فيكون تعقيده <span class="en">O(n²)</span>. لكن في بعض المسائل نعرف مسبقًا أن أزواجًا كثيرة لا تفيد. عندها نستطيع أن نتخطاها كلها دفعة واحدة.</p>
+      <p>طريقة المؤشرين (<span class="en">Two Pointers</span>) تستخدم موقعين في القائمة يتحركان حسب قاعدة واضحة. والنافذة المنزلقة (<span class="en">Sliding Window</span>) نوع خاص منها، وفيها يحدّد المؤشران جزءًا متصلًا من القائمة.</p>
+      <p>في هذا الدرس ستتعلم ثلاثة أنواع من المؤشرين، ونوعين من النوافذ. وستتعلم أيضًا متى تعمل هذه الطريقة ومتى تفشل. في النهاية ستبني نظامًا يكشف المعاملات المشبوهة على بطاقة دفع.</p>
+    </section>
+
+    <section id="analogy">
+      <h2>تشبيه من الحياة</h2>
+      <div class="analogy">📚 <strong>المؤشران المتقابلان:</strong> تخيّل رفًّا عليه كتب مرتبة من الأخف إلى الأثقل، وتريد كتابين وزنهما معًا 10 كيلو بالضبط. تمسك أخف كتاب بيدك اليسرى وأثقل كتاب بيدك اليمنى. إذا كان المجموع ثقيلًا جدًا، تبدّل الكتاب الذي في اليمنى بكتاب أخف منه. وإذا كان خفيفًا جدًا، تبدّل الكتاب الذي في اليسرى بكتاب أثقل. لن تحتاج أن تجرب كل زوج من الكتب.<br><br>
+      🚆 <strong>النافذة المنزلقة:</strong> تخيّل أنك تنظر من نافذة قطار. ترى دائمًا جزءًا متصلًا من الطريق. عندما يتحرك القطار، يدخل منظر جديد من جهة ويخرج منظر قديم من الجهة الأخرى. أنت لا تنظر إلى الطريق كله من جديد في كل لحظة، بل تتابع ما دخل وما خرج فقط.</div>
+    </section>
+
+    <section id="terms">
+      <h2>المصطلحات الأساسية</h2>
+      <table>
+        <tr><th>المصطلح</th><th>بالإنجليزية</th><th>المعنى ببساطة</th></tr>
+        <tr><td>المؤشر</td><td class="en">Pointer</td><td>متغير يحفظ موقعًا في القائمة، مثل <code>left</code> و <code>right</code>. ليس مؤشر ذاكرة كما في لغة C.</td></tr>
+        <tr><td>المؤشران المتقابلان</td><td class="en">Opposite Ends / Converging</td><td>مؤشر يبدأ من أول القائمة وآخر من نهايتها، ويقتربان من بعضهما.</td></tr>
+        <tr><td>القارئ والكاتب</td><td class="en">Read / Write (Fast / Slow)</td><td>مؤشران يتحركان في نفس الاتجاه. الأول يقرأ كل عنصر، والثاني يحدد مكان الكتابة.</td></tr>
+        <tr><td>النافذة</td><td class="en">Window</td><td>جزء متصل من القائمة بين <code>left</code> و <code>right</code>.</td></tr>
+        <tr><td>نافذة ثابتة</td><td class="en">Fixed-size Window</td><td>نافذة طولها <code>k</code> دائمًا، تتحرك خطوة خطوة.</td></tr>
+        <tr><td>نافذة متغيرة</td><td class="en">Variable-size Window</td><td>نافذة تكبر من اليمين وتصغر من اليسار حسب شرط معيّن.</td></tr>
+        <tr><td>الجزء المتصل</td><td class="en">Subarray / Substring</td><td>عناصر متجاورة من القائمة أو النص، بدون فجوات.</td></tr>
+        <tr><td>الثابت</td><td class="en">Invariant</td><td>شرط يبقى صحيحًا في كل دورة، مثل "النافذة لا تحتوي حرفًا مكررًا".</td></tr>
+        <tr><td>الرتابة</td><td class="en">Monotonicity</td><td>توسيع النافذة يغيّر القيمة في اتجاه واحد دائمًا، وتصغيرها يغيّرها في الاتجاه المعاكس. شرط ضروري لكي تعمل النافذة المنزلقة.</td></tr>
+        <tr><td>في المكان</td><td class="en">In-place</td><td>تعديل القائمة نفسها بدون إنشاء قائمة جديدة. الذاكرة الإضافية <span class="en">O(1)</span>.</td></tr>
+      </table>
+    </section>
+
+    <section id="concepts">
+      <h2>المفاهيم الأساسية</h2>
+
+      <h3>الأنواع الأربعة</h3>
+      <div class="steps-grid">
+        <div class="card"><h4>1. المؤشران المتقابلان</h4><code>left = 0</code> و <code>right = n - 1</code>، ثم يقتربان. يُستخدم مع القوائم المرتبة، والمسائل التي تبحث عن زوج، والنصوص المتناظرة (<span class="en">palindrome</span>).</div>
+        <div class="card"><h4>2. القارئ والكاتب</h4>كلاهما يتحرك للأمام. يُستخدم لحذف عناصر أو تصفيتها داخل القائمة نفسها.</div>
+        <div class="card"><h4>3. النافذة الثابتة</h4>طولها <code>k</code>. أضف العنصر الذي دخل، واطرح العنصر الذي خرج.</div>
+        <div class="card"><h4>4. النافذة المتغيرة</h4>وسّع من اليمين دائمًا. صغّر من اليسار ما دام الشرط مكسورًا (أو ما دام محققًا، حسب المسألة).</div>
+      </div>
+
+      <h3>لماذا يعمل المؤشران المتقابلان؟</h3>
+      <p>لنعد إلى مسألة <span class="en">Two Sum</span>، لكن مع قائمة <strong>مرتبة</strong>. لنفترض أن <code>nums[left] + nums[right] &lt; target</code>.</p>
+      <p>الآن خذ أي عنصر <code>nums[j]</code> حيث <code>j ≤ right</code>. القائمة مرتبة، لذلك <code>nums[j] ≤ nums[right]</code>. إذن:</p>
+      <div dir="ltr">$$nums[left] + nums[j] \;\le\; nums[left] + nums[right] \;<\; target$$</div>
+      <p>معنى هذا أن <code>nums[left]</code> لا يكوّن زوجًا صحيحًا مع أي عنصر باقٍ. لذلك نحذفه بأمان، أي نكتب <code>left += 1</code>. نفس المنطق يعمل في الاتجاه الآخر: إذا كان المجموع أكبر من <code>target</code>، نحذف <code>nums[right]</code>.</p>
+      <div class="callout tip">💡 <strong>الفكرة الأساسية:</strong> كل مقارنة تحذف عنصرًا كاملًا مع كل أزواجه. لذلك نحتاج n مقارنة على الأكثر بدل <span class="en">n²/2</span>.</div>
+
+      <h3>لماذا تعمل النافذة المنزلقة؟ (شرط الرتابة)</h3>
+      <p>لنفترض أن كل الأرقام موجبة، وأنك تبحث عن أقصر جزء متصل مجموعه أكبر من أو يساوي <code>target</code>:</p>
+      <ul>
+        <li>عندما توسّع النافذة من اليمين، يزيد المجموع دائمًا.</li>
+        <li>عندما تصغّرها من اليسار، يقل المجموع دائمًا.</li>
+      </ul>
+      <p>لذلك عندما يصبح المجموع كافيًا، تعرف أن التوسيع لن يعطيك نافذة أقصر. ولهذا تصغّر النافذة فورًا. لو وُجدت أرقام سالبة، فقد يزيد المجموع بعد التصغير، وعندها تنهار هذه القاعدة.</p>
+      <div class="callout warning">⚠️ <strong>قبل أن تستخدم النافذة المنزلقة اسأل:</strong> هل التوسيع يغيّر الشرط في اتجاه واحد دائمًا؟ إذا كان الجواب لا (كما مع الأرقام السالبة)، استخدم <span class="en">Prefix Sum</span> مع <span class="en">dict</span>، كما في تمرين 4 من الدرس 1.</div>
+
+      <h3>كيف تختار النوع المناسب؟</h3>
+      <div class="diagram mermaid">
+flowchart TD
+  A["اقرأ المسألة"] --> B{"هل تبحث عن جزء متصل؟"}
+  B -->|"نعم"| C{"هل طول الجزء ثابت k؟"}
+  C -->|"نعم"| D["نافذة ثابتة"]
+  C -->|"لا"| E{"هل الشرط رتيب؟ مثلًا أرقام موجبة فقط"}
+  E -->|"نعم"| F["نافذة متغيرة"]
+  E -->|"لا"| G["Prefix Sum + dict"]
+  B -->|"لا"| H{"هل تبحث عن زوج أو ثلاثية؟"}
+  H -->|"نعم"| I{"هل القائمة مرتبة أو يمكن ترتيبها؟"}
+  I -->|"نعم"| J["مؤشران متقابلان"]
+  I -->|"لا وتحتاج المواقع الأصلية"| K["Hashing - الدرس 4"]
+  H -->|"لا"| L{"هل تعدّل القائمة في مكانها؟"}
+  L -->|"نعم"| M["القارئ والكاتب"]
+  L -->|"لا"| N["جرّب نمطًا آخر"]
+      </div>
+    </section>
+
+    <section id="inside">
+      <h2>كيف يعمل من الداخل</h2>
+
+      <h3>المؤشران المتقابلان خطوة بخطوة</h3>
+      <p>المدخلات: <code>nums = [1, 3, 4, 6, 8, 11]</code> (مرتبة) و <code>target = 10</code>.</p>
+      <div class="legend"><span><span class="dot" style="background:#2563eb"></span>left</span><span><span class="dot" style="background:#f59e0b"></span>right</span><span><span class="dot" style="background:#94a3b8;opacity:.4"></span>عنصر محذوف</span></div>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1</h4>
+          <div class="mem"><div class="box l">1<small>L</small></div><div class="box">3</div><div class="box">4</div><div class="box">6</div><div class="box">8</div><div class="box r">11<small>R</small></div></div>
+          <div class="state">1 + 11 = 12 &gt; 10 → right -= 1</div>
+          <p>المجموع أكبر من المطلوب. العدد 11 مع أصغر عنصر ما زال كبيرًا جدًا، إذن 11 لا يفيد مع أي عنصر. نحذفه.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2</h4>
+          <div class="mem"><div class="box l">1<small>L</small></div><div class="box">3</div><div class="box">4</div><div class="box">6</div><div class="box r">8<small>R</small></div><div class="box out">11</div></div>
+          <div class="state">1 + 8 = 9 &lt; 10 → left += 1</div>
+          <p>المجموع أصغر من المطلوب. العدد 1 مع أكبر عنصر باقٍ ما زال صغيرًا، إذن 1 لا يفيد. نحذفه.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3</h4>
+          <div class="mem"><div class="box out">1</div><div class="box l">3<small>L</small></div><div class="box">4</div><div class="box">6</div><div class="box r">8<small>R</small></div><div class="box out">11</div></div>
+          <div class="state">3 + 8 = 11 &gt; 10 → right -= 1</div>
+          <p>المجموع أكبر من المطلوب، فنحذف 8.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4</h4>
+          <div class="mem"><div class="box out">1</div><div class="box l">3<small>L</small></div><div class="box">4</div><div class="box r">6<small>R</small></div><div class="box out">8</div><div class="box out">11</div></div>
+          <div class="state">3 + 6 = 9 &lt; 10 → left += 1</div>
+          <p>المجموع أصغر من المطلوب، فنحذف 3.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 5: وجدنا الجواب 🎉</h4>
+          <div class="mem"><div class="box out">1</div><div class="box out">3</div><div class="box found">4<small>L</small></div><div class="box found">6<small>R</small></div><div class="box out">8</div><div class="box out">11</div></div>
+          <div class="state">4 + 6 = 10 → return (2, 3)</div>
+          <p>خمس مقارنات فقط. الحل البدائي كان سيجرب حتى 15 زوجًا. ولم نستخدم أي ذاكرة إضافية.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+
+      <h3>النافذة الثابتة خطوة بخطوة</h3>
+      <p>المطلوب: أكبر مجموع لثلاثة عناصر متتالية (<code>k = 3</code>) في <code>[2, 1, 5, 1, 3, 2]</code>.</p>
+      <div class="stepper">
+        <div class="step">
+          <h4>الخطوة 1: النافذة الأولى</h4>
+          <div class="mem"><div class="box win">2</div><div class="box win">1</div><div class="box win">5</div><div class="box">1</div><div class="box">3</div><div class="box">2</div></div>
+          <div class="state">window = 2 + 1 + 5 = 8 &nbsp;|&nbsp; best = 8</div>
+          <p>نحسب مجموع أول نافذة مرة واحدة بتكلفة <span class="en">O(k)</span>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 2: خرج 2 ودخل 1</h4>
+          <div class="mem"><div class="box out">2</div><div class="box win">1</div><div class="box win">5</div><div class="box win r">1</div><div class="box">3</div><div class="box">2</div></div>
+          <div class="state">window = 8 - 2 + 1 = 7 &nbsp;|&nbsp; best = 8</div>
+          <p>لا نعيد جمع العناصر الثلاثة. نطرح العنصر الذي خرج، ونضيف العنصر الذي دخل. التكلفة <span class="en">O(1)</span>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 3: خرج 1 ودخل 3</h4>
+          <div class="mem"><div class="box out">2</div><div class="box out">1</div><div class="box win">5</div><div class="box win">1</div><div class="box win r">3</div><div class="box">2</div></div>
+          <div class="state">window = 7 - 1 + 3 = 9 &nbsp;|&nbsp; best = 9 ✅</div>
+          <p>مجموع جديد أكبر من السابق، فنحدّث <code>best</code>.</p>
+        </div>
+        <div class="step">
+          <h4>الخطوة 4: خرج 5 ودخل 2</h4>
+          <div class="mem"><div class="box out">2</div><div class="box out">1</div><div class="box out">5</div><div class="box win">1</div><div class="box win">3</div><div class="box win r">2</div></div>
+          <div class="state">window = 9 - 5 + 2 = 6 &nbsp;|&nbsp; best = 9</div>
+          <p>وصلنا إلى نهاية القائمة. الجواب 9. المجموع كله <span class="en">O(n)</span> بدل <span class="en">O(n·k)</span>.</p>
+        </div>
+        <div class="step-controls">
+          <button class="btn prev">→ السابق</button>
+          <span class="step-label"></span>
+          <button class="btn next">التالي ←</button>
+        </div>
+      </div>
+
+      <h3>لماذا النافذة المتغيرة <span class="en">O(n)</span> رغم الحلقة الداخلية؟</h3>
+      <p>هذا هو التحليل المُطفأ من الدرس 2. المؤشر <code>right</code> يتحرك n مرة. المؤشر <code>left</code> يتحرك للأمام فقط، ولا يتجاوز <code>right</code>. إذن:</p>
+      <div dir="ltr">$$\underbrace{n}_{\text{right moves}} + \underbrace{n}_{\text{left moves (total)}} = 2n = O(n)$$</div>
+      <p>كل عنصر يدخل النافذة مرة واحدة، ويخرج منها مرة واحدة على الأكثر.</p>
+    </section>
+
+    <section id="code">
+      <h2>أمثلة الكود</h2>
+
+      <h3>مثال 1: المؤشران المتقابلان (<span class="en">Two Sum</span> على قائمة مرتبة)</h3>
+<pre><code class="language-python">def two_sum_sorted(nums: list[int], target: int) -> tuple[int, int] | None:
+    """nums must be sorted ascending. Time: O(n), Space: O(1)."""
+    left, right = 0, len(nums) - 1
+    while left &lt; right:                 # strict: never pair an element with itself
+        total = nums[left] + nums[right]
+        if total == target:
+            return (left, right)
+        if total &lt; target:
+            left += 1                    # need a bigger sum
+        else:
+            right -= 1                   # need a smaller sum
+    return None
+
+
+print(two_sum_sorted([1, 3, 4, 6, 8, 11], 10))
+print(two_sum_sorted([1, 2, 3], 100))</code></pre>
+      <div class="output">(2, 3)
+None</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>left, right = 0, len(nums) - 1</code>: نبدأ من الطرفين.</li>
+        <li><code>while left &lt; right</code>: نتوقف عندما يلتقي المؤشران. علامة <code>&lt;</code> هنا وليست <code>&lt;=</code>، لأننا لا نريد أن نجمع العنصر مع نفسه.</li>
+        <li>إذا كان المجموع صغيرًا، نحرك <code>left</code> نحو أرقام أكبر.</li>
+        <li>إذا كان المجموع كبيرًا، نحرك <code>right</code> نحو أرقام أصغر.</li>
+        <li><strong>المقارنة مع الدرس 1:</strong> حل <span class="en">dict</span> كان يحتاج ذاكرة <span class="en">O(n)</span>. هذا الحل يحتاج <span class="en">O(1)</span>، لكنه يعمل فقط عندما تكون القائمة مرتبة مسبقًا.</li>
+      </ol>
+
+      <h3>مثال 2: القارئ والكاتب (حذف التكرار في المكان)</h3>
+      <p>المطلوب: احذف التكرار من قائمة مرتبة <strong>بدون إنشاء قائمة جديدة</strong>، وأرجع عدد العناصر الفريدة.</p>
+<pre><code class="language-python">def remove_duplicates(nums: list[int]) -> int:
+    """nums is sorted. Keeps unique values at the front. Time: O(n), Space: O(1)."""
+    if not nums:
+        return 0
+    write = 1                              # nums[:write] holds unique values
+    for read in range(1, len(nums)):
+        if nums[read] != nums[write - 1]:  # a new value
+            nums[write] = nums[read]
+            write += 1
+    return write
+
+
+data = [1, 1, 2, 3, 3, 3, 5]
+k = remove_duplicates(data)
+print(k, data[:k])</code></pre>
+      <div class="output">4 [1, 2, 3, 5]</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>if not nums</code>: حالة طرفية، قائمة فارغة.</li>
+        <li><code>write = 1</code>: أول عنصر فريد دائمًا. <strong>الثابت:</strong> كل ما قبل <code>write</code> قيم فريدة ومرتبة.</li>
+        <li><code>read</code> يمرّ على كل عنصر مرة واحدة.</li>
+        <li><code>nums[read] != nums[write - 1]</code>: نقارن مع آخر قيمة فريدة كتبناها. القائمة مرتبة، لذلك يظهر أي تكرار بجانب أصله.</li>
+        <li>القيم بعد <code>write</code> لا تهمنا، لذلك نطبع <code>data[:k]</code> فقط.</li>
+      </ol>
+
+      <h3>مثال 3: النافذة الثابتة</h3>
+<pre><code class="language-python">def max_window_sum(nums: list[int], k: int) -> int | None:
+    """Largest sum of k consecutive items. Time: O(n), Space: O(1)."""
+    if k &lt;= 0 or k > len(nums):
+        return None
+    window = sum(nums[:k])               # first window: O(k)
+    best = window
+    for right in range(k, len(nums)):
+        window += nums[right] - nums[right - k]   # add new, remove old
+        best = max(best, window)
+    return best
+
+
+print(max_window_sum([2, 1, 5, 1, 3, 2], 3))
+print(max_window_sum([4, 2], 3))</code></pre>
+      <div class="output">9
+None</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>k > len(nums)</code>: لا توجد نافذة بهذا الطول.</li>
+        <li><code>sum(nums[:k])</code>: مجموع النافذة الأولى.</li>
+        <li><code>nums[right - k]</code>: العنصر الذي خرج من النافذة. عندما يدخل العنصر <code>right</code>، يخرج العنصر الذي يبعد عنه k خطوات.</li>
+        <li>هذه النافذة تعمل حتى مع الأرقام السالبة، لأن طولها ثابت ولا نحتاج شرط الرتابة.</li>
+      </ol>
+
+      <h3>مثال 4: النافذة المتغيرة (أقصر جزء مجموعه ≥ target)</h3>
+<pre><code class="language-python">def min_window_len(nums: list[int], target: int) -> int:
+    """nums are POSITIVE. Shortest subarray with sum >= target, or 0.
+    Time: O(n), Space: O(1)."""
+    left = 0
+    window_sum = 0
+    best = len(nums) + 1                 # "infinity" that stays an int
+    for right, num in enumerate(nums):
+        window_sum += num                # 1) expand
+        while window_sum >= target:      # 2) shrink while still valid
+            best = min(best, right - left + 1)
+            window_sum -= nums[left]
+            left += 1
+    return 0 if best > len(nums) else best
+
+
+print(min_window_len([2, 3, 1, 2, 4, 3], 7))
+print(min_window_len([1, 4, 4], 4))
+print(min_window_len([1, 1, 1], 10))</code></pre>
+      <div class="output">2
+1
+0</div>
+      <h4>الشرح سطرًا بسطر</h4>
+      <ol>
+        <li><code>best = len(nums) + 1</code>: قيمة أكبر من أي طول ممكن. إذا بقيت كما هي، فلا يوجد جواب.</li>
+        <li><strong>التوسيع:</strong> نضيف العنصر الجديد دائمًا.</li>
+        <li><strong>التصغير:</strong> ما دامت النافذة صالحة، نسجل طولها ثم نحاول أن نجعلها أقصر. استخدمنا <code>while</code> وليس <code>if</code>، لأن النافذة قد تحتاج أكثر من خطوة تصغير.</li>
+        <li><code>right - left + 1</code>: طول النافذة. النافذة <code>[left, right]</code> تشمل الطرفين.</li>
+        <li>في المثال الأول، الجواب هو <code>[4, 3]</code> بطول 2.</li>
+      </ol>
+
+      <div class="callout note">📝 <strong>قالب النافذة المتغيرة:</strong> أغلب مسائل هذا النوع تتبع نفس الشكل.</div>
+<pre><code class="language-python">left = 0
+state = ...                          # sum, counter dict, set, ...
+for right, item in enumerate(data):
+    add item to state                # expand
+    while window is invalid:         # (or "while valid" for "shortest" problems)
+        remove data[left] from state # shrink
+        left += 1
+    update answer using right - left + 1</code></pre>
+    </section>
+
+    <section id="mistakes">
+      <h2>الأخطاء الشائعة</h2>
+
+      <h3>خطأ 1: النافذة المنزلقة مع أرقام سالبة</h3>
+      <p>المطلوب: عدد الأجزاء المتصلة التي مجموعها <code>k</code>. الجواب الصحيح لـ <code>[1, -1, 0]</code> و <code>k = 0</code> هو 3: <code>[1, -1]</code>، و <code>[0]</code>، و <code>[1, -1, 0]</code>.</p>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def count_sum_k(nums: list[int], k: int) -> int:
+    left = 0
+    window = 0
+    count = 0
+    for right, num in enumerate(nums):
+        window += num
+        while window > k and left &lt;= right:
+            window -= nums[left]
+            left += 1
+        if window == k:
+            count += 1
+    return count
+
+print(count_sum_k([1, -1, 0], 0))  # 1  wrong!</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">def count_sum_k(nums: list[int], k: int) -> int:
+    count = 0
+    prefix = 0
+    seen: dict[int, int] = {0: 1}
+    for num in nums:
+        prefix += num
+        count += seen.get(prefix - k, 0)
+        seen[prefix] = seen.get(prefix, 0) + 1
+    return count
+
+print(count_sum_k([1, -1, 0], 0))  # 3</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> مع الأرقام السالبة، توسيع النافذة قد يُنقص المجموع، وتصغيرها قد يزيده. لذلك لا تعرف أي مؤشر يجب أن تحرك. في الخطوة الأولى حذفت النافذة العدد 1، ففقدت الجزء <code>[1, -1]</code> إلى الأبد. الحل الصحيح هو <span class="en">Prefix Sum</span> من الدرس 1، وتعقيده أيضًا <span class="en">O(n)</span>.</div>
+
+      <h3>خطأ 2: <code>&lt;=</code> بدل <code>&lt;</code> في المؤشرين المتقابلين</h3>
+      <div class="compare">
+        <div class="bad">
+          <h4>❌ الطريقة الخاطئة</h4>
+<pre><code class="language-python">def two_sum_sorted(nums: list[int], target: int):
+    left, right = 0, len(nums) - 1
+    while left &lt;= right:          # allows left == right
+        total = nums[left] + nums[right]
+        if total == target:
+            return (left, right)
+        if total &lt; target:
+            left += 1
+        else:
+            right -= 1
+    return None
+
+print(two_sum_sorted([5], 10))  # (0, 0)  wrong!</code></pre>
+        </div>
+        <div class="good">
+          <h4>✅ الطريقة الصحيحة</h4>
+<pre><code class="language-python">def two_sum_sorted(nums: list[int], target: int):
+    left, right = 0, len(nums) - 1
+    while left &lt; right:           # two DIFFERENT positions
+        total = nums[left] + nums[right]
+        if total == target:
+            return (left, right)
+        if total &lt; target:
+            left += 1
+        else:
+            right -= 1
+    return None
+
+print(two_sum_sorted([5], 10))  # None</code></pre>
+        </div>
+      </div>
+      <div class="callout warning">⚠️ <strong>لماذا الأولى خاطئة؟</strong> عندما يكون <code>left == right</code>، يشير المؤشران إلى نفس العنصر، فيجمع الكود 5 مع نفسه. هذا نفس الخطأ الذي رأيته في الدرس 1، لكن في شكل مختلف.</div>
+
+      <h3>أخطاء أخرى متكررة</h3>
+      <ul>
+        <li><strong><code>if</code> بدل <code>while</code> في التصغير:</strong> قد تحتاج النافذة أن تصغر عدة خطوات مرة واحدة. مع <code>if</code> تبقى النافذة غير صالحة.</li>
+        <li><strong>خطأ في طول النافذة:</strong> الطول هو <code>right - left + 1</code>، وليس <code>right - left</code>.</li>
+        <li><strong>تحديث الجواب في المكان الخطأ:</strong> في مسائل "الأطول"، حدّث الجواب بعد التصغير. وفي مسائل "الأقصر"، حدّثه داخل حلقة التصغير.</li>
+        <li><strong>الترتيب عندما تحتاج المواقع الأصلية:</strong> الترتيب يغيّر المواقع (راجع الخطأ 2 في الدرس 1).</li>
+        <li><strong>نسيان حذف المفتاح من القاموس:</strong> إذا وصل العدّ إلى صفر ولم تحذف المفتاح، فإن <code>len(counts)</code> يعطيك رقمًا خاطئًا.</li>
+      </ul>
+    </section>
+
+    <section id="best">
+      <h2>أفضل الممارسات</h2>
+      <ul>
+        <li><strong>اكتب الثابت في تعليق</strong>، مثل <code># nums[:write] holds unique values</code>. هذا السطر يساعدك على كتابة الكود، ويثبت صحته.</li>
+        <li><strong>تحقق من شرط الرتابة</strong> قبل أن تكتب أي نافذة متغيرة. اسأل: هل هناك أرقام سالبة؟</li>
+        <li><strong>استخدم أسماء واضحة</strong> مثل <code>left/right</code> و <code>read/write</code> و <code>window_sum</code>، وليس <code>i/j</code>.</li>
+        <li><strong>اختبر الحالات الطرفية:</strong> قائمة فارغة، وعنصر واحد، وكل العناصر متساوية، و <code>k</code> أكبر من طول القائمة.</li>
+        <li><strong>احتفظ بالحل البدائي</strong> لاختبار الضغط، كما تعلمت في الدرس 1. أخطاء المؤشرين غالبًا أخطاء صغيرة بفرق واحد (<span class="en">off-by-one</span>)، والاختبار العشوائي يكشفها بسرعة.</li>
+        <li><strong>اشرح سبب تحريك كل مؤشر.</strong> إذا لم تستطع أن تقول "لماذا هذا العنصر لا يفيد بعد الآن؟"، فقد يكون الحل خاطئًا.</li>
+      </ul>
+      <div class="callout tip">💡 <strong>إشارات في نص المسألة:</strong> كلمات مثل "مرتبة" و "زوج" و "متناظر" تشير إلى المؤشرين المتقابلين. وكلمات مثل "جزء متصل" و "أطول" و "أقصر" و "خلال k" تشير إلى النافذة. وعبارة "في المكان بدون ذاكرة إضافية" تشير إلى القارئ والكاتب.</div>
+    </section>
+
+    <section id="perf">
+      <h2>الأداء والموازنات</h2>
+      <h3>الحل البدائي مقابل النافذة المتغيرة</h3>
+      <p>مسألة "أقصر جزء مجموعه ≥ target". الحل البدائي يجرب كل بداية وكل نهاية، والنافذة تحرك كل مؤشر n مرة. الرسم بمقياس لوغاريتمي.</p>
+      <div class="chart-box"><canvas id="windowChart"></canvas></div>
+
+      <h3>مسائل مشهورة وتحسيناتها</h3>
+      <table>
+        <tr><th>المسألة</th><th>الحل البدائي</th><th>النمط</th><th>الوقت</th><th>الذاكرة</th></tr>
+        <tr><td><span class="en">Two Sum</span> (مرتبة)</td><td class="en">O(n²)</td><td>مؤشران متقابلان</td><td class="en">O(n)</td><td class="en">O(1)</td></tr>
+        <tr><td><span class="en">3Sum</span></td><td class="en">O(n³)</td><td>ترتيب + مؤشران متقابلان</td><td class="en">O(n²)</td><td class="en">O(n)</td></tr>
+        <tr><td>حذف التكرار من قائمة مرتبة</td><td><span class="en">O(n)</span> مع <span class="en">set</span></td><td>القارئ والكاتب</td><td class="en">O(n)</td><td class="en">O(1)</td></tr>
+        <tr><td>أكبر مجموع لـ k عناصر متتالية</td><td class="en">O(n·k)</td><td>نافذة ثابتة</td><td class="en">O(n)</td><td class="en">O(1)</td></tr>
+        <tr><td>أطول نص بدون حرف مكرر</td><td class="en">O(n²)</td><td>نافذة متغيرة + <span class="en">set</span></td><td class="en">O(n)</td><td class="en">O(k)</td></tr>
+        <tr><td>أقصر جزء مجموعه ≥ target</td><td class="en">O(n²)</td><td>نافذة متغيرة</td><td class="en">O(n)</td><td class="en">O(1)</td></tr>
+      </table>
+
+      <h3>المؤشران أم <span class="en">dict</span>؟</h3>
+      <table>
+        <tr><th>الموقف</th><th>الاختيار الأفضل</th><th>السبب</th></tr>
+        <tr><td>القائمة مرتبة مسبقًا</td><td>المؤشران</td><td>وقت <span class="en">O(n)</span> وذاكرة <span class="en">O(1)</span>.</td></tr>
+        <tr><td>القائمة غير مرتبة وتحتاج المواقع الأصلية</td><td><span class="en">dict</span></td><td>الترتيب يكلّف <span class="en">O(n log n)</span> ويضيّع المواقع.</td></tr>
+        <tr><td>القائمة غير مرتبة والذاكرة محدودة جدًا</td><td>ترتيب في المكان + مؤشران</td><td><code>nums.sort()</code> يأخذ <span class="en">O(n log n)</span>، لكنه يغيّر قائمة المستخدم.</td></tr>
+        <tr><td>تحتاج كل الثلاثيات الفريدة</td><td>ترتيب + مؤشران</td><td>الترتيب يجعل تخطي التكرار سهلًا.</td></tr>
+      </table>
+    </section>
+
+    <section id="project">
+      <h2>مشروع تطبيقي صغير: كشف المعاملات المشبوهة (<span class="en">Velocity Check</span>)</h2>
+      <p><strong>القصة:</strong> أنظمة الحماية من الاحتيال تراقب سرعة استخدام البطاقة. إذا استُخدمت نفس البطاقة أكثر من <code>limit</code> مرة خلال <code>60</code> ثانية، نطلق تنبيهًا. المطلوب: لكل بطاقة، جد أول نافذة زمنية مشبوهة.</p>
+
+      <h3>طبّق الخطوات الست</h3>
+      <ol>
+        <li><strong>الفهم:</strong> المدخلات قائمة <code>(card_id, timestamp)</code> بالثواني، وغير مرتبة. المخرجات قاموس فيه البطاقات المشبوهة، ولكل بطاقة <code>(بداية النافذة، نهايتها، العدد)</code>.</li>
+        <li><strong>الحالات الطرفية:</strong> بطاقة لها معاملة واحدة، ومعاملات في نفس الثانية، ونافذة تنتهي بالضبط عند 60 ثانية.</li>
+        <li><strong>الحل البدائي:</strong> لكل معاملة، عدّ المعاملات التي في الـ 60 ثانية قبلها. التعقيد <span class="en">O(n²)</span>.</li>
+        <li><strong>التحسين:</strong> بعد الترتيب، الشرط رتيب: كلما تقدم الوقت، تخرج المعاملات القديمة ولا تعود. هذه نافذة متغيرة على الزمن.</li>
+        <li><strong>الكود:</strong> بالأسفل.</li>
+        <li><strong>الاختبار:</strong> بطاقة مشبوهة، وبطاقة عادية.</li>
+      </ol>
+<pre><code class="language-python">from collections import defaultdict
+
+Alert = tuple[int, int, int]  # (window_start, window_end, count)
+
+
+def velocity_alert(times: list[int], window_seconds: int, limit: int) -> Alert | None:
+    """times sorted ascending, window_seconds > 0.
+    Finds the first window [t - window_seconds, t] with more than `limit` transactions.
+    Time: O(n), Space: O(1)."""
+    left = 0
+    for right, ts in enumerate(times):
+        while ts - times[left] >= window_seconds:   # drop transactions that are too old
+            left += 1
+        count = right - left + 1
+        if count > limit:
+            return (times[left], ts, count)
+    return None
+
+
+def scan_cards(transactions: list[tuple[str, int]], window_seconds: int, limit: int) -> dict[str, Alert]:
+    """Time: O(n log n) because of sorting, Space: O(n)."""
+    by_card: dict[str, list[int]] = defaultdict(list)
+    for card, ts in transactions:
+        by_card[card].append(ts)
+
+    alerts: dict[str, Alert] = {}
+    for card, times in by_card.items():
+        times.sort()
+        alert = velocity_alert(times, window_seconds, limit)
+        if alert:
+            alerts[card] = alert
+    return alerts
+
+
+transactions = [
+    ("C1", 0), ("C2", 5), ("C1", 15), ("C1", 70), ("C2", 200),
+    ("C1", 80), ("C1", 95), ("C1", 110), ("C2", 210),
+]
+
+print(scan_cards(transactions, window_seconds=60, limit=3))
+print(scan_cards(transactions, window_seconds=60, limit=4))</code></pre>
+      <div class="output">{'C1': (70, 110, 4)}
+{}</div>
+      <h4>الشرح</h4>
+      <ol>
+        <li><code>defaultdict(list)</code>: نجمع أوقات كل بطاقة في قائمة. لن تحتاج أن تتحقق هل المفتاح موجود أم لا. سنشرح هذا بالتفصيل في الدرس 4.</li>
+        <li><code>times.sort()</code>: النافذة تحتاج ترتيبًا زمنيًا. هذا هو عنق الزجاجة بتعقيد <span class="en">O(n log n)</span>.</li>
+        <li><code>ts - times[left] >= window_seconds</code>: المعاملة التي عند <code>left</code> أقدم من 60 ثانية، فنخرجها. لن تعود أبدًا، لأن الوقت يتقدم فقط. هذه هي الرتابة.</li>
+        <li><code>left</code> لا يتجاوز <code>right</code> أبدًا، لأن <code>ts - times[right] = 0</code>، وهذا أصغر من <code>window_seconds</code>.</li>
+        <li>البطاقة <code>C1</code> لها 4 معاملات بين الثانية 70 والثانية 110، وهذا أكثر من الحد (3).</li>
+      </ol>
+      <div class="callout tip">💡 <strong>في الأنظمة الحقيقية:</strong> المعاملات تصل كتدفق مستمر (<span class="en">stream</span>) ومرتبة زمنيًا تقريبًا. لذلك تحفظ لكل بطاقة <code>deque</code> فيها أوقات آخر 60 ثانية. عند وصول معاملة جديدة، تحذف الأوقات القديمة من البداية بـ <code>popleft()</code>. هذه نفس النافذة المنزلقة، وتكلفة كل معاملة <span class="en">O(1)</span> مُطفأة.</div>
+    </section>
+
+    <section id="quiz">
+      <h2>اختبر نفسك</h2>
+      <div class="quiz" data-explain="المجموع صغير، ونحتاج رقمًا أكبر. القائمة مرتبة، إذن الأرقام الأكبر على اليمين، فنحرك left.">
+        <div class="q">1. في المؤشرين المتقابلين على قائمة مرتبة، المجموع أصغر من target. ماذا تفعل؟</div>
+        <button class="option">right -= 1</button>
+        <button class="option" data-correct="true">left += 1</button>
+        <button class="option">تحرك المؤشرين معًا</button>
+        <button class="option">تبدأ من جديد</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="مع الأرقام السالبة، التوسيع قد يُنقص المجموع والتصغير قد يزيده. لا تعرف أي مؤشر تحرك. الحل هو Prefix Sum.">
+        <div class="q">2. لماذا تفشل النافذة المتغيرة غالبًا مع الأرقام السالبة؟</div>
+        <button class="option">لأن Python لا يجمع الأرقام السالبة بسرعة</button>
+        <button class="option" data-correct="true">لأن شرط الرتابة ينكسر: التصغير قد يزيد المجموع</button>
+        <button class="option">لأن القائمة يجب أن تكون مرتبة</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="right يتحرك n مرة، و left يتحرك n مرة على الأكثر في الدالة كلها. المجموع 2n.">
+        <div class="q">3. نافذة متغيرة فيها حلقة while داخل حلقة for. ما التعقيد؟</div>
+        <button class="option">O(n²)</button>
+        <button class="option">O(n log n)</button>
+        <button class="option" data-correct="true">O(n)</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="النافذة تشمل الطرفين. مثلًا left = 2 و right = 4 يعني العناصر 2 و 3 و 4، أي 3 عناصر.">
+        <div class="q">4. ما طول النافذة [left, right]؟</div>
+        <button class="option">right - left</button>
+        <button class="option" data-correct="true">right - left + 1</button>
+        <button class="option">right + left</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-explain="نعدّل القائمة نفسها بمتغيرين فقط: read و write. لا ننشئ أي قائمة أو set.">
+        <div class="q">5. ما الذاكرة الإضافية لحذف التكرار من قائمة مرتبة بطريقة القارئ والكاتب؟</div>
+        <button class="option">O(n)</button>
+        <button class="option" data-correct="true">O(1)</button>
+        <button class="option">O(log n)</button>
+        <div class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>تمارين</h2>
+      <p>قبل أن تكتب الكود، حدد النوع المناسب من الأنواع الأربعة، واكتب الثابت في تعليق.</p>
+
+      <h3>تمرين 1 (سهل): هل النص متناظر؟</h3>
+      <p>اكتب دالة <code>is_palindrome(s: str) -> bool</code>. تجاهل المسافات والرموز، ولا تفرّق بين الحروف الكبيرة والصغيرة. مثلًا <code>"A man, a plan, a canal: Panama"</code> متناظر. لا تنشئ نصًا جديدًا.</p>
+      <details><summary>💡 تلميح</summary><p>مؤشران متقابلان. إذا كان الحرف عند أحد المؤشرين ليس حرفًا أو رقمًا، حرّك هذا المؤشر فقط. استخدم <code>str.isalnum()</code>.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def is_palindrome(s: str) -> bool:
+    # Time: O(n), Space: O(1)
+    left, right = 0, len(s) - 1
+    while left &lt; right:
+        if not s[left].isalnum():
+            left += 1
+        elif not s[right].isalnum():
+            right -= 1
+        elif s[left].lower() != s[right].lower():
+            return False
+        else:
+            left += 1
+            right -= 1
+    return True
+
+
+print(is_palindrome("A man, a plan, a canal: Panama"))
+print(is_palindrome("paymob"))
+print(is_palindrome(""))</code></pre>
+        <div class="output">True
+False
+True</div>
+        <p>الحل الأسهل هو <code>cleaned == cleaned[::-1]</code>. تعقيده أيضًا <span class="en">O(n)</span>، لكنه يحتاج ذاكرة <span class="en">O(n)</span> لإنشاء نصين جديدين.</p>
+      </details>
+
+      <h3>تمرين 2 (متوسط): انقل الأصفار إلى النهاية</h3>
+      <p>اكتب دالة <code>move_zeros(nums: list[int]) -> None</code>. تنقل كل الأصفار إلى نهاية القائمة، وتحافظ على ترتيب باقي العناصر. عدّل القائمة في مكانها.</p>
+      <details><summary>💡 تلميح</summary><p>القارئ والكاتب. كل عنصر غير صفري يذهب إلى موقع <code>write</code>. استخدم التبديل (<span class="en">swap</span>) بدل النسخ، حتى تنتقل الأصفار تلقائيًا إلى الخلف.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def move_zeros(nums: list[int]) -> None:
+    # Invariant: nums[:write] = non-zeros in original order
+    # Time: O(n), Space: O(1)
+    write = 0
+    for read in range(len(nums)):
+        if nums[read] != 0:
+            nums[write], nums[read] = nums[read], nums[write]
+            write += 1
+
+
+data = [0, 1, 0, 3, 12]
+move_zeros(data)
+print(data)</code></pre>
+        <div class="output">[1, 3, 12, 0, 0]</div>
+        <p>الدالة ترجع <code>None</code> لأنها تعدّل القائمة نفسها، وهذا هو العرف في <span class="en">Python</span>، مثل <code>list.sort()</code>.</p>
+      </details>
+
+      <h3>تمرين 3 (متوسط): <span class="en">3Sum</span></h3>
+      <p>اكتب دالة <code>three_sum(nums: list[int]) -> list[list[int]]</code>. ترجع كل الثلاثيات الفريدة التي مجموعها صفر. مثلًا <code>[-1, 0, 1, 2, -1, -4]</code> يعطي <code>[[-1, -1, 2], [-1, 0, 1]]</code>.</p>
+      <details><summary>💡 تلميح</summary><p>رتّب القائمة. ثبّت العنصر الأول <code>nums[i]</code>، ثم ابحث عن زوج مجموعه <code>-nums[i]</code> بالمؤشرين المتقابلين. لتجنب التكرار، تخطَّ القيم المتساوية المتجاورة.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def three_sum(nums: list[int]) -> list[list[int]]:
+    # Time: O(n^2), Space: O(n) for the sorted copy
+    nums = sorted(nums)
+    n = len(nums)
+    result: list[list[int]] = []
+    for i in range(n - 2):
+        if i > 0 and nums[i] == nums[i - 1]:
+            continue                         # skip duplicate first values
+        left, right = i + 1, n - 1
+        while left &lt; right:
+            total = nums[i] + nums[left] + nums[right]
+            if total &lt; 0:
+                left += 1
+            elif total > 0:
+                right -= 1
+            else:
+                result.append([nums[i], nums[left], nums[right]])
+                left += 1
+                right -= 1
+                while left &lt; right and nums[left] == nums[left - 1]:
+                    left += 1                # skip duplicate second values
+    return result
+
+
+print(three_sum([-1, 0, 1, 2, -1, -4]))
+print(three_sum([0, 0, 0, 0]))</code></pre>
+        <div class="output">[[-1, -1, 2], [-1, 0, 1]]
+[[0, 0, 0]]</div>
+        <p>الحل البدائي <span class="en">O(n³)</span>. هنا نكرر حلًا بتعقيد <span class="en">O(n)</span> لكل قيمة من n قيمة، فيصبح المجموع <span class="en">O(n²)</span>. استخدمنا <code>sorted()</code> وليس <code>nums.sort()</code>، حتى لا نغيّر قائمة المستخدم.</p>
+      </details>
+
+      <h3>تمرين 4 (صعب): أطول جزء فيه k حروف مختلفة على الأكثر</h3>
+      <p>اكتب دالة <code>longest_k_distinct(s: str, k: int) -> int</code>. مثلًا <code>"eceba"</code> و <code>k = 2</code> يعطي 3، لأن الجزء هو <code>"ece"</code>.</p>
+      <details><summary>💡 تلميح</summary><p>نافذة متغيرة. لا يكفي <span class="en">set</span> هنا، لأن الحرف قد يتكرر داخل النافذة. استخدم قاموسًا يعدّ كل حرف. النافذة غير صالحة عندما يكون <code>len(counts) > k</code>. وعندما يصل عدّ حرف إلى صفر، احذف مفتاحه.</p></details>
+      <details><summary>✅ الحل</summary>
+<pre><code class="language-python">def longest_k_distinct(s: str, k: int) -> int:
+    # Time: O(n), Space: O(k)
+    counts: dict[str, int] = {}
+    left = 0
+    best = 0
+    for right, ch in enumerate(s):
+        counts[ch] = counts.get(ch, 0) + 1          # expand
+        while len(counts) > k:                       # invalid: too many kinds
+            out = s[left]
+            counts[out] -= 1
+            if counts[out] == 0:
+                del counts[out]                      # keep len(counts) correct
+            left += 1
+        best = max(best, right - left + 1)           # "longest": update after shrinking
+    return best
+
+
+print(longest_k_distinct("eceba", 2))
+print(longest_k_distinct("aa", 1))
+print(longest_k_distinct("abc", 0))</code></pre>
+        <div class="output">3
+2
+0</div>
+        <p>الشرط رتيب: إضافة حرف لا تُنقص عدد الأنواع المختلفة، وحذف حرف لا يزيده. لذلك تعمل النافذة. لاحظ أننا نحدّث <code>best</code> بعد التصغير، لأننا نبحث عن الأطول. هذا الحل يجمع بين النافذة والعدّ بالقاموس، وهو موضوع الدرس القادم.</p>
+      </details>
+    </section>
+
+    <section id="summary">
+      <h2>الخلاصة</h2>
+      <ul>
+        <li>طريقة المؤشرين تحذف احتمالات كثيرة في كل خطوة، فتحوّل <span class="en">O(n²)</span> إلى <span class="en">O(n)</span> غالبًا.</li>
+        <li><strong>المؤشران المتقابلان:</strong> للقوائم المرتبة ومسائل الأزواج والنصوص المتناظرة.</li>
+        <li><strong>القارئ والكاتب:</strong> للتعديل في المكان بذاكرة <span class="en">O(1)</span>.</li>
+        <li><strong>النافذة الثابتة:</strong> أضف العنصر الذي دخل، واطرح العنصر الذي خرج.</li>
+        <li><strong>النافذة المتغيرة:</strong> وسّع من اليمين دائمًا، وصغّر من اليسار بـ <code>while</code>.</li>
+        <li>النافذة المتغيرة تحتاج شرط الرتابة. مع الأرقام السالبة استخدم <span class="en">Prefix Sum</span> مع <span class="en">dict</span>.</li>
+        <li>التعقيد <span class="en">O(n)</span> رغم الحلقة الداخلية، لأن كل مؤشر يتحرك n مرة على الأكثر في الدالة كلها.</li>
+        <li>طول النافذة <code>right - left + 1</code>، واستخدم <code>&lt;</code> وليس <code>&lt;=</code> عندما تحتاج عنصرين مختلفين.</li>
+        <li>اكتب الثابت في تعليق، فهو يرشدك إلى الكود الصحيح.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>الخطوة التالية</h2>
+      <ul>
+        <li><strong>الدرس 4: الـ <span class="en">Hashing</span> والعدّ</strong>. ستتعلم كيف يعمل <span class="en">dict</span> من الداخل، ومتى تستخدم <code>Counter</code> و <code>defaultdict</code>، وكيف تجمع العناصر حسب مفتاح، مثل تجميع الكلمات المتجانسة (<span class="en">anagrams</span>).</li>
+        <li>الدرس 5: العودية والتراجع (<span class="en">Recursion &amp; Backtracking</span>).</li>
+        <li>للتدريب: حلّ 5 مسائل على <span class="en">LeetCode</span> بوسم <span class="en">Two Pointers</span>، و 5 بوسم <span class="en">Sliding Window</span>. قبل كل مسألة، اكتب أي نوع من الأنواع الأربعة ستستخدم ولماذا.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>تعلّم خطوة بخطوة 🚀</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+  // Code highlighting + copy buttons
+  hljs.highlightAll();
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "نسخ";
+    btn.onclick = function () {
+      var code = pre.querySelector("code");
+      navigator.clipboard.writeText(code ? code.textContent : pre.textContent);
+      btn.textContent = "تم النسخ ✓";
+      setTimeout(function () { btn.textContent = "نسخ"; }, 1500);
+    };
+    pre.appendChild(btn);
+  });
+
+  // Mermaid diagrams
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif", securityLevel: "loose" });
+
+  // Math formulas
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+
+  // Chart: brute force vs sliding window
+  Chart.defaults.font.family = "Cairo, Tahoma, sans-serif";
+  var wc = document.getElementById("windowChart");
+  if (wc) {
+    var sizes = [10, 100, 1000, 10000, 100000];
+    new Chart(wc, {
+      type: "line",
+      data: {
+        labels: sizes.map(function (n) { return n.toLocaleString("en-US"); }),
+        datasets: [
+          { label: "الحل البدائي n(n+1)/2", data: sizes.map(function (n) { return n * (n + 1) / 2; }), borderColor: "#ef4444", backgroundColor: "#ef4444", tension: 0.2 },
+          { label: "النافذة المتغيرة 2n", data: sizes.map(function (n) { return 2 * n; }), borderColor: "#10b981", backgroundColor: "#10b981", tension: 0.2 }
+        ]
+      },
+      options: {
+        plugins: { legend: { rtl: true }, tooltip: { rtl: true } },
+        scales: {
+          y: { type: "logarithmic", title: { display: true, text: "عدد العمليات (مقياس لوغاريتمي)" } },
+          x: { title: { display: true, text: "حجم المدخلات n" } }
+        }
+      }
+    });
+  }
+
+  // Steppers
+  document.querySelectorAll(".stepper").forEach(function (s) {
+    var steps = s.querySelectorAll(".step");
+    var label = s.querySelector(".step-label");
+    var prev = s.querySelector(".prev");
+    var next = s.querySelector(".next");
+    var i = 0;
+    function show() {
+      steps.forEach(function (el, k) { el.classList.toggle("active", k === i); });
+      label.textContent = "الخطوة " + (i + 1) + " من " + steps.length;
+      prev.disabled = i === 0;
+      next.disabled = i === steps.length - 1;
+    }
+    prev.onclick = function () { if (i > 0) { i--; show(); } };
+    next.onclick = function () { if (i < steps.length - 1) { i++; show(); } };
+    show();
+  });
+
+  // Quizzes
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.dataset.correct === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ إجابة صحيحة! " : "❌ ليست صحيحة. ") + (q.dataset.explain || "");
+      };
+    });
+  });
+
+  // Reading progress bar (fills from the right, RTL)
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById("progress").style.width = p + "%";
+  });
+</script>
+</body>
+</html>
