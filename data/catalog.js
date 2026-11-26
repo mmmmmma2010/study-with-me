@@ -163,119 +163,119 @@ window.STUDY_CATALOG = [
       {
         id: "en-b1-1",
         order: 1,
-        subfolder: "English B2 level",
-        file: "English/English B2 level/lesson-english-b1-1.html",
+        subfolder: "English B1 level",
+        file: "English/English B1 level/lesson-english-b1-1.html",
         title: "الدرس 1: هل سبق لك أن...؟",
         titleEn: "Have you ever...?",
         description: "تحدّث عن تجاربك في الحياة والسفر.",
         duration: "30 دقيقة",
         durationMinutes: 30,
         level: "B1",
-        tags: ["Present Perfect vs Past Simple", "English B2 level"]
+        tags: ["Present Perfect vs Past Simple", "English B1 level"]
       },
       {
         id: "en-b1-2",
         order: 2,
-        subfolder: "English B2 level",
-        file: "English/English B2 level/lesson-english-b1-2.html",
+        subfolder: "English B1 level",
+        file: "English/English B1 level/lesson-english-b1-2.html",
         title: "الدرس 2: أسكن هنا منذ سنوات",
         titleEn: "I've lived here for years",
         description: "تحدّث عن التغيّرات في حياتك وعن الأخبار الجديدة.",
         duration: "30 دقيقة",
         durationMinutes: 30,
         level: "B1",
-        tags: ["for · since · already · yet · just", "English B2 level"]
+        tags: ["for · since · already · yet · just", "English B1 level"]
       },
       {
         id: "en-b1-3",
         order: 3,
-        subfolder: "English B2 level",
-        file: "English/English B2 level/lesson-english-b1-3.html",
+        subfolder: "English B1 level",
+        file: "English/English B1 level/lesson-english-b1-3.html",
         title: "الدرس 3: عندما كنت طفلًا...",
         titleEn: "When I was a child...",
         description: "تحدّث عن عاداتك في الماضي وذكريات الطفولة.",
         duration: "30 دقيقة",
         durationMinutes: 30,
         level: "B1",
-        tags: ["used to · would", "English B2 level"]
+        tags: ["used to · would", "English B1 level"]
       },
       {
         id: "en-b1-4",
         order: 4,
-        subfolder: "English B2 level",
-        file: "English/English B2 level/lesson-english-b1-4.html",
+        subfolder: "English B1 level",
+        file: "English/English B1 level/lesson-english-b1-4.html",
         title: "الدرس 4: بينما كنت أنتظر...",
         titleEn: "While I was waiting...",
         description: "احكِ قصة قصيرة عن موقف أو حادث.",
         duration: "30 دقيقة",
         durationMinutes: 30,
         level: "B1",
-        tags: ["Past continuous · when · while", "English B2 level"]
+        tags: ["Past continuous · when · while", "English B1 level"]
       },
       {
         id: "en-b1-5",
         order: 5,
-        subfolder: "English B2 level",
-        file: "English/English B2 level/lesson-english-b1-5.html",
+        subfolder: "English B1 level",
+        file: "English/English B1 level/lesson-english-b1-5.html",
         title: "الدرس 5: إذا أمطرت، سنبقى في البيت",
         titleEn: "If it rains, we'll stay home",
         description: "تحدّث عن الطقس والخطط والاحتمالات الحقيقية.",
         duration: "30 دقيقة",
         durationMinutes: 30,
         level: "B1",
-        tags: ["First conditional · when · unless", "English B2 level"]
+        tags: ["First conditional · when · unless", "English B1 level"]
       },
       {
         id: "en-b1-6",
         order: 6,
-        subfolder: "English B2 level",
-        file: "English/English B2 level/lesson-english-b1-6.html",
+        subfolder: "English B1 level",
+        file: "English/English B1 level/lesson-english-b1-6.html",
         title: "الدرس 6: لو كنتُ غنيًا...",
         titleEn: "If I were rich...",
         description: "تحدّث عن المواقف الخيالية والأحلام، وقدّم النصيحة.",
         duration: "30 دقيقة",
         durationMinutes: 30,
         level: "B1",
-        tags: ["Second conditional · If I were you", "English B2 level"]
+        tags: ["Second conditional · If I were you", "English B1 level"]
       },
       {
         id: "en-b1-7",
         order: 7,
-        subfolder: "English B2 level",
-        file: "English/English B2 level/lesson-english-b1-7.html",
+        subfolder: "English B1 level",
+        file: "English/English B1 level/lesson-english-b1-7.html",
         title: "الدرس 7: صُنع في مصر",
         titleEn: "It's made in Egypt",
         description: "صِف كيف تُصنع الأشياء ومن أين تأتي.",
         duration: "30 دقيقة",
         durationMinutes: 30,
         level: "B1",
-        tags: ["Passive: present & past", "English B2 level"]
+        tags: ["Passive: present & past", "English B1 level"]
       },
       {
         id: "en-b1-8",
         order: 8,
-        subfolder: "English B2 level",
-        file: "English/English B2 level/lesson-english-b1-8.html",
+        subfolder: "English B1 level",
+        file: "English/English B1 level/lesson-english-b1-8.html",
         title: "الدرس 8: الرجل الذي ساعدني",
         titleEn: "The man who helped me",
         description: "صِف الناس والأشياء والأماكن بوضوح.",
         duration: "30 دقيقة",
         durationMinutes: 30,
         level: "B1",
-        tags: ["who · which · that · where", "English B2 level"]
+        tags: ["who · which · that · where", "English B1 level"]
       },
       {
         id: "en-b1-9",
         order: 9,
-        subfolder: "English B2 level",
-        file: "English/English B2 level/lesson-english-b1-9.html",
+        subfolder: "English B1 level",
+        file: "English/English B1 level/lesson-english-b1-9.html",
         title: "الدرس 9: ينبغي أن تذهب إلى الطبيب",
         titleEn: "You should see a doctor",
         description: "قدّم النصيحة وتحدّث عن الصحة والأعراض.",
         duration: "30 دقيقة",
         durationMinutes: 30,
         level: "B1",
-        tags: ["should · ought to · had better", "English B2 level"]
+        tags: ["should · ought to · had better", "English B1 level"]
       },
       {
         id: "en-b2-1",
