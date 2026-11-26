@@ -250,6 +250,32 @@ window.STUDY_CATALOG = [
         durationMinutes: 30,
         level: "B1",
         tags: ["Passive: present & past", "English B2 level"]
+      },
+      {
+        id: "en-b1-8",
+        order: 8,
+        subfolder: "English B2 level",
+        file: "English/English B2 level/lesson-english-b1-8.html",
+        title: "الدرس 8: الرجل الذي ساعدني",
+        titleEn: "The man who helped me",
+        description: "صِف الناس والأشياء والأماكن بوضوح.",
+        duration: "30 دقيقة",
+        durationMinutes: 30,
+        level: "B1",
+        tags: ["who · which · that · where", "English B2 level"]
+      },
+      {
+        id: "en-b1-9",
+        order: 9,
+        subfolder: "English B2 level",
+        file: "English/English B2 level/lesson-english-b1-9.html",
+        title: "الدرس 9: ينبغي أن تذهب إلى الطبيب",
+        titleEn: "You should see a doctor",
+        description: "قدّم النصيحة وتحدّث عن الصحة والأعراض.",
+        duration: "30 دقيقة",
+        durationMinutes: 30,
+        level: "B1",
+        tags: ["should · ought to · had better", "English B2 level"]
       }
     ]
   },

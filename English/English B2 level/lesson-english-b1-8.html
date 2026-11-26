@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 8: الرجل الذي ساعدني — English B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b; --r:#9333ea;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Cairo',Tahoma,'Segoe UI',sans-serif; font-size:18px; line-height:1.9; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .progress { max-width:420px; margin:14px auto 0; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; }
+  .progress div { height:100%; background:#fde68a; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:210px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); }
+  .emoji { font-size:2.6rem; line-height:1.2; }
+  .word { font-size:1.4rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.15rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); } .w.r { background:var(--r); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .w.del { background:transparent; color:var(--bad); border:2px solid var(--bad); text-decoration:line-through; }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  .swap { border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin:14px 0; background:#fafafa; }
+  .swap .arrow { text-align:center; font-size:1.4rem; color:var(--primary); font-weight:800; }
+  .legend { display:flex; gap:10px; flex-wrap:wrap; font-size:.85rem; margin:8px 0; }
+  .legend span { padding:2px 10px; border-radius:999px; color:#fff; font-weight:700; }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; }
+  .bubble { max-width:80%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:110px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:220px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>الدرس 8: الرجل الذي ساعدني <span class="tl">— The man who helped me</span></h1>
+  <p>صِف الناس والأشياء والأماكن بوضوح. <span class="tl">Describe people, things and places clearly.</span></p>
+  <div class="badges">
+    <span class="badge">اللغة: الإنجليزية</span>
+    <span class="badge">المستوى: B1</span>
+    <span class="badge">الدرس 8 من 15</span>
+    <span class="badge">وقت الدراسة: 30 دقيقة</span>
+    <span class="badge tl">who · which · that · where</span>
+  </div>
+  <div class="progress"><div style="width:53%"></div></div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 السرعة: عادية</button>
+  <span>النتيجة: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ حفظ PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section id="goals">
+    <h2>🎯 أهداف الدرس <span class="tl">— Can-do goals</span></h2>
+    <div class="cando">
+      <label><input type="checkbox"><span class="tl">I can join two sentences with who, which, that and where.</span> — أستطيع أن أربط جملتين بـ «الذي / التي / حيث».</label>
+      <label><input type="checkbox"><span class="tl">I can describe people by their jobs and actions.</span> — أستطيع أن أصف الناس بمهنهم وأفعالهم.</label>
+      <label><input type="checkbox"><span class="tl">I can avoid the extra pronoun: "the man who I saw" (not "saw him").</span> — أستطيع أن أتجنّب الضمير الزائد.</label>
+      <label><input type="checkbox"><span class="tl">I can pronounce who /huː/ and that /ðæt/ correctly.</span> — أستطيع أن أنطق <span class="tl">who</span> و <span class="tl">that</span> صحيحًا.</label>
+    </div>
+  </section>
+
+  <section id="warmup">
+    <h2>🌱 تمهيد <span class="tl">— Warm-up</span></h2>
+    <p>تذكّر الدرس 4: سيارة يوسف تعطّلت، وساعده رجل لطيف. كيف تصف هذا الرجل في جملة واحدة؟</p>
+    <p>في العربية: «هذا هو <b>الرجلُ الذي</b> ساعدني».</p>
+    <p>بالإنجليزية: <span class="tl"><b>This is the man who helped me.</b></span> <button class="say" data-text="This is the man who helped me.">🔊</button></p>
+    <p>كلمة <span class="tl">who</span> هنا تعمل مثل «<b>الذي</b>»: تربط الجملتين وتشرح <b>أيّ</b> رجل نقصد.</p>
+    <div class="callout note">📝 <b>Think:</b> <span class="tl">Who is the person who helps you the most in your life?</span><br>فكّر: من هو الشخص الذي يساعدك أكثر من غيره في حياتك؟</div>
+  </section>
+
+  <section id="words">
+    <h2>📚 الكلمات الجديدة <span class="tl">— New words: People &amp; jobs</span></h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. — اضغط على البطاقة لتقلبها. المقطع المنبور باللون الأحمر.</p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧑‍💼</div><div class="word tl">colleague</div><button class="say" data-text="colleague">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">زميل في العمل</div><span class="ipa">/<b>ˈkɑː</b>.liːɡ/</span><span class="tl">She's the colleague who sits next to me.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👩‍💼</div><div class="word tl">manager</div><button class="say" data-text="manager">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">مدير</div><span class="ipa">/<b>ˈmæn</b>.ɪ.dʒər/</span><span class="tl">The manager who hired me is very kind.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🛎️</div><div class="word tl">receptionist</div><button class="say" data-text="receptionist">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">موظف الاستقبال</div><span class="ipa">/rɪ<b>ˈsep</b>.ʃən.ɪst/</span><span class="tl">A receptionist is a person who greets visitors.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🧮</div><div class="word tl">accountant</div><button class="say" data-text="accountant">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">محاسب</div><span class="ipa">/ə<b>ˈkaʊn</b>.tənt/</span><span class="tl">The accountant who deals with salaries is on holiday.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👷</div><div class="word tl">engineer</div><button class="say" data-text="engineer">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">مهندس</div><span class="ipa">/ˌen.dʒɪ<b>ˈnɪr</b>/</span><span class="tl">My brother is an engineer who builds bridges.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💊</div><div class="word tl">pharmacist</div><button class="say" data-text="pharmacist">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">صيدلي</div><span class="ipa">/<b>ˈfɑːr</b>.mə.sɪst/</span><span class="tl">The pharmacist who works there speaks English.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🩺</div><div class="word tl">nurse</div><button class="say" data-text="nurse">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">ممرّض / ممرّضة</div><span class="ipa">/<b>nɜːrs</b>/</span><span class="tl">The nurse who looked after me was great.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🔧</div><div class="word tl">plumber</div><button class="say" data-text="plumber">🔊</button><div class="hint">noun — b صامتة</div></div>
+        <div class="back"><div class="word">سبّاك</div><span class="ipa">/<b>ˈplʌm</b>.ər/</span><span class="tl">A plumber is someone who fixes pipes.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💡</div><div class="word tl">electrician</div><button class="say" data-text="electrician">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">كهربائي</div><span class="ipa">/ɪˌlek<b>ˈtrɪʃ</b>.ən/</span><span class="tl">We need an electrician who can come today.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">⚖️</div><div class="word tl">lawyer</div><button class="say" data-text="lawyer">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">محامٍ</div><span class="ipa">/<b>ˈlɔɪ</b>.ər/</span><span class="tl">The lawyer that I called was very helpful.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🛒</div><div class="word tl">customer</div><button class="say" data-text="customer">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">زبون / عميل</div><span class="ipa">/<b>ˈkʌs</b>.tə.mər/</span><span class="tl">Customers who pay by card get a discount.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤗</div><div class="word tl">helpful</div><button class="say" data-text="helpful">🔊</button><div class="hint">adjective</div></div>
+        <div class="back"><div class="word">متعاون / يحب المساعدة</div><span class="ipa">/<b>ˈhelp</b>.fəl/</span><span class="tl">Everyone in this office is helpful.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🗂️</div><div class="word tl">deal with</div><button class="say" data-text="deal with">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يتعامل مع / يتولّى أمرًا</div><span class="ipa">/<b>ˈdiːl</b> wɪð/</span><span class="tl">She's the person who deals with complaints.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌟</div><div class="word tl">look up to</div><button class="say" data-text="look up to">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يحترم ويُعجَب بـ (قدوة)</div><span class="ipa">/lʊk <b>ˈʌp</b> tə/</span><span class="tl">My father is the person I look up to.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🔄</div><div class="word tl">take over</div><button class="say" data-text="take over">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يتولّى (مسؤولية / عمل غيره)</div><span class="ipa">/teɪk <b>ˈoʊ</b>.vər/</span><span class="tl">Who will take over when the manager retires?</span></div>
+      </div></div>
+    </div>
+    <div class="callout warning">⚠️ <b>انتبه:</b> في <span class="tl">plumber</span> حرف <span class="tl">b</span> صامت: «بْلَمَر». وكلمة <span class="tl">colleague</span> = زميل <b>في العمل</b> فقط. زميل الدراسة: <span class="tl">classmate</span>.</div>
+  </section>
+
+  <section id="grammar">
+    <h2>🎨 القاعدة بالألوان <span class="tl">— Grammar 1: Joining two sentences</span></h2>
+    <p class="instr">Look at how two sentences become one.<span class="instr-ar">انظر كيف تصبح الجملتان جملة واحدة.</span></p>
+    <div class="legend tl"><span style="background:var(--s)">subject</span><span style="background:var(--v)">verb</span><span style="background:var(--o)">object / place</span><span style="background:var(--r)">relative pronoun</span></div>
+    <div class="swap">
+      <div class="sent tl"><span class="w s">I<small>أنا</small></span><span class="w v">met<small>قابلتُ</small></span><span class="w o">a nurse.<small>ممرّضة</small></span><span class="w s">She<small>هي</small></span><span class="w v">works<small>تعمل</small></span><span class="w o">in Aswan.<small>في أسوان</small></span></div>
+      <div class="arrow">⬇ She → who ⬇</div>
+      <div class="sent tl"><span class="w s">I</span><span class="w v">met</span><span class="w o">a nurse</span><span class="w r">who<small>التي</small></span><span class="w v">works<small>تعمل</small></span><span class="w o">in Aswan.</span><button class="say" data-text="I met a nurse who works in Aswan.">🔊</button></div>
+    </div>
+    <p>الضمير <span class="tl">She</span> <b>اختفى</b>، وحلّت محلّه كلمة <span class="tl">who</span>. هذه الجملة الصغيرة <span class="tl">(who works in Aswan)</span> تشرح <b>أيّ ممرّضة</b> نقصد.</p>
+
+    <h3>🧩 <span class="tl">Which word?</span> — أيّ كلمة نستخدم؟</h3>
+    <table>
+      <tr><th class="tl">Word</th><th>نستخدمها لـ</th><th class="tl">Example</th></tr>
+      <tr><td class="tl"><b>who</b></td><td>الأشخاص 🧑</td><td class="tl">The man <mark>who</mark> helped me was kind. <button class="say" data-text="The man who helped me was kind.">🔊</button></td></tr>
+      <tr><td class="tl"><b>which</b></td><td>الأشياء والحيوانات 📦🐈</td><td class="tl">The bus <mark>which</mark> goes to Giza is late. <button class="say" data-text="The bus which goes to Giza is late.">🔊</button></td></tr>
+      <tr><td class="tl"><b>that</b></td><td>الأشخاص <b>أو</b> الأشياء (شائعة في الكلام)</td><td class="tl">The phone <mark>that</mark> I bought is great. <button class="say" data-text="The phone that I bought is great.">🔊</button></td></tr>
+      <tr><td class="tl"><b>where</b></td><td>الأماكن (حيث يحدث شيء) 📍</td><td class="tl">This is the café <mark>where</mark> we first met. <button class="say" data-text="This is the café where we first met.">🔊</button></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>Rule:</b> في هذا النوع من الجمل <b>لا</b> نضع فواصل: <span class="tl">The man who helped me was kind.</span> ✅ بدون فاصلة.</div>
+
+    <h3>🎯 <span class="tl">Grammar 2: Subject or object?</span> — متى نحذف <span class="tl">who / that / which</span>؟</h3>
+    <table>
+      <tr><th>1) <span class="tl">who / which / that</span> = <b>فاعل</b> (بعدها فعل مباشرة)</th><th>2) <span class="tl">who / which / that</span> = <b>مفعول به</b> (بعدها فاعل جديد)</th></tr>
+      <tr><td class="tl">The woman <mark>who</mark> <b>called</b> you is my aunt.<br>(she called you)<br>❌ لا يمكن الحذف</td><td class="tl">The woman <mark>(who)</mark> <b>you</b> called is my aunt.<br>(you called her)<br>✅ يمكن الحذف: The woman you called...</td></tr>
+    </table>
+    <div class="sent tl"><span class="w o">The book</span><span class="w r">(that)<small>يمكن حذفها</small></span><span class="w s">you<small>أنت</small></span><span class="w v">gave me<small>أعطيتني</small></span><span class="w del">it<small>ممنوع!</small></span><span class="w v">was amazing.<small>كان رائعًا</small></span><button class="say" data-text="The book you gave me was amazing.">🔊</button></div>
+    <div class="callout warning">⚠️ <b>Never add an extra pronoun:</b> كلمة <span class="tl">who / which / that</span> حلّت محلّ الضمير، فلا تكرّره: <span class="tl">the book that you gave me <s>it</s> ❌</span>.</div>
+
+    <h3>📍 <span class="tl">Grammar 3: where or which for places?</span></h3>
+    <table>
+      <tr><th class="tl">where = في هذا المكان</th><th class="tl">which / that = المكان نفسه فاعل أو مفعول</th></tr>
+      <tr><td class="tl">This is the town <mark>where</mark> I grew up. <button class="say" data-text="This is the town where I grew up.">🔊</button><br>(I grew up <b>there</b>)</td><td class="tl">This is the town <mark>which</mark> I visited last year. <button class="say" data-text="This is the town which I visited last year.">🔊</button><br>(I visited <b>it</b>)</td></tr>
+    </table>
+    <p>اختبار سهل: إذا كانت الجملة تحتاج <span class="tl">there</span> (هناك) → <span class="tl">where</span>. إذا كانت تحتاج <span class="tl">it</span> → <span class="tl">which / that</span>.</p>
+
+    <div class="diagram mermaid">
+flowchart TD
+  A["What are you describing? / ماذا تصف؟"] -->|"A person / شخص"| B["who or that: the nurse who works here"]
+  A -->|"A thing or animal / شيء أو حيوان"| C["which or that: the bus which goes to Giza"]
+  A -->|"A place: something happens THERE / مكان"| D["where: the café where we met"]
+  B --> E["Is there a new subject after it? / هل بعدها فاعل جديد؟"]
+  C --> E
+  E -->|"Yes: the man I saw"| F["You can drop who / which / that"]
+  E -->|"No: the man who helped me"| G["Keep it!"]
+    </div>
+  </section>
+
+  <section id="compare">
+    <h2>🔁 العربية مقابل الإنجليزية <span class="tl">— Arabic vs English</span></h2>
+    <div class="vs">
+      <div>
+        <h4>العربية</h4>
+        <div class="sent"><span class="w o">الرجلُ<small>the man</small></span><span class="w r">الذي<small>who</small></span><span class="w v">رأيتُ<small>I saw</small></span><span class="w gap">ـه<small>him (ضمير عائد)</small></span></div>
+        <div class="sent"><span class="w o">رجلٌ<small>a man</small></span><span class="w v">يعملُ<small>works</small></span><span class="w o">في بنك<small>in a bank</small></span></div>
+        <p>العربية تعيد الضمير («رأيتُ<b>ه</b>»). ومع النكرة («رجلٌ») لا نستخدم «الذي» أصلًا.</p>
+      </div>
+      <div>
+        <h4 class="tl">English</h4>
+        <div class="sent tl"><span class="w o">the man</span><span class="w r">who</span><span class="w s">I</span><span class="w v">saw</span><span class="w del">him</span></div>
+        <div class="sent tl"><span class="w o">a man</span><span class="w gap">who<small>إجباري!</small></span><span class="w v">works</span><span class="w o">in a bank</span></div>
+        <p>الإنجليزية لا تعيد الضمير، وتحتاج <span class="tl">who / that</span> مع <span class="tl">a</span> و <span class="tl">the</span>.</p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>سهل عليك:</b> «الذي / التي / الذين» = <span class="tl">who / which / that</span>، و«حيث» = <span class="tl">where</span>. وأسهل من العربية: لا يوجد مذكر ومؤنث ولا مفرد وجمع! <span class="tl">who</span> للرجل والمرأة والجماعة.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (1) — الضمير العائد:</b> «الكتاب الذي اشتريتُ<b>ه</b>» ← <span class="tl">the book which I bought <s>it</s> ❌</span>. الصحيح: <span class="tl">the book (which) I bought ✅</span>. هذا أشهر خطأ عند العرب في هذا الدرس.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (2) — النكرة:</b> «عندي صديقٌ يتكلم اليابانية» ← <span class="tl">I have a friend speaks Japanese ❌</span>. الصحيح: <span class="tl">I have a friend <b>who</b> speaks Japanese ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (3) — what:</b> لا تترجم «الذي» إلى <span class="tl">what</span> بعد اسم: <span class="tl">the car what I bought ❌ → the car that I bought ✅</span>.</div>
+  </section>
+
+  <section id="pron">
+    <h2>👄 النطق: <span class="tl">who</span> و <span class="tl">that</span></h2>
+    <h3>1) <span class="tl">who</span> = <span class="ipa">/huː/</span> «هُو»</h3>
+    <p>حرف <span class="tl">w</span> في <span class="tl">who</span> <b>صامت</b>! لا تقل «وُو». قل «<b>هُو</b>»، مثل الضمير العربي «هو» لكن بصوت «و» أطول.</p>
+    <ul>
+      <li><span class="tl">who</span> <span class="ipa">/huː/</span> <button class="say" data-text="who">🔊</button> · <span class="tl">whose</span> <span class="ipa">/huːz/</span> <button class="say" data-text="whose">🔊</button> · <span class="tl">whole</span> <span class="ipa">/hoʊl/</span> <button class="say" data-text="whole">🔊</button></li>
+      <li>لكن: <span class="tl">which</span> <span class="ipa">/wɪtʃ/</span> <button class="say" data-text="which">🔊</button> و <span class="tl">where</span> <span class="ipa">/wer/</span> <button class="say" data-text="where">🔊</button> تبدأ بصوت <span class="ipa">/w/</span> عادي.</li>
+    </ul>
+    <h3>2) <span class="tl">th</span>: صوتا <b>ذ</b> و <b>ث</b> الفصحى</h3>
+    <p>خبر جيد: هذان الصوتان <b>موجودان</b> في العربية الفصحى! لكن في بعض اللهجات تصبح «ذ» ← «ز / د» و«ث» ← «س / ت». فيقول كثيرون <span class="tl">"zat"</span> أو <span class="tl">"dat"</span> بدل <span class="tl">that</span>. أخرج طرف لسانك قليلًا بين أسنانك، كما في «<b>ذ</b>لك» و«<b>ث</b>لاثة».</p>
+    <table>
+      <tr><th><span class="ipa">/ð/</span> = ذ (مع اهتزاز)</th><th><span class="ipa">/d/</span> أو <span class="ipa">/z/</span></th><th><span class="ipa">/θ/</span> = ث (بلا اهتزاز)</th><th><span class="ipa">/s/</span></th></tr>
+      <tr><td><span class="tl">they</span> <button class="say" data-text="they">🔊</button></td><td><span class="tl">day</span> <button class="say" data-text="day">🔊</button></td><td><span class="tl">think</span> <button class="say" data-text="think">🔊</button></td><td><span class="tl">sink</span> <button class="say" data-text="sink">🔊</button></td></tr>
+      <tr><td><span class="tl">then</span> <button class="say" data-text="then">🔊</button></td><td><span class="tl">den</span> <button class="say" data-text="den">🔊</button></td><td><span class="tl">thick</span> <button class="say" data-text="thick">🔊</button></td><td><span class="tl">sick</span> <button class="say" data-text="sick">🔊</button></td></tr>
+      <tr><td><span class="tl">breathe</span> <button class="say" data-text="breathe">🔊</button></td><td><span class="tl">breeze</span> <button class="say" data-text="breeze">🔊</button></td><td><span class="tl">mouth</span> <button class="say" data-text="mouth">🔊</button></td><td><span class="tl">mouse</span> <button class="say" data-text="mouse">🔊</button></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>Weak form:</b> كلمة <span class="tl">that</span> في جملة الصلة تكون <b>ضعيفة</b>: <span class="ipa">/ðət/</span> «ذِت». <span class="tl">The phone that I bought...</span> <button class="say" data-text="The phone that I bought is great.">🔊</button></div>
+    <div class="ex quiz" data-explain="حرف w في who صامت: /huː/.">
+      <div class="q">🎧 <span class="tl">How do you say "who"?</span></div>
+      <button class="option tl">/wuː/ — "woo"</button>
+      <button class="option tl" data-correct="true">/huː/ — "hoo"</button>
+      <button class="option tl">/hwaɪ/ — "hwy"</button>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section id="dialogue">
+    <h2>💬 حوار من الحياة <span class="tl">— First day at a new job</span></h2>
+    <p class="instr">Listen to Salma and Ahmed. Find the sentences with who, which, that and where.<span class="instr-ar">استمع إلى سلمى وأحمد. ابحث عن الجمل التي فيها who و which و that و where.</span></p>
+    <button class="btn" id="playDialogue">▶️ استمع للحوار كاملًا</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Ahmed</div><div class="tl line">Welcome to the team, Salma! Let me show you around.</div></div>
+      <div class="bubble b"><div class="who">Salma</div><div class="tl line">Thanks! I've been nervous since I woke up this morning.</div></div>
+      <div class="bubble a"><div class="who">Ahmed</div><div class="tl line">Don't worry. Everyone here is helpful. The woman who's talking on the phone is Hala. She's our manager.</div></div>
+      <div class="bubble b"><div class="who">Salma</div><div class="tl line">And the man who's sitting next to her?</div></div>
+      <div class="bubble a"><div class="who">Ahmed</div><div class="tl line">That's Mostafa, our accountant. He's the person who deals with all the salaries.</div></div>
+      <div class="bubble b"><div class="who">Salma</div><div class="tl line">Good to know! Who should I ask if my laptop doesn't work?</div></div>
+      <div class="bubble a"><div class="who">Ahmed</div><div class="tl line">Ask Tamer. He's the engineer who fixes everything. His desk is the one which is near the window.</div></div>
+      <div class="bubble b"><div class="who">Salma</div><div class="tl line">And where's the kitchen?</div></div>
+      <div class="bubble a"><div class="who">Ahmed</div><div class="tl line">Down the hall. That's the room where we have lunch together. Oh, and this is the coffee machine that was given to us by a customer!</div></div>
+      <div class="bubble b"><div class="who">Salma</div><div class="tl line">Ha! Is there a café near here?</div></div>
+      <div class="bubble a"><div class="who">Ahmed</div><div class="tl line">Yes, there's a small café where you can get great falafel. The man who owns it used to work here.</div></div>
+      <div class="bubble b"><div class="who">Salma</div><div class="tl line">Really? If I were him, I'd miss this office!</div></div>
+      <div class="bubble a"><div class="who">Ahmed</div><div class="tl line">Maybe! Anyway, the people you'll meet today are all really friendly.</div></div>
+      <div class="bubble b"><div class="who">Salma</div><div class="tl line">Thanks, Ahmed. You're the first person who's made me feel welcome.</div></div>
+    </div>
+    <details><summary>👀 Answers</summary>
+      <table class="tl">
+        <tr><th>Word</th><th>Sentence</th></tr>
+        <tr><td>who</td><td>The woman who's talking on the phone · the man who's sitting next to her · the person who deals with all the salaries · the engineer who fixes everything · The man who owns it · the first person who's made me feel welcome</td></tr>
+        <tr><td>which / that</td><td>the one which is near the window · the coffee machine that was given to us</td></tr>
+        <tr><td>where</td><td>the room where we have lunch · a small café where you can get great falafel</td></tr>
+        <tr><td>(omitted)</td><td>the people (who) you'll meet today</td></tr>
+      </table>
+      <p>انتبه: <span class="tl">Who should I ask...?</span> هنا <b>سؤال</b> وليست جملة صلة. وانظر إلى المراجعة: <span class="tl">I've been nervous since...</span> (الدرس 2)، <span class="tl">used to work</span> (الدرس 3)، <span class="tl">if my laptop doesn't work</span> (الدرس 5)، <span class="tl">If I were him, I'd...</span> (الدرس 6)، <span class="tl">was given to us by a customer</span> (الدرس 7).</p>
+    </details>
+  </section>
+
+  <section id="practice">
+    <h2>🏋️ تدريب <span class="tl">— Practice</span></h2>
+
+    <h3 class="instr">A. Choose the correct answer.<span class="instr-ar">اختر الإجابة الصحيحة.</span></h3>
+
+    <div class="ex quiz" data-explain="شخص → who.">
+      <div class="q">1. <span class="tl">A pharmacist is a person ___ sells medicine.</span></div>
+      <button class="option tl" data-correct="true">who</button>
+      <button class="option tl">which</button>
+      <button class="option tl">where</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="شيء (laptop) → which أو that.">
+      <div class="q">2. <span class="tl">The laptop ___ I bought last week doesn't work.</span></div>
+      <button class="option tl">who</button>
+      <button class="option tl" data-correct="true">which</button>
+      <button class="option tl">where</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="I was born THERE → where.">
+      <div class="q">3. <span class="tl">This is the hospital ___ I was born.</span></div>
+      <button class="option tl">which</button>
+      <button class="option tl">who</button>
+      <button class="option tl" data-correct="true">where</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="لا نعيد الضمير بعد who / that.">
+      <div class="q">4. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">The man who I met him is a lawyer.</button>
+      <button class="option tl" data-correct="true">The man I met is a lawyer.</button>
+      <button class="option tl">The man what I met is a lawyer.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="I visited IT → which/that (ليس where، لأن visit يحتاج مفعولًا).">
+      <div class="q">5. <span class="tl">Luxor is the city ___ I visited last summer.</span></div>
+      <button class="option tl">where</button>
+      <button class="option tl" data-correct="true">that</button>
+      <button class="option tl">who</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="مع النكرة a friend نحتاج who، عكس العربية.">
+      <div class="q">6. <span class="tl">I have a friend ___ Japanese.</span></div>
+      <button class="option tl">speaks</button>
+      <button class="option tl" data-correct="true">who speaks</button>
+      <button class="option tl">who he speaks</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">B. Write who, which or where.<span class="instr-ar">اكتب who أو which أو where.</span></h3>
+    <div class="ex fill">
+      <p class="tl">7. A plumber is someone <input class="blank" data-answer="who|that"> fixes pipes.</p>
+      <p class="tl">8. This is the restaurant <input class="blank" data-answer="where"> we had our first date.</p>
+      <p class="tl">9. The cat <input class="blank" data-answer="which|that"> lives next door is very naughty.</p>
+      <p class="tl">10. The colleague <input class="blank" data-answer="who|that"> took over my job is from Tanta.</p>
+      <p class="tl">11. Do you know a shop <input class="blank" data-answer="where"> I can buy handmade lamps?</p>
+      <p class="tl">12. The scarf <input class="blank" data-answer="which|that"> she gave me is made of cotton.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">C. Join the two sentences.<span class="instr-ar">اربط الجملتين في جملة واحدة. لا تكرّر الضمير!</span></h3>
+    <div class="ex fill">
+      <p class="tl">13. I met a woman. She works at the bank.<br>→ I met a woman <input class="blank wide" data-answer="who works at the bank|that works at the bank">.</p>
+      <p class="tl">14. This is the book. I told you about it.<br>→ This is the book <input class="blank wide" data-answer="which I told you about|that I told you about|I told you about">.</p>
+      <p class="tl">15. That's the village. My father grew up there.<br>→ That's the village <input class="blank wide" data-answer="where my father grew up">.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">D. Put the words in order.<span class="instr-ar">رتّب الكلمات لتكوّن جملة.</span></h3>
+    <div class="ex builder" data-answer="The woman who works at the pharmacy is my aunt">
+      <div class="q">16. 💊</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex builder" data-answer="This is the café where we first met">
+      <div class="q">17. ☕</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">E. Say it! 🎤<span class="instr-ar">قل الجملة بصوتك. انطق who «هُو» و the بصوت «ذ».</span></h3>
+    <div class="ex speak-check" data-text="The man who helped me was very kind">
+      <div class="q">18. <span class="tl">The man who helped me was very kind.</span> <button class="say" data-text="The man who helped me was very kind.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+    <div class="ex speak-check" data-text="This is the place where I grew up">
+      <div class="q">19. <span class="tl">This is the place where I grew up.</span> <button class="say" data-text="This is the place where I grew up.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+  </section>
+
+  <section id="task">
+    <h2>✍️ مهمة الكتابة <span class="tl">— Writing task (50–80 words)</span></h2>
+    <p class="instr">Write about three people who are important in your life.<span class="instr-ar">اكتب عن ثلاثة أشخاص مهمّين في حياتك. أرسل الفقرة لي في المحادثة وسأصححها.</span></p>
+    <ul class="tl">
+      <li>Use <b>who</b> at least twice.</li>
+      <li>Use <b>which / that</b> for a thing, and <b>where</b> for a place.</li>
+      <li>Try one sentence without who / that: <i>the book he gave me</i>.</li>
+      <li>Bonus: use <b>look up to</b> or <b>deal with</b>.</li>
+    </ul>
+    <details><summary>👀 Model answer (71 words)</summary>
+      <p class="tl">My grandmother is the person who taught me to cook. She lives in a small village where everyone knows each other. My best friend Karim is someone who always makes me laugh. He works for a company that makes solar panels. Finally, there's Mr. Adel, the teacher who I looked up to at school. He gave me a book which changed my life. I still have the book he gave me.</p>
+    </details>
+  </section>
+
+  <section id="mistakes">
+    <h2>🚫 الأخطاء الشائعة عند العرب <span class="tl">— Common mistakes</span></h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>لماذا؟</th></tr>
+      <tr><td class="tl">The man who I saw him is a doctor.</td><td class="tl">The man (who) I saw is a doctor.</td><td>لا نعيد الضمير كما في «رأيتُه».</td></tr>
+      <tr><td class="tl">The book which I bought it is boring.</td><td class="tl">The book (which) I bought is boring.</td><td><span class="tl">which</span> حلّت محلّ <span class="tl">it</span>.</td></tr>
+      <tr><td class="tl">I have a friend lives in Dubai.</td><td class="tl">I have a friend who lives in Dubai.</td><td>مع النكرة نحتاج <span class="tl">who</span>.</td></tr>
+      <tr><td class="tl">The car what I bought is red.</td><td class="tl">The car that I bought is red.</td><td>بعد اسم لا نستخدم <span class="tl">what</span>.</td></tr>
+      <tr><td class="tl">The teacher which taught me...</td><td class="tl">The teacher who taught me...</td><td><span class="tl">which</span> للأشياء، و <span class="tl">who</span> للأشخاص.</td></tr>
+      <tr><td class="tl">This is the city where I visited.</td><td class="tl">This is the city (that) I visited.</td><td><span class="tl">visit</span> يحتاج مفعولًا → <span class="tl">that / which</span>.</td></tr>
+      <tr><td class="tl">The man, who helped me, was kind. (للتعريف)</td><td class="tl">The man who helped me was kind.</td><td>لا فواصل في هذا النوع من الجمل.</td></tr>
+      <tr><td class="tl">"woo" / "zat"</td><td class="tl">who /huː/ · that /ðæt/</td><td><span class="tl">w</span> صامتة في <span class="tl">who</span>، و <span class="tl">th</span> = ذ.</td></tr>
+    </table>
+  </section>
+
+  <section id="summary">
+    <h2>📌 الخلاصة <span class="tl">— Summary</span></h2>
+    <ul>
+      <li><span class="tl"><b>who</b></span> = الأشخاص · <span class="tl"><b>which</b></span> = الأشياء · <span class="tl"><b>that</b></span> = الاثنان · <span class="tl"><b>where</b></span> = الأماكن (حيث).</li>
+      <li>هذه الكلمة <b>تحلّ محلّ</b> الضمير: لا تقل <span class="tl">the man who I saw <s>him</s></span>.</li>
+      <li>مع النكرة أيضًا: <span class="tl">a friend <b>who</b> speaks Japanese</span>.</li>
+      <li>إذا جاء بعدها فاعل جديد، يمكن حذفها: <span class="tl">the book (that) you gave me</span>.</li>
+      <li><span class="tl">where</span> = يحتاج «هناك» · <span class="tl">which / that</span> = يحتاج «ـه / it».</li>
+      <li>لا فواصل في جمل الصلة التي تحدّد الاسم.</li>
+      <li>انطق <span class="tl">who</span> «هُو»، و <span class="tl">th</span> مثل ذ / ث الفصحى.</li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <h2>🔄 مراجعة سريعة <span class="tl">— Quick review (Lesson 7)</span></h2>
+    <p>هل تتذكر المبني للمجهول <span class="tl">(passive)</span>؟</p>
+    <div class="ex quiz" data-explain="المبني للمجهول يحتاج be: is + past participle.">
+      <div class="q">R1. <span class="tl">This phone ___ in Korea.</span></div>
+      <button class="option tl">made</button>
+      <button class="option tl" data-correct="true">is made</button>
+      <button class="option tl">is make</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="«من قِبَل» = by.">
+      <div class="q">R2. <span class="tl">The novel was written ___ Naguib Mahfouz.</span></div>
+      <button class="option tl">from</button>
+      <button class="option tl">of</button>
+      <button class="option tl" data-correct="true">by</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="happen لا يأتي مبنيًا للمجهول.">
+      <div class="q">R3. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">The accident was happened at 9 p.m.</button>
+      <button class="option tl" data-correct="true">The accident happened at 9 p.m.</button>
+      <button class="option tl">The accident is happened at 9 p.m.</button>
+      <div class="feedback"></div>
+    </div>
+    <p class="tl">Review words: factory · export · import · handmade · receipt · refund · try on · sell out · send back</p>
+  </section>
+
+  <section id="next">
+    <h2>➡️ الدرس التالي <span class="tl">— Next lesson</span></h2>
+    <p>الدرس 9: <span class="tl">You should see a doctor</span>: النصيحة بـ <span class="tl">should / ought to / had better</span>، مع كلمات الصحة والأعراض. هناك ستعرف لماذا لا نقول <span class="tl">You should <s>to</s> rest</span>. اكتب «التالي» لتبدأ.</p>
+  </section>
+
+</div>
+
+<footer>تعلّم خطوة بخطوة 🌍 · <span class="tl">English B1 · Lesson 8</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif" });
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("المتصفح لا يدعم الصوت. جرّب Chrome أو Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 السرعة: عادية" : "🐢 السرعة: بطيئة";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · ضع الفأرة على الخانة الحمراء لترى الإجابة." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition) — accepts alternatives separated by |
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "المتصفح لا يدعم التعرف على الصوت. جرّب Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ I'm listening... أستمع إليك...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var targets = box.getAttribute("data-text").split("|").map(norm);
+        var ok = targets.indexOf(norm(said)) !== -1;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again. حاول مرة أخرى.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ لم أسمع جيدًا. تأكد من إذن الميكروفون وحاول مرة أخرى."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>

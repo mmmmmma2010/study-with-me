@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس 9: ينبغي أن تذهب إلى الطبيب — English B1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b; --r:#9333ea;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Cairo',Tahoma,'Segoe UI',sans-serif; font-size:18px; line-height:1.9; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .progress { max-width:420px; margin:14px auto 0; height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; }
+  .progress div { height:100%; background:#fde68a; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:210px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); }
+  .emoji { font-size:2.6rem; line-height:1.2; }
+  .word { font-size:1.4rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.15rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); } .w.r { background:var(--r); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .w.del { background:transparent; color:var(--bad); border:2px solid var(--bad); text-decoration:line-through; }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  .legend { display:flex; gap:10px; flex-wrap:wrap; font-size:.85rem; margin:8px 0; }
+  .legend span { padding:2px 10px; border-radius:999px; color:#fff; font-weight:700; }
+  /* Strength scale */
+  .scale { direction:ltr; margin:18px 0; }
+  .scale-bar { height:14px; border-radius:999px; background:linear-gradient(90deg,#10b981,#f59e0b,#ef4444); }
+  .scale-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }
+  .scale-steps div { border:2px solid var(--border); border-radius:12px; padding:8px; text-align:center; background:#fff; font-size:.95rem; }
+  .scale-steps b { display:block; font-size:1.05rem; }
+  .scale-steps small { display:block; font-family:'Cairo',sans-serif; color:var(--muted); direction:rtl; }
+  @media (max-width:700px) { .scale-steps { grid-template-columns:1fr 1fr; } }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; }
+  .bubble { max-width:80%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:110px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:220px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>الدرس 9: ينبغي أن تذهب إلى الطبيب <span class="tl">— You should see a doctor</span></h1>
+  <p>قدّم النصيحة وتحدّث عن الصحة والأعراض. <span class="tl">Give advice and talk about health and symptoms.</span></p>
+  <div class="badges">
+    <span class="badge">اللغة: الإنجليزية</span>
+    <span class="badge">المستوى: B1</span>
+    <span class="badge">الدرس 9 من 15</span>
+    <span class="badge">وقت الدراسة: 30 دقيقة</span>
+    <span class="badge tl">should · ought to · had better</span>
+  </div>
+  <div class="progress"><div style="width:60%"></div></div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 السرعة: عادية</button>
+  <span>النتيجة: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ حفظ PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section id="goals">
+    <h2>🎯 أهداف الدرس <span class="tl">— Can-do goals</span></h2>
+    <div class="cando">
+      <label><input type="checkbox"><span class="tl">I can give and ask for advice with should / shouldn't.</span> — أستطيع أن أقدّم النصيحة وأطلبها.</label>
+      <label><input type="checkbox"><span class="tl">I can use ought to as another way to say should.</span> — أستطيع أن أستخدم <span class="tl">ought to</span>.</label>
+      <label><input type="checkbox"><span class="tl">I can give strong advice or a warning with had better.</span> — أستطيع أن أحذّر شخصًا بنصيحة قوية.</label>
+      <label><input type="checkbox"><span class="tl">I can describe common symptoms to a doctor or pharmacist.</span> — أستطيع أن أصف الأعراض للطبيب أو الصيدلي.</label>
+      <label><input type="checkbox"><span class="tl">I can pronounce should /ʃʊd/ and ought to /ˈɔː.tə/.</span> — أستطيع أن أنطق <span class="tl">should</span> و <span class="tl">ought to</span> صحيحًا.</label>
+    </div>
+  </section>
+
+  <section id="warmup">
+    <h2>🌱 تمهيد <span class="tl">— Warm-up</span></h2>
+    <p>صديقك عنده صداع منذ يومين. ماذا تقول له؟ في العربية: «<b>ينبغي أن</b> تذهب إلى الطبيب» أو «<b>من الأفضل أن</b> ترتاح».</p>
+    <p>بالإنجليزية: <span class="tl"><b>You should see a doctor.</b></span> <button class="say" data-text="You should see a doctor.">🔊</button></p>
+    <p>لاحظ: لا توجد كلمة <span class="tl">to</span> بعد <span class="tl">should</span>، مع أن العربية تقول «أن».</p>
+    <div class="callout note">📝 <b>Think:</b> <span class="tl">What do you usually do when you have a cold?</span><br>فكّر: ماذا تفعل عادةً عندما تصاب بالبرد؟ وما النصيحة التي تقدّمها لصديق مريض؟</div>
+  </section>
+
+  <section id="words">
+    <h2>📚 الكلمات الجديدة <span class="tl">— New words: Health &amp; symptoms</span></h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. — اضغط على البطاقة لتقلبها. المقطع المنبور باللون الأحمر.</p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📋</div><div class="word tl">symptom</div><button class="say" data-text="symptom">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">عَرَض (مرض)</div><span class="ipa">/<b>ˈsɪmp</b>.təm/</span><span class="tl">What are your symptoms?</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤕</div><div class="word tl">headache</div><button class="say" data-text="headache">🔊</button><div class="hint">noun — ch = k</div></div>
+        <div class="back"><div class="word">صداع</div><span class="ipa">/<b>ˈhed</b>.eɪk/</span><span class="tl">I've had a headache since yesterday.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">😣</div><div class="word tl">sore throat</div><button class="say" data-text="sore throat">🔊</button><div class="hint">collocation</div></div>
+        <div class="back"><div class="word">التهاب / ألم في الحلق</div><span class="ipa">/ˌsɔːr <b>ˈθroʊt</b>/</span><span class="tl">You should drink warm tea for a sore throat.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">😷</div><div class="word tl">cough</div><button class="say" data-text="cough">🔊</button><div class="hint">noun + verb — gh = f</div></div>
+        <div class="back"><div class="word">سُعال / يَسعُل</div><span class="ipa">/<b>kɔːf</b>/</span><span class="tl">My cough is worse at night.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤒</div><div class="word tl">fever</div><button class="say" data-text="fever">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">حُمّى / سخونة</div><span class="ipa">/<b>ˈfiː</b>.vər/</span><span class="tl">If you have a fever, you'd better stay home.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤧</div><div class="word tl">flu</div><button class="say" data-text="flu">🔊</button><div class="hint">noun — the flu</div></div>
+        <div class="back"><div class="word">إنفلونزا</div><span class="ipa">/<b>fluː</b>/</span><span class="tl">Half of my office has the flu.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">😵‍💫</div><div class="word tl">dizzy</div><button class="say" data-text="dizzy">🔊</button><div class="hint">adjective</div></div>
+        <div class="back"><div class="word">يشعر بالدوخة</div><span class="ipa">/<b>ˈdɪz</b>.i/</span><span class="tl">I feel dizzy when I stand up.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🥜</div><div class="word tl">allergic (to)</div><button class="say" data-text="allergic to">🔊</button><div class="hint">adjective</div></div>
+        <div class="back"><div class="word">عنده حساسية من</div><span class="ipa">/ə<b>ˈlɜːr</b>.dʒɪk/</span><span class="tl">I'm allergic to nuts.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">💊</div><div class="word tl">painkiller</div><button class="say" data-text="painkiller">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">مسكّن للألم</div><span class="ipa">/<b>ˈpeɪn</b>ˌkɪl.ər/</span><span class="tl">You shouldn't take too many painkillers.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📝</div><div class="word tl">prescription</div><button class="say" data-text="prescription">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">روشتة / وصفة طبية</div><span class="ipa">/prɪ<b>ˈskrɪp</b>.ʃən/</span><span class="tl">You need a prescription for this medicine.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">📅</div><div class="word tl">appointment</div><button class="say" data-text="appointment">🔊</button><div class="hint">noun</div></div>
+        <div class="back"><div class="word">موعد (عند طبيب...)</div><span class="ipa">/ə<b>ˈpɔɪnt</b>.mənt/</span><span class="tl">You should make an appointment today.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🛌</div><div class="word tl">rest</div><button class="say" data-text="rest">🔊</button><div class="hint">verb + noun</div></div>
+        <div class="back"><div class="word">يرتاح / راحة</div><span class="ipa">/<b>rest</b>/</span><span class="tl">You ought to rest for a few days.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤒➡️😊</div><div class="word tl">get over</div><button class="say" data-text="get over">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يتعافى من (مرض)</div><span class="ipa">/ɡet <b>ˈoʊ</b>.vər/</span><span class="tl">It took me a week to get over the flu.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🍬⬇️</div><div class="word tl">cut down on</div><button class="say" data-text="cut down on">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يقلّل من</div><span class="ipa">/kʌt <b>ˈdaʊn</b> ɑːn/</span><span class="tl">You should cut down on sugar.</span></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🦠</div><div class="word tl">come down with</div><button class="say" data-text="come down with">🔊</button><div class="hint">Phrasal verb</div></div>
+        <div class="back"><div class="word">يُصاب بـ (مرض بسيط)</div><span class="ipa">/kʌm <b>ˈdaʊn</b> wɪð/</span><span class="tl">I think I'm coming down with a cold.</span></div>
+      </div></div>
+    </div>
+    <div class="callout warning">⚠️ <b>انتبه:</b> في <span class="tl">headache</span> حرفا <span class="tl">ch</span> يُنطقان <b>ك</b>: «هِدِيك». وفي <span class="tl">cough</span> حرفا <span class="tl">gh</span> يُنطقان <b>ف</b>: «كُوف». ونقول <span class="tl">I <b>have</b> a headache</span>، ولا نقول <span class="tl">I feel headache ❌</span>.</div>
+  </section>
+
+  <section id="grammar">
+    <h2>🎨 القاعدة بالألوان <span class="tl">— Grammar 1: should / shouldn't</span></h2>
+    <p class="instr">Look at these sentences. What comes after "should"?<span class="instr-ar">انظر إلى الجمل. ماذا يأتي بعد should؟</span></p>
+    <div class="legend tl"><span style="background:var(--s)">subject</span><span style="background:var(--r)">modal</span><span style="background:var(--v)">base verb</span><span style="background:var(--o)">object</span></div>
+    <div class="sent tl"><span class="w s">You<small>أنت</small></span><span class="w r">should<small>ينبغي أن</small></span><span class="w v">see<small>ترى (المصدر)</small></span><span class="w o">a doctor<small>طبيبًا</small></span><button class="say" data-text="You should see a doctor.">🔊</button></div>
+    <div class="sent tl"><span class="w s">He<small>هو</small></span><span class="w r">shouldn't<small>لا ينبغي أن</small></span><span class="w v">eat<small>يأكل</small></span><span class="w o">so much sugar<small>سكرًا كثيرًا</small></span><button class="say" data-text="He shouldn't eat so much sugar.">🔊</button></div>
+    <div class="sent tl"><span class="w x">What<small>ماذا</small></span><span class="w r">should<small>ينبغي</small></span><span class="w s">I<small>أنا</small></span><span class="w v">do?<small>أن أفعل</small></span><button class="say" data-text="What should I do?">🔊</button></div>
+    <p>بعد <span class="tl">should</span> يأتي <b>المصدر</b> مباشرةً، بدون <span class="tl">to</span> وبدون <span class="tl">-s</span>: <span class="tl">he should <b>rest</b></span>، وليس <span class="tl">he should rests ❌</span>.</p>
+
+    <table class="tl">
+      <tr><th>Form</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Positive ✅</td><td>subject + <mark>should</mark> + base verb</td><td>You should drink more water. <button class="say" data-text="You should drink more water.">🔊</button></td></tr>
+      <tr><td>Negative ❌</td><td>subject + <mark>shouldn't</mark> + base verb</td><td>You shouldn't work so late. <button class="say" data-text="You shouldn't work so late.">🔊</button></td></tr>
+      <tr><td>Question ❓</td><td><mark>Should</mark> + subject + base verb?</td><td>Should I take a painkiller? <button class="say" data-text="Should I take a painkiller?">🔊</button></td></tr>
+      <tr><td>Short answers</td><td>Yes, you <mark>should</mark>. / No, you <mark>shouldn't</mark>.</td><td>No, you shouldn't. <button class="say" data-text="No, you shouldn't.">🔊</button></td></tr>
+    </table>
+    <div class="callout tip">💡 <b>Polite advice:</b> لتكون النصيحة ألطف، أضف <span class="tl">I think</span> أو <span class="tl">Maybe</span>: <span class="tl"><b>I think</b> you should rest.</span> <button class="say" data-text="I think you should rest.">🔊</button> وللنفي: <span class="tl"><b>I don't think</b> you should go.</span> (أفضل من <span class="tl">I think you shouldn't go</span>).</div>
+
+    <h3>🟰 <span class="tl">Grammar 2: ought to = should</span></h3>
+    <div class="sent tl"><span class="w s">You<small>أنت</small></span><span class="w r">ought to<small>ينبغي أن</small></span><span class="w v">rest<small>ترتاح</small></span><span class="w x">for a few days<small>لبضعة أيام</small></span><button class="say" data-text="You ought to rest for a few days.">🔊</button></div>
+    <p>معناها مثل <span class="tl">should</span> تمامًا، لكنها أقل استخدامًا وأكثر رسمية قليلًا. لاحظ أن كلمة <span class="tl">to</span> <b>جزء منها</b>: <span class="tl">ought <b>to</b></span>.</p>
+    <div class="callout note">📝 <b>Note:</b> في النفي والسؤال نستخدم <span class="tl">should</span> عادةً: <span class="tl">You shouldn't...</span> و <span class="tl">Should I...?</span>. شكل <span class="tl">ought not to</span> صحيح لكنه نادر في الكلام.</div>
+
+    <h3>⚠️ <span class="tl">Grammar 3: had better — strong advice / warning</span></h3>
+    <div class="sent tl"><span class="w s">You<small>أنت</small></span><span class="w r">'d better<small>من الأفضل لك أن</small></span><span class="w v">go<small>تذهب</small></span><span class="w o">to the hospital<small>إلى المستشفى</small></span><span class="w x">now<small>الآن</small></span><button class="say" data-text="You'd better go to the hospital now.">🔊</button></div>
+    <div class="sent tl"><span class="w s">We<small>نحن</small></span><span class="w r">'d better not<small>من الأفضل ألّا</small></span><span class="w v">be<small>نكون</small></span><span class="w o">late<small>متأخرين</small></span><button class="say" data-text="We'd better not be late.">🔊</button></div>
+    <p>نستخدم <span class="tl">had better</span> لموقف <b>محدد الآن</b>، عندما تكون هناك <b>نتيجة سيئة</b> إذا لم تفعل: «وإلا...».</p>
+    <ul>
+      <li class="tl">You'd better take an umbrella, <b>or</b> you'll get wet. <button class="say" data-text="You'd better take an umbrella, or you'll get wet.">🔊</button></li>
+    </ul>
+    <div class="callout warning">⚠️ <b>Not past!</b> <span class="tl">had</span> هنا <b>لا</b> تعني الماضي. المعنى عن <b>الآن أو المستقبل القريب</b>. والنفي: <span class="tl">'d better <b>not</b> + verb</span>، وليس <span class="tl">hadn't better ❌</span> ولا <span class="tl">'d better don't ❌</span>.</div>
+
+    <h3>📶 <span class="tl">How strong is the advice?</span> — قوة النصيحة</h3>
+    <div class="scale tl">
+      <div class="scale-bar"></div>
+      <div class="scale-steps">
+        <div><b>could / Why don't you...?</b>اقتراح لطيف<small>Why don't you rest?</small></div>
+        <div><b>should / ought to</b>نصيحة عادية<small>You should rest.</small></div>
+        <div><b>had better</b>نصيحة قوية + تحذير<small>You'd better rest, or...</small></div>
+        <div><b>must / have to</b>إلزام / ضرورة<small>You must take this medicine.</small></div>
+      </div>
+    </div>
+
+    <div class="diagram mermaid">
+flowchart TD
+  A["Do you want to give advice? / تريد أن تنصح؟"] -->|"General, normal advice / نصيحة عادية"| B["should / ought to: You should drink more water."]
+  A -->|"Specific situation NOW + bad result / تحذير الآن"| C["had better: You'd better go now, or you'll miss the bus."]
+  A -->|"Asking for advice / تطلب نصيحة"| D["Should I...? / What should I do?"]
+  B --> E["Negative: shouldn't + verb"]
+  C --> F["Negative: 'd better not + verb"]
+    </div>
+  </section>
+
+  <section id="compare">
+    <h2>🔁 العربية مقابل الإنجليزية <span class="tl">— Arabic vs English</span></h2>
+    <div class="vs">
+      <div>
+        <h4>العربية</h4>
+        <div class="sent"><span class="w r">ينبغي<small>should</small></span><span class="w x">أن<small>to ?</small></span><span class="w v">ترتاحَ<small>rest</small></span></div>
+        <div class="sent"><span class="w r">من الأفضل<small>had better</small></span><span class="w x">أن<small>to ?</small></span><span class="w v">تذهبَ<small>go</small></span><span class="w o">الآن<small>now</small></span></div>
+        <p>العربية تضع «<b>أن</b>» بين الكلمتين.</p>
+      </div>
+      <div>
+        <h4 class="tl">English</h4>
+        <div class="sent tl"><span class="w s">You</span><span class="w r">should</span><span class="w del">to</span><span class="w v">rest.</span></div>
+        <div class="sent tl"><span class="w s">You</span><span class="w r">'d better</span><span class="w del">to</span><span class="w v">go</span><span class="w o">now.</span></div>
+        <p>الإنجليزية: <b>لا</b> <span class="tl">to</span> بعد <span class="tl">should</span> و <span class="tl">had better</span>. فقط <span class="tl">ought to</span> فيها <span class="tl">to</span>.</p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>سهل عليك:</b> المعاني موجودة في العربية تمامًا: «ينبغي / يُستحسن» = <span class="tl">should</span>، «من الأفضل لك أن... وإلا» = <span class="tl">had better</span>، «لِمَ لا...؟» = <span class="tl">Why don't you...?</span>. ولا يتغيّر <span class="tl">should</span> مع الضمائر: <span class="tl">I / you / he / they should</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (1) — «أن»:</b> بسبب «ينبغي <b>أن</b>» يقول كثيرون <span class="tl">You should to rest ❌</span>. الصحيح: <span class="tl">You should rest ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (2) — «يجب»:</b> في الكلام اليومي نقول «لازم / يجب» للنصيحة أيضًا. لكن ترجمتها دائمًا إلى <span class="tl">must</span> تبدو قوية جدًا وكأنها أمر. للنصيحة بين الأصدقاء استخدم <span class="tl">should</span>: «لازم تنام بدري» ← <span class="tl">You should go to bed early ✅</span>.</div>
+    <div class="callout warning">⚠️ <b>صعب عليك (3) — had:</b> لا تظن أن <span class="tl">had better</span> ماضٍ. <span class="tl">You'd better leave now</span> = «من الأفضل أن تغادر <b>الآن</b>».</div>
+  </section>
+
+  <section id="pron">
+    <h2>👄 النطق: <span class="tl">should</span>، <span class="tl">ought to</span>، <span class="tl">'d better</span></h2>
+    <h3>1) <span class="tl">should = /ʃʊd/</span> — حرف <span class="tl">l</span> صامت</h3>
+    <p>كما تعلمت في الدرس 6 مع <span class="tl">would</span>: حرف <span class="tl">l</span> لا يُنطق. هذه الكلمات الثلاث على نفس الوزن:</p>
+    <table>
+      <tr><th class="tl">would</th><th class="tl">could</th><th class="tl">should</th></tr>
+      <tr><td><span class="ipa">/wʊd/</span> «وُد» <button class="say" data-text="would">🔊</button></td><td><span class="ipa">/kʊd/</span> «كُد» <button class="say" data-text="could">🔊</button></td><td><span class="ipa">/ʃʊd/</span> «شُد» <button class="say" data-text="should">🔊</button></td></tr>
+      <tr><td><span class="tl">wouldn't</span> <button class="say" data-text="wouldn't">🔊</button></td><td><span class="tl">couldn't</span> <button class="say" data-text="couldn't">🔊</button></td><td><span class="tl">shouldn't</span> <span class="ipa">/ˈʃʊd.ənt/</span> <button class="say" data-text="shouldn't">🔊</button></td></tr>
+    </table>
+    <h3>2) <span class="tl">ought to = /ˈɔː.tə/</span> «أُوتَه»</h3>
+    <p>حرفا <span class="tl">gh</span> صامتان، و <span class="tl">t</span> واحدة فقط تُسمع، و <span class="tl">to</span> ضعيفة. <span class="tl">You ought to rest.</span> <span class="ipa">/juː ˈɔː.tə rest/</span> <button class="say" data-text="You ought to rest.">🔊</button></p>
+    <h3>3) <span class="tl">'d better</span> — صوت <span class="tl">'d</span> صغير جدًا</h3>
+    <p>في الكلام السريع يكاد صوت <span class="tl">'d</span> يختفي: <span class="tl">You'd better</span> <span class="ipa">/jʊd ˈbet.ər/</span>. لكن في الكتابة لا تحذفه: <span class="tl">You better go ❌</span> (غير رسمي جدًا) ← <span class="tl">You'd better go ✅</span>. <button class="say" data-text="You'd better go.">🔊</button></p>
+    <div class="callout tip">💡 <b>Stress:</b> في الجملة، الكلمة المهمة هي <b>الفعل</b>، وليست <span class="tl">should</span>: <span class="tl">You should <b>REST</b>.</span> <span class="tl">You should <b>SEE</b> a <b>DOC</b>tor.</span> لكن في النفي تكون <span class="tl">SHOULDN'T</span> قوية. <button class="say" data-text="You shouldn't work so late.">🔊</button></div>
+    <div class="ex quiz" data-explain="حرف l صامت في should: /ʃʊd/، مثل would و could.">
+      <div class="q">🎧 <span class="tl">How do you say "should"?</span></div>
+      <button class="option tl">/ʃuːld/ — "shoold"</button>
+      <button class="option tl" data-correct="true">/ʃʊd/ — "shood"</button>
+      <button class="option tl">/ʃaʊld/ — "showld"</button>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <section id="dialogue">
+    <h2>💬 حوار من الحياة <span class="tl">— At the pharmacy</span></h2>
+    <p class="instr">Listen to Nour and the pharmacist. Find 4 sentences with should / shouldn't, 1 with ought to and 2 with had better.<span class="instr-ar">استمع إلى نور والصيدلي. ابحث عن 4 جمل فيها should / shouldn't، وجملة فيها ought to، وجملتين فيهما had better.</span></p>
+    <button class="btn" id="playDialogue">▶️ استمع للحوار كاملًا</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Pharmacist</div><div class="tl line">Good evening. How can I help you?</div></div>
+      <div class="bubble b"><div class="who">Nour</div><div class="tl line">Hi. I think I'm coming down with the flu. I've had a sore throat since Monday, and now I have a bad cough.</div></div>
+      <div class="bubble a"><div class="who">Pharmacist</div><div class="tl line">I'm sorry to hear that. Do you have a fever?</div></div>
+      <div class="bubble b"><div class="who">Nour</div><div class="tl line">A little. And this morning I felt dizzy while I was walking to the metro.</div></div>
+      <div class="bubble a"><div class="who">Pharmacist</div><div class="tl line">Then you shouldn't go to work tomorrow. You should stay in bed and drink a lot of warm water.</div></div>
+      <div class="bubble b"><div class="who">Nour</div><div class="tl line">Should I take a painkiller for my headache?</div></div>
+      <div class="bubble a"><div class="who">Pharmacist</div><div class="tl line">Yes, you can take this one. But are you allergic to any medicine?</div></div>
+      <div class="bubble b"><div class="who">Nour</div><div class="tl line">No, I'm not.</div></div>
+      <div class="bubble a"><div class="who">Pharmacist</div><div class="tl line">Good. Take one tablet every eight hours. You'd better not take more than three a day.</div></div>
+      <div class="bubble b"><div class="who">Nour</div><div class="tl line">OK. What about the cough? What should I do?</div></div>
+      <div class="bubble a"><div class="who">Pharmacist</div><div class="tl line">This syrup is made from honey and herbs. It's very good for coughs. And you ought to rest your voice, too.</div></div>
+      <div class="bubble b"><div class="who">Nour</div><div class="tl line">That's hard. I'm a teacher!</div></div>
+      <div class="bubble a"><div class="who">Pharmacist</div><div class="tl line">Ha! Well, if the fever doesn't go down in two days, you'd better see a doctor. The doctor who works next door is excellent.</div></div>
+      <div class="bubble b"><div class="who">Nour</div><div class="tl line">Thank you so much. I hope I get over it quickly.</div></div>
+    </div>
+    <details><summary>👀 Answers</summary>
+      <table class="tl">
+        <tr><th>Form</th><th>Sentence</th></tr>
+        <tr><td>should / shouldn't</td><td>You shouldn't go to work tomorrow. · You should stay in bed. · Should I take a painkiller? · What should I do?</td></tr>
+        <tr><td>ought to</td><td>You ought to rest your voice, too.</td></tr>
+        <tr><td>had better</td><td>You'd better not take more than three a day. · You'd better see a doctor.</td></tr>
+      </table>
+      <p>لاحظ: الصيدلي استخدم <span class="tl">had better</span> عند <b>الخطر</b> (جرعة زائدة، حُمّى لا تنزل). وانظر إلى المراجعة: <span class="tl">I've had a sore throat since Monday</span> (الدرس 2)، <span class="tl">while I was walking</span> (الدرس 4)، <span class="tl">if the fever doesn't go down, you'd better...</span> (الدرس 5)، <span class="tl">is made from honey</span> (الدرس 7)، <span class="tl">The doctor who works next door</span> (الدرس 8).</p>
+    </details>
+  </section>
+
+  <section id="practice">
+    <h2>🏋️ تدريب <span class="tl">— Practice</span></h2>
+
+    <h3 class="instr">A. Choose the correct answer.<span class="instr-ar">اختر الإجابة الصحيحة.</span></h3>
+
+    <div class="ex quiz" data-explain="should + base verb بدون to.">
+      <div class="q">1. <span class="tl">You look tired. You ___ go to bed early.</span></div>
+      <button class="option tl" data-correct="true">should</button>
+      <button class="option tl">should to</button>
+      <button class="option tl">ought</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="نصيحة بالنفي → shouldn't + base verb.">
+      <div class="q">2. <span class="tl">You ___ eat so much sugar. It's bad for your teeth.</span></div>
+      <button class="option tl">should</button>
+      <button class="option tl" data-correct="true">shouldn't</button>
+      <button class="option tl">'d better</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="موقف محدد الآن + نتيجة سيئة → had better + base verb (بدون to).">
+      <div class="q">3. <span class="tl">The bus leaves in five minutes. We ___ hurry, or we'll miss it.</span></div>
+      <button class="option tl">had better to</button>
+      <button class="option tl" data-correct="true">'d better</button>
+      <button class="option tl">ought</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="ought to: كلمة to جزء منها.">
+      <div class="q">4. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">You ought rest.</button>
+      <button class="option tl" data-correct="true">You ought to rest.</button>
+      <button class="option tl">You ought resting.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="طلب النصيحة: Should + subject + base verb?">
+      <div class="q">5. <span class="tl">___ I take a painkiller?</span></div>
+      <button class="option tl" data-correct="true">Should</button>
+      <button class="option tl">Ought</button>
+      <button class="option tl">Had</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="نفي had better: 'd better not + base verb.">
+      <div class="q">6. <span class="tl">You'd better ___ late for the exam.</span></div>
+      <button class="option tl" data-correct="true">not be</button>
+      <button class="option tl">don't be</button>
+      <button class="option tl">not to be</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">B. Complete with the words in brackets.<span class="instr-ar">أكمل باستخدام الكلمات بين القوسين.</span></h3>
+    <div class="ex fill">
+      <p class="tl">7. You <input class="blank wide" data-answer="should drink"> (should / drink) more water.</p>
+      <p class="tl">8. She <input class="blank wide" data-answer="shouldn't work|should not work"> (should not / work) so late.</p>
+      <p class="tl">9. <input class="blank" data-answer="should"> I <input class="blank" data-answer="see"> (see) a doctor about my cough?</p>
+      <p class="tl">10. You'd better <input class="blank wide" data-answer="not forget"> (not / forget) your prescription.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">C. Rewrite the sentences.<span class="instr-ar">أعد كتابة الجمل بنفس المعنى.</span></h3>
+    <div class="ex fill">
+      <p class="tl">11. "It's a good idea to rest for a few days."<br>→ You <input class="blank wide" data-answer="should rest|ought to rest"> for a few days.</p>
+      <p class="tl">12. "It's not a good idea to drink coffee at night."<br>→ You <input class="blank wide" data-answer="shouldn't drink|should not drink|ought not to drink"> coffee at night.</p>
+      <p class="tl">13. "Take an umbrella now, or you'll get wet!"<br>→ You'd <input class="blank wide" data-answer="better take"> an umbrella.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">D. Put the words in order.<span class="instr-ar">رتّب الكلمات لتكوّن جملة.</span></h3>
+    <div class="ex builder" data-answer="What should I do about my headache">
+      <div class="q">14. 🤕</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex builder" data-answer="You had better see a doctor today">
+      <div class="q">15. 🩺</div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <h3 class="instr">E. Say it! 🎤<span class="instr-ar">قل الجملة بصوتك. انطق should «شُد» بدون l.</span></h3>
+    <div class="ex speak-check" data-text="You should see a doctor">
+      <div class="q">16. <span class="tl">You should see a doctor.</span> <button class="say" data-text="You should see a doctor.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+    <div class="ex speak-check" data-text="You'd better not go to work today|You had better not go to work today">
+      <div class="q">17. <span class="tl">You'd better not go to work today.</span> <button class="say" data-text="You'd better not go to work today.">🔊</button></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+  </section>
+
+  <section id="task">
+    <h2>✍️ مهمة الكتابة <span class="tl">— Writing task (50–80 words)</span></h2>
+    <p class="instr">Your friend wrote: "I'm always tired and I can't sleep at night. What should I do?" Write a reply.<span class="instr-ar">صديقك كتب لك: «أنا متعب دائمًا ولا أستطيع النوم في الليل. ماذا أفعل؟» اكتب له ردًّا. أرسله لي في المحادثة وسأصححه.</span></p>
+    <ul class="tl">
+      <li>Two pieces of advice with <b>should</b>.</li>
+      <li>One with <b>shouldn't</b>.</li>
+      <li>One warning with <b>had better</b>.</li>
+      <li>Use at least one phrasal verb: <b>cut down on, get over, come down with</b>.</li>
+    </ul>
+    <details><summary>👀 Model answer (74 words)</summary>
+      <p class="tl">Hi Omar! I'm sorry you feel so tired. I think you should go to bed at the same time every night. You should also do some exercise, like walking after work. You shouldn't use your phone in bed, because the light keeps your brain awake. And you ought to cut down on coffee after 4 p.m. If you still can't sleep next week, you'd better make an appointment with a doctor. Get well soon!</p>
+    </details>
+  </section>
+
+  <section id="mistakes">
+    <h2>🚫 الأخطاء الشائعة عند العرب <span class="tl">— Common mistakes</span></h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>لماذا؟</th></tr>
+      <tr><td class="tl">You should to rest.</td><td class="tl">You should rest.</td><td>«ينبغي <b>أن</b>»، لكن لا <span class="tl">to</span> بعد <span class="tl">should</span>.</td></tr>
+      <tr><td class="tl">He shoulds see a doctor. / He should sees...</td><td class="tl">He should see a doctor.</td><td><span class="tl">should</span> لا يتغيّر، والفعل بعده مصدر.</td></tr>
+      <tr><td class="tl">You ought rest.</td><td class="tl">You ought to rest.</td><td><span class="tl">to</span> جزء من <span class="tl">ought to</span>.</td></tr>
+      <tr><td class="tl">You had better to go.</td><td class="tl">You'd better go.</td><td>بعد <span class="tl">had better</span> المصدر بدون <span class="tl">to</span>.</td></tr>
+      <tr><td class="tl">You'd better don't go. / You hadn't better go.</td><td class="tl">You'd better not go.</td><td>النفي: <span class="tl">'d better not</span>.</td></tr>
+      <tr><td class="tl">Do I should take it?</td><td class="tl">Should I take it?</td><td>السؤال يبدأ بـ <span class="tl">Should</span> مباشرة.</td></tr>
+      <tr><td class="tl">You must sleep early. (نصيحة لصديق)</td><td class="tl">You should go to bed early.</td><td><span class="tl">must</span> قوية جدًا للنصيحة العادية.</td></tr>
+      <tr><td class="tl">I feel headache.</td><td class="tl">I have a headache.</td><td>نقول <span class="tl">have a headache / a cough / a fever</span>.</td></tr>
+      <tr><td class="tl">"shoold" / "ought-to-oo"</td><td class="tl">should /ʃʊd/ · ought to /ˈɔː.tə/</td><td><span class="tl">l</span> و <span class="tl">gh</span> صامتة.</td></tr>
+    </table>
+  </section>
+
+  <section id="summary">
+    <h2>📌 الخلاصة <span class="tl">— Summary</span></h2>
+    <ul>
+      <li><span class="tl"><b>should / shouldn't + base verb</b></span> = نصيحة عادية («ينبغي / لا ينبغي»).</li>
+      <li>طلب النصيحة: <span class="tl">Should I...? / What should I do?</span></li>
+      <li><span class="tl"><b>ought to + base verb</b></span> = نفس معنى <span class="tl">should</span> (فيها <span class="tl">to</span>).</li>
+      <li><span class="tl"><b>had better ('d better) + base verb</b></span> = نصيحة قوية لموقف محدد الآن، وإلا ستكون النتيجة سيئة. النفي: <span class="tl">'d better not</span>. ليست ماضيًا!</li>
+      <li><b>لا</b> <span class="tl">to</span> بعد <span class="tl">should</span> و <span class="tl">had better</span>، رغم «أن» في العربية.</li>
+      <li>للنصيحة بين الأصدقاء استخدم <span class="tl">should</span>، وليس <span class="tl">must</span>.</li>
+      <li>انطق <span class="tl">should</span> «شُد» و <span class="tl">ought to</span> «أُوتَه».</li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <h2>🔄 مراجعة سريعة <span class="tl">— Quick review (Lesson 8)</span></h2>
+    <p>هل تتذكر <span class="tl">who / which / that / where</span>؟</p>
+    <div class="ex quiz" data-explain="شخص → who.">
+      <div class="q">R1. <span class="tl">A pharmacist is someone ___ sells medicine.</span></div>
+      <button class="option tl" data-correct="true">who</button>
+      <button class="option tl">which</button>
+      <button class="option tl">where</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="لا نعيد الضمير بعد which / that.">
+      <div class="q">R2. <span class="tl">Which sentence is correct?</span></div>
+      <button class="option tl">The medicine which the doctor gave me it works well.</button>
+      <button class="option tl" data-correct="true">The medicine the doctor gave me works well.</button>
+      <button class="option tl">The medicine what the doctor gave me works well.</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="I was treated THERE → where.">
+      <div class="q">R3. <span class="tl">This is the hospital ___ I was treated last year.</span></div>
+      <button class="option tl">which</button>
+      <button class="option tl" data-correct="true">where</button>
+      <button class="option tl">who</button>
+      <div class="feedback"></div>
+    </div>
+    <p class="tl">Review words: colleague · receptionist · accountant · plumber · helpful · deal with · look up to · take over</p>
+  </section>
+
+  <section id="next">
+    <h2>➡️ الدرس التالي <span class="tl">— Next lesson</span></h2>
+    <p>الدرس 10: <span class="tl">I'm meeting him tomorrow</span>: المستقبل بثلاث طرق: <span class="tl">will</span> و <span class="tl">going to</span> والمضارع المستمر، لتتحدث عن الخطط والمواعيد في العمل. هناك ستعرف لماذا نقول <span class="tl">I'm meeting him at 5</span> وليس دائمًا <span class="tl">I will meet</span>. اكتب «التالي» لتبدأ.</p>
+  </section>
+
+</div>
+
+<footer>تعلّم خطوة بخطوة 🌍 · <span class="tl">English B1 · Lesson 9</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Cairo, Tahoma, sans-serif" });
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("المتصفح لا يدعم الصوت. جرّب Chrome أو Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 السرعة: عادية" : "🐢 السرعة: بطيئة";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · ضع الفأرة على الخانة الحمراء لترى الإجابة." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition) — accepts alternatives separated by |
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "المتصفح لا يدعم التعرف على الصوت. جرّب Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ I'm listening... أستمع إليك...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var targets = box.getAttribute("data-text").split("|").map(norm);
+        var ok = targets.indexOf(norm(said)) !== -1;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again. حاول مرة أخرى.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ لم أسمع جيدًا. تأكد من إذن الميكروفون وحاول مرة أخرى."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>
