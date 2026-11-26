@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 1: If only I had known... — English B2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#4f46e5; --soft:rgba(79,70,229,.1); --good:#10b981; --bad:#ef4444; --warn:#f59e0b;
+          --s:#2563eb; --v:#dc2626; --o:#059669; --x:#64748b;
+          --bg:#f8fafc; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Noto Sans','Segoe UI','Cairo',sans-serif; font-size:18px; line-height:1.85; background:var(--bg); color:var(--text); }
+  .tl { font-family:'Noto Sans','Segoe UI',sans-serif; direction:ltr; unicode-bidi:isolate; }
+  body[data-tl-dir="rtl"] .tl { direction:rtl; }
+  .ar { font-family:'Cairo',Tahoma,sans-serif; direction:rtl; unicode-bidi:isolate; }
+  .ar-block { font-family:'Cairo',Tahoma,sans-serif; direction:rtl; text-align:right; }
+  .hero { background:linear-gradient(135deg,#312e81,#4f46e5 55%,#06b6d4); color:#fff; padding:40px 24px; text-align:center; }
+  .hero h1 { margin:0 0 6px; font-size:2rem; font-weight:800; }
+  .hero p { margin:4px 0; }
+  .badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+  .badge { background:rgba(255,255,255,.18); padding:3px 14px; border-radius:999px; font-size:.9rem; }
+  .toolbar { position:sticky; top:0; z-index:10; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:8px; background:var(--card); border-bottom:1px solid var(--border); }
+  .btn { background:var(--primary); color:#fff; border:0; border-radius:8px; padding:7px 16px; cursor:pointer; font-family:inherit; font-size:.95rem; font-weight:600; }
+  .btn.alt { background:#0f172a; } .btn.ghost { background:var(--soft); color:var(--primary); }
+  .btn:disabled { opacity:.5; cursor:default; }
+  .score { font-weight:800; color:var(--primary); }
+  .wrap { max-width:1000px; margin:auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px 26px; margin-bottom:22px; }
+  section h2 { margin-top:0; color:var(--primary); border-bottom:2px solid var(--soft); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th, td { border:1px solid var(--border); padding:8px 12px; text-align:start; vertical-align:top; }
+  th { background:var(--soft); }
+  mark { background:#fde68a; padding:0 3px; border-radius:4px; }
+  .say { border:0; background:var(--soft); border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:1rem; vertical-align:middle; }
+  .say:hover { background:var(--primary); }
+  .ipa { font-family:'Noto Sans',sans-serif; color:var(--muted); direction:ltr; unicode-bidi:isolate; }
+  .ipa b { color:var(--v); }
+  .callout { border-inline-start:5px solid; padding:10px 16px; border-radius:10px; margin:14px 0; }
+  .tip { border-color:var(--good); background:rgba(16,185,129,.1); }
+  .warning { border-color:var(--warn); background:rgba(245,158,11,.12); }
+  .note { border-color:var(--primary); background:var(--soft); }
+  .cando label { display:block; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .cando input { transform:scale(1.3); margin-inline-end:8px; }
+  .instr { font-weight:700; }
+  .instr-ar { display:block; font-size:.85rem; color:var(--muted); font-weight:600; font-family:'Cairo',sans-serif; direction:rtl; text-align:left; unicode-bidi:plaintext; }
+  /* Flashcards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+  .flashcard { perspective:900px; height:220px; cursor:pointer; }
+  .flashcard .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+  .flashcard.flipped .inner { transform:rotateY(180deg); }
+  .flashcard .front, .flashcard .back { position:absolute; inset:0; backface-visibility:hidden; border:2px solid var(--border); border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px; text-align:center; background:var(--card); }
+  .flashcard .back { transform:rotateY(180deg); background:var(--soft); font-size:.92rem; }
+  .emoji { font-size:2.4rem; line-height:1.2; }
+  .word { font-size:1.25rem; font-weight:700; }
+  .hint { font-size:.75rem; color:var(--muted); }
+  /* Sentence blocks */
+  .sent { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; align-items:flex-start; }
+  .w { display:inline-flex; flex-direction:column; align-items:center; padding:6px 14px; border-radius:10px; color:#fff; font-weight:700; font-size:1.1rem; }
+  .w small { font-family:'Cairo',sans-serif; font-weight:600; font-size:.7rem; opacity:.95; direction:rtl; }
+  .w.s { background:var(--s); } .w.v { background:var(--v); } .w.o { background:var(--o); } .w.x { background:var(--x); }
+  .w.gap { background:transparent; color:var(--v); border:2px dashed var(--v); }
+  .legend { display:flex; gap:12px; flex-wrap:wrap; font-size:.85rem; color:var(--muted); }
+  .legend span::before { content:""; display:inline-block; width:12px; height:12px; border-radius:3px; margin-inline-end:5px; vertical-align:middle; }
+  .legend .ls::before { background:var(--s); } .legend .lv::before { background:var(--v); } .legend .lo::before { background:var(--o); } .legend .lx::before { background:var(--x); }
+  .vs { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .vs > div { border:1px solid var(--border); border-radius:12px; padding:12px; }
+  @media (max-width:700px) { .vs { grid-template-columns:1fr; } }
+  /* Timeline */
+  .timeline-viz { position:relative; height:150px; margin:30px 10px 20px; direction:ltr; }
+  .tl-line { position:absolute; top:60px; left:0; right:0; height:4px; background:linear-gradient(90deg,#94a3b8,#4f46e5,#06b6d4); border-radius:4px; }
+  .tl-now { position:absolute; top:30px; height:64px; border-left:3px solid var(--v); }
+  .tl-now span, .tl-event span { position:absolute; top:-28px; transform:translateX(-50%); white-space:nowrap; font-weight:700; font-size:.82rem; background:var(--card); padding:0 6px; }
+  .tl-now span { color:var(--v); }
+  .tl-event { position:absolute; top:52px; width:20px; height:20px; margin-left:-10px; border-radius:50%; background:var(--o); border:3px solid #fff; box-shadow:0 0 0 2px var(--o); }
+  .tl-event span { top:28px; color:var(--o); }
+  .tl-event.unreal { background:#fff; border:3px dashed var(--bad); box-shadow:none; }
+  .tl-event.unreal span { color:var(--bad); }
+  .tl-labels { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; color:var(--muted); font-size:.85rem; font-weight:700; }
+  .diagram { direction:ltr; text-align:center; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+  /* Dialogue */
+  .chat { display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+  .bubble { max-width:82%; padding:10px 14px; border-radius:16px; }
+  .bubble.a { align-self:flex-start; background:var(--soft); }
+  .bubble.b { align-self:flex-end; background:rgba(16,185,129,.14); }
+  .bubble .who { font-size:.8rem; font-weight:800; color:var(--muted); }
+  .gloss { border-bottom:2px dotted var(--primary); cursor:help; }
+  /* Exercises */
+  .ex { border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:14px 0; }
+  .ex .q { font-weight:700; margin-bottom:8px; }
+  .option { display:block; width:100%; text-align:start; margin:6px 0; padding:9px 14px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); cursor:pointer; font-family:inherit; font-size:1rem; }
+  .option.correct { background:rgba(16,185,129,.2); border-color:var(--good); }
+  .option.wrong { background:rgba(239,68,68,.2); border-color:var(--bad); }
+  .blank { font-family:'Noto Sans',sans-serif; font-size:1rem; width:150px; padding:3px 8px; border:2px solid var(--border); border-radius:8px; text-align:center; }
+  .blank.wide { width:100%; max-width:640px; text-align:start; margin-top:6px; }
+  .blank.ok { border-color:var(--good); background:rgba(16,185,129,.12); }
+  .blank.no { border-color:var(--bad); background:rgba(239,68,68,.12); }
+  .pool, .answer { display:flex; gap:8px; flex-wrap:wrap; min-height:52px; padding:8px; border-radius:10px; margin:6px 0; }
+  .pool { background:#f1f5f9; } .answer { border:2px dashed var(--primary); }
+  .wchip { border:0; background:var(--primary); color:#fff; padding:6px 14px; border-radius:999px; cursor:pointer; font-size:1.05rem; font-family:'Noto Sans',sans-serif; }
+  .feedback { margin-top:8px; font-weight:700; }
+  details { border:1px solid var(--border); border-radius:10px; padding:8px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:700; color:var(--primary); }
+  footer { text-align:center; color:var(--muted); padding:20px; }
+  @media print {
+    .toolbar, .say, .mic, .btn { display:none !important; }
+    section { break-inside:avoid; }
+    .flashcard { height:auto; } .flashcard .inner { transform:none !important; }
+    .flashcard .front, .flashcard .back { position:static; transform:none; backface-visibility:visible; }
+  }
+</style>
+</head>
+<body data-tl="en-US" data-tl-dir="ltr">
+
+<header class="hero">
+  <h1>Lesson 1: If only I had known... <span class="ar">— الدرس 1: لو كنتُ أعرف...</span></h1>
+  <p>Talk about past decisions, regrets and the paths you didn't take.</p>
+  <p class="ar">تحدّث عن قراراتك في الماضي، وعن الندم، وعن الطرق التي لم تسلكها.</p>
+  <div class="badges">
+    <span class="badge">Language: English</span>
+    <span class="badge">Level: B2</span>
+    <span class="badge">Lesson 1 of 15</span>
+    <span class="badge">Study time: 30 min</span>
+    <span class="badge">Third conditional · could / might have</span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="btn ghost" id="btnSpeed">🔊 Speed: normal</button>
+  <span>Score: <span class="score" id="score">0 / 0</span></span>
+  <button class="btn alt" id="btnPrint">🖨️ Save as PDF</button>
+</div>
+
+<div class="wrap">
+
+  <!-- 2. Level map -->
+  <section id="map">
+    <h2>🗺️ B2 Level Map <span class="ar" style="font-size:.9rem;color:var(--muted)">خريطة المستوى</span></h2>
+    <p>At B2 (Upper-Intermediate) you move from <i>describing</i> to <i>arguing, speculating and reporting</i>. Here is your path:</p>
+    <table>
+      <tr><th>#</th><th>Title</th><th>Grammar</th><th>Vocabulary</th><th>After this lesson I can...</th></tr>
+      <tr><td><b>1</b></td><td><b>If only I had known...</b></td><td>Third conditional, could/might have</td><td>Decisions &amp; regrets</td><td>talk about past regrets and imagined results</td></tr>
+      <tr><td>2</td><td>If I had studied medicine, I'd be a doctor now</td><td>Mixed conditionals</td><td>Careers &amp; life paths</td><td>connect past choices with the present</td></tr>
+      <tr><td>3</td><td>She said she was leaving</td><td>Reported speech: statements</td><td>News &amp; media</td><td>report what other people said</td></tr>
+      <tr><td>4</td><td>He asked me whether I agreed</td><td>Reported questions &amp; reporting verbs</td><td>The workplace</td><td>summarise a meeting or interview</td></tr>
+      <tr><td>5</td><td>It must have been a mistake</td><td>Modals of deduction (past)</td><td>Mysteries &amp; crime</td><td>speculate about what happened</td></tr>
+      <tr><td>6</td><td>I wish I hadn't said that</td><td>wish / if only / would rather</td><td>Feelings &amp; relationships</td><td>express wishes and complaints politely</td></tr>
+      <tr><td>7</td><td>Having finished work, I left</td><td>Participle clauses</td><td>Travel stories</td><td>write a more fluent narrative</td></tr>
+      <tr><td>8</td><td>It is believed that...</td><td>Passive reporting structures</td><td>Science &amp; health</td><td>present facts and research objectively</td></tr>
+      <tr><td>9</td><td>I'm getting used to it</td><td>be used to / get used to</td><td>Living abroad</td><td>talk about adapting to change</td></tr>
+      <tr><td>10</td><td>By 2035, we will have...</td><td>Future perfect &amp; future continuous</td><td>Technology &amp; the future</td><td>make predictions with precision</td></tr>
+      <tr><td>11</td><td>What I really need is time</td><td>Cleft sentences (intro)</td><td>Opinions &amp; priorities</td><td>emphasise the key point</td></tr>
+      <tr><td>12</td><td>Although it's cheap, ...</td><td>Contrast linkers: despite, whereas, even though</td><td>Environment</td><td>argue for and against a topic</td></tr>
+      <tr><td>13</td><td>You needn't have worried</td><td>Past obligation: needn't have / didn't need to</td><td>Money &amp; spending</td><td>talk about unnecessary past actions</td></tr>
+      <tr><td>14</td><td>We fell out but made up</td><td>Phrasal verbs (separable / inseparable)</td><td>Relationships</td><td>use natural, informal English</td></tr>
+      <tr><td>15</td><td>B2 Review &amp; Essay</td><td>Mixed review</td><td>Opinion essay language</td><td>write a 250-word for-and-against essay</td></tr>
+    </table>
+  </section>
+
+  <!-- 3. Goals -->
+  <section id="goals">
+    <h2>🎯 Can-do goals</h2>
+    <div class="cando">
+      <label><input type="checkbox">I can talk about past events that <b>didn't</b> happen and their imagined results.</label>
+      <label><input type="checkbox">I can express regret and relief with <span class="tl">would have / could have / might have</span>.</label>
+      <label><input type="checkbox">I can pronounce weak forms like <span class="tl">would've /ˈwʊdəv/</span> naturally.</label>
+    </div>
+  </section>
+
+  <!-- 4. Warm-up -->
+  <section id="warmup">
+    <h2>🌱 Warm-up</h2>
+    <p>Think about a moment in your life when one small decision changed everything. Maybe you missed a bus, changed your university major, or said "yes" to a trip on the spur of the moment.</p>
+    <div class="sent tl"><span class="w s">If I had missed that bus,</span><span class="w o">I would never have met my best friend.</span><button class="say" data-text="If I had missed that bus, I would never have met my best friend.">🔊</button></div>
+    <p>This sentence is about the <b>past</b>, but it describes something that <b>did not happen</b>. That is the job of the <b>third conditional</b>.</p>
+    <p class="ar-block">في العربية نقول: «لو كنتُ فاتني الباص، لما كنتُ قابلتُ أعز أصدقائي». الفكرة نفسها تمامًا: ماضٍ لم يحدث، ونتيجة متخيَّلة.</p>
+  </section>
+
+  <!-- 5. New words -->
+  <section id="words">
+    <h2>📚 New words &amp; collocations</h2>
+    <p class="hint">Click a card to flip it. Click 🔊 to listen. <span class="ar">اضغط على البطاقة لتقلبها.</span></p>
+    <div class="cards">
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">😔</div><div class="word tl">regret (v / n)</div><span class="ipa">/rɪˈ<b>ɡret</b>/</span><button class="say" data-text="regret">🔊</button></div>
+        <div class="back"><div class="word ar">يندم / ندم</div><span class="tl">I deeply regret leaving so early.</span><button class="say" data-text="I deeply regret leaving so early.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🔙</div><div class="word tl">in hindsight</div><span class="ipa">/ɪn ˈ<b>haɪnd</b>saɪt/</span><button class="say" data-text="in hindsight">🔊</button></div>
+        <div class="back"><div class="word ar">بعد فوات الأوان / بالنظر إلى الماضي</div><span class="tl">In hindsight, it was the right choice.</span><button class="say" data-text="In hindsight, it was the right choice.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">✋</div><div class="word tl">turn down (an offer)</div><span class="ipa">/tɜːrn ˈ<b>daʊn</b>/</span><button class="say" data-text="turn down an offer">🔊</button></div>
+        <div class="back"><div class="word ar">يرفض (عرضًا)</div><span class="tl">She turned down a job in London.</span><button class="say" data-text="She turned down a job in London.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🎲</div><div class="word tl">take a risk</div><span class="ipa">/teɪk ə ˈ<b>rɪsk</b>/</span><button class="say" data-text="take a risk">🔊</button></div>
+        <div class="back"><div class="word ar">يخاطر / يجازف</div><span class="tl">Sometimes you have to take a risk.</span><button class="say" data-text="Sometimes you have to take a risk.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🚪</div><div class="word tl">miss out on</div><span class="ipa">/mɪs ˈ<b>aʊt</b> ɑːn/</span><button class="say" data-text="miss out on">🔊</button></div>
+        <div class="back"><div class="word ar">يفوّت (فرصة جيدة)</div><span class="tl">I missed out on a great opportunity.</span><button class="say" data-text="I missed out on a great opportunity.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🔀</div><div class="word tl">a turning point</div><span class="ipa">/ə ˈ<b>tɜːr</b>nɪŋ pɔɪnt/</span><button class="say" data-text="a turning point">🔊</button></div>
+        <div class="back"><div class="word ar">نقطة تحوّل</div><span class="tl">That trip was a turning point in my life.</span><button class="say" data-text="That trip was a turning point in my life.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👀</div><div class="word tl">look back on</div><span class="ipa">/lʊk ˈ<b>bæk</b> ɑːn/</span><button class="say" data-text="look back on">🔊</button></div>
+        <div class="back"><div class="word ar">يستعيد ذكرى / ينظر إلى الماضي</div><span class="tl">I look back on those years with a smile.</span><button class="say" data-text="I look back on those years with a smile.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">⛓️</div><div class="word tl">consequence</div><span class="ipa">/ˈ<b>kɑːn</b>səkwens/</span><button class="say" data-text="consequence">🔊</button></div>
+        <div class="back"><div class="word ar">عاقبة / نتيجة</div><span class="tl">Every decision has consequences.</span><button class="say" data-text="Every decision has consequences.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤷</div><div class="word tl">settle for</div><span class="ipa">/ˈ<b>set</b>l fɔːr/</span><button class="say" data-text="settle for">🔊</button></div>
+        <div class="back"><div class="word ar">يرضى بـ (أقل مما يريد)</div><span class="tl">Don't settle for a job you hate.</span><button class="say" data-text="Don't settle for a job you hate.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">⏰</div><div class="word tl">a wake-up call</div><span class="ipa">/ə ˈ<b>weɪk</b> ʌp kɔːl/</span><button class="say" data-text="a wake-up call">🔊</button></div>
+        <div class="back"><div class="word ar">جرس إنذار / تنبيه قوي</div><span class="tl">Failing the exam was a wake-up call.</span><button class="say" data-text="Failing the exam was a wake-up call.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🤔</div><div class="word tl">have second thoughts</div><span class="ipa">/ˈ<b>sek</b>ənd θɔːts/</span><button class="say" data-text="have second thoughts">🔊</button></div>
+        <div class="back"><div class="word ar">يتردد / يعيد التفكير</div><span class="tl">I had second thoughts about moving.</span><button class="say" data-text="I had second thoughts about moving.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">⚡</div><div class="word tl">on the spur of the moment</div><span class="ipa">/ɒn ðə ˈ<b>spɜːr</b> əv ðə ˈməʊmənt/</span><button class="say" data-text="on the spur of the moment">🔊</button></div>
+        <div class="back"><div class="word ar">فجأة / دون تخطيط</div><span class="tl">We booked the trip on the spur of the moment.</span><button class="say" data-text="We booked the trip on the spur of the moment.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">🌟</div><div class="word tl">make the most of</div><span class="ipa">/meɪk ðə ˈ<b>məʊst</b> əv/</span><button class="say" data-text="make the most of">🔊</button></div>
+        <div class="back"><div class="word ar">يستغل أفضل استغلال</div><span class="tl">Make the most of your time at university.</span><button class="say" data-text="Make the most of your time at university.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">👉</div><div class="word tl">blame yourself</div><span class="ipa">/ˈ<b>bleɪm</b> jərˌself/</span><button class="say" data-text="blame yourself">🔊</button></div>
+        <div class="back"><div class="word ar">يلوم نفسه</div><span class="tl">Stop blaming yourself for the past.</span><button class="say" data-text="Stop blaming yourself for the past.">🔊</button></div>
+      </div></div>
+      <div class="flashcard"><div class="inner">
+        <div class="front"><div class="emoji">😮‍💨</div><div class="word tl">a narrow escape</div><span class="ipa">/ə ˈ<b>nær</b>oʊ ɪˈskeɪp/</span><button class="say" data-text="a narrow escape">🔊</button></div>
+        <div class="back"><div class="word ar">نجاة بأعجوبة</div><span class="tl">It was a narrow escape — we almost crashed.</span><button class="say" data-text="It was a narrow escape. We almost crashed.">🔊</button></div>
+      </div></div>
+    </div>
+    <div class="callout note">📝 <b>Collocations matter at B2.</b> Learn the whole chunk: <span class="tl"><b>take</b> a risk</span> (not <s>do a risk</s>), <span class="tl"><b>make</b> a decision</span> (not <s>take a decision</s> in US English), <span class="tl"><b>miss</b> an opportunity</span>.</div>
+  </section>
+
+  <!-- 6. Grammar -->
+  <section id="grammar">
+    <h2>🎨 Grammar in colour: the third conditional</h2>
+    <p>Look at these three sentences. What do they have in common?</p>
+    <div class="legend"><span class="ls">if-clause (condition)</span><span class="lv">had + past participle</span><span class="lo">result</span><span class="lx">would/could/might have + past participle</span></div>
+    <div class="sent tl"><span class="w s">If I</span><span class="w v">had known<small>كنتُ أعرف</small></span><span class="w s">about the traffic,</span><span class="w o">I</span><span class="w x">would have left<small>لكنتُ غادرتُ</small></span><span class="w o">earlier.</span><button class="say" data-text="If I had known about the traffic, I would have left earlier.">🔊</button></div>
+    <div class="sent tl"><span class="w s">If she</span><span class="w v">hadn't turned down<small>لو لم ترفض</small></span><span class="w s">the offer,</span><span class="w o">she</span><span class="w x">might have moved<small>ربما انتقلت</small></span><span class="w o">to Dubai.</span><button class="say" data-text="If she hadn't turned down the offer, she might have moved to Dubai.">🔊</button></div>
+    <div class="sent tl"><span class="w o">We</span><span class="w x">could have won<small>كان بإمكاننا الفوز</small></span><span class="w o">the match</span><span class="w s">if we</span><span class="w v">had taken<small>لو كنا أخذنا</small></span><span class="w s">more risks.</span><button class="say" data-text="We could have won the match if we had taken more risks.">🔊</button></div>
+    <p><b>Did you notice?</b> All three talk about the past, and in all three the condition is <b>not true</b>. I didn't know. She did turn it down. We didn't take risks.</p>
+
+    <table class="tl">
+      <tr><th>If-clause</th><th>Result clause</th><th>Meaning</th></tr>
+      <tr><td>If + <mark>had</mark> + past participle</td><td><mark>would have</mark> + past participle</td><td>certain imagined result</td></tr>
+      <tr><td>If + <mark>had</mark> + past participle</td><td><mark>could have</mark> + past participle</td><td>imagined ability / possibility</td></tr>
+      <tr><td>If + <mark>had</mark> + past participle</td><td><mark>might have</mark> + past participle</td><td>imagined result, less certain</td></tr>
+      <tr><td>If + <mark>hadn't</mark> + past participle</td><td><mark>wouldn't have</mark> + past participle</td><td>negative forms</td></tr>
+    </table>
+
+    <div class="callout tip">💡 <b>Order is flexible.</b> The if-clause can come first or second. Use a <b>comma</b> only when the if-clause comes first.</div>
+
+    <h3>On the timeline</h3>
+    <div class="timeline-viz">
+      <div class="tl-line"></div>
+      <div class="tl-event" style="left:22%"><span>reality: I didn't know ✔</span></div>
+      <div class="tl-event unreal" style="left:38%"><span>imagined: had known ✘</span></div>
+      <div class="tl-event unreal" style="left:58%"><span style="top:-30px">would have left earlier ✘</span></div>
+      <div class="tl-now" style="left:85%"><span>NOW</span></div>
+      <div class="tl-labels"><span>⬅ Past</span><span>Future ➡</span></div>
+    </div>
+    <p>Both the condition and the result are in the <b>past</b>. Both are <b>unreal</b> (red dashed circles). We are imagining a different past.</p>
+
+    <h3>Which conditional do I need?</h3>
+    <div class="diagram mermaid">
+flowchart LR
+  A["Is the situation real / possible?"] -->|"Yes, likely future"| B["1st: If it rains, I'll stay"]
+  A -->|"No, imagined"| C["When?"]
+  C -->|"Present / future"| D["2nd: If I were rich, I'd travel"]
+  C -->|"Past"| E["3rd: If I had known, I'd have helped"]
+  C -->|"Past cause, present result"| F["Mixed: Lesson 2"]
+    </div>
+
+    <h3>The tricky <span class="tl">'d</span></h3>
+    <p>In speech, both <b>had</b> and <b>would</b> become <span class="tl">'d</span>:</p>
+    <div class="sent tl"><span class="w s">If you<mark style="background:#fff;color:#2563eb">'d</mark> told me,<small>'d = had</small></span><span class="w o">I<mark style="background:#fff;color:#059669">'d</mark> have helped.<small>'d = would</small></span><button class="say" data-text="If you'd told me, I'd have helped.">🔊</button></div>
+    <div class="callout note">📝 <b>Rule of thumb:</b> <span class="tl">'d</span> + past participle = <b>had</b>. <span class="tl">'d</span> + <b>have</b> = <b>would</b>.</div>
+  </section>
+
+  <!-- 7. Arabic vs English -->
+  <section id="compare">
+    <h2>🔁 Arabic vs English</h2>
+    <div class="vs">
+      <div>
+        <h4 class="ar-block">العربية</h4>
+        <div class="sent ar" style="direction:rtl"><span class="w s">لو كنتُ قد عرفتُ<small>شرط</small></span><span class="w o">لكنتُ غادرتُ مبكرًا<small>جواب</small></span></div>
+        <p class="ar-block">«لو» + «كان (قد)» + فعل ماضٍ = تركيب قريب جدًا من الإنجليزية.</p>
+      </div>
+      <div>
+        <h4>English</h4>
+        <div class="sent tl"><span class="w s">If I had known,</span><span class="w o">I would have left early.</span></div>
+        <p><span class="tl">had</span> ≈ <span class="ar">كنتُ قد</span> · <span class="tl">would have</span> ≈ <span class="ar">لـ + كنتُ</span></p>
+      </div>
+    </div>
+    <div class="callout tip">✅ <b>Easy for you:</b> <span class="ar">التركيب «لو كنتُ قد فعلتُ... لكنتُ فعلتُ» يطابق الإنجليزية تقريبًا. فكّر به عندما تتكلم.</span></div>
+    <div class="callout warning">⚠️ <b>Hard for you:</b> <span class="ar">في العامية نقول «لو عرفت كان رحت» ونستخدم الماضي البسيط لكل شيء. لذلك يقول كثير من العرب <span class="tl">If I knew yesterday ❌</span> أو يضعون <span class="tl">would</span> في جملة الشرط: <span class="tl">If I would have known ❌</span>. لا تضع <span class="tl">would</span> بعد <span class="tl">if</span> أبدًا.</span></div>
+  </section>
+
+  <!-- 8. Pronunciation -->
+  <section id="pron">
+    <h2>👄 Pronunciation: weak forms &amp; linking</h2>
+    <p>Native speakers almost never say <i>would have</i> in full. <b>have</b> becomes a tiny <span class="ipa">/əv/</span> and links to the word before it.</p>
+    <table>
+      <tr><th>Written</th><th>Spoken (weak form)</th><th>Listen</th></tr>
+      <tr><td class="tl">would have</td><td><span class="ipa">/ˈ<b>wʊd</b>əv/</span> — "would-uv"</td><td><button class="say" data-text="I would have called you.">🔊</button> <span class="tl">I would have called you.</span></td></tr>
+      <tr><td class="tl">wouldn't have</td><td><span class="ipa">/ˈ<b>wʊd</b>ntəv/</span></td><td><button class="say" data-text="I wouldn't have gone.">🔊</button> <span class="tl">I wouldn't have gone.</span></td></tr>
+      <tr><td class="tl">could have</td><td><span class="ipa">/ˈ<b>kʊd</b>əv/</span></td><td><button class="say" data-text="We could have won.">🔊</button> <span class="tl">We could have won.</span></td></tr>
+      <tr><td class="tl">might have</td><td><span class="ipa">/ˈ<b>maɪt</b>əv/</span></td><td><button class="say" data-text="She might have missed it.">🔊</button> <span class="tl">She might have missed it.</span></td></tr>
+      <tr><td class="tl">If I had</td><td><span class="ipa">/ɪˈf‿aɪd/</span> — linking</td><td><button class="say" data-text="If I'd known, I'd have stayed.">🔊</button> <span class="tl">If I'd known, I'd have stayed.</span></td></tr>
+    </table>
+    <p><b>Sentence stress:</b> stress the main verb and the important words, not <i>would</i> or <i>have</i>:</p>
+    <p class="tl" style="font-size:1.15rem">If I'd <b>KNOWN</b>, I'd have <b>LEFT</b> <b>EAR</b>lier. <button class="say" data-text="If I'd known, I'd have left earlier.">🔊</button></p>
+    <div class="callout warning">⚠️ <b>Spelling trap:</b> because <span class="tl">would've</span> sounds like "would of", many people write <span class="tl">would of ❌</span>. Always write <span class="tl">would have</span> or <span class="tl">would've ✅</span>.</div>
+    <div class="callout tip">💡 <span class="ar">العربية تنطق كل مقطع بوضوح. في الإنجليزية «ابلع» الكلمات الصغيرة واضغط على الفعل الأساسي.</span></div>
+  </section>
+
+  <!-- 9. Dialogue -->
+  <section id="dialogue">
+    <h2>💬 Real-life dialogue: "The job I turned down"</h2>
+    <p>Lina and Karim, two old university friends, meet at a café after five years. <span class="ar">الكلمات المنقّطة: مرّر الفأرة لترى المعنى.</span></p>
+    <button class="btn" id="playDialogue">▶️ Play the whole dialogue</button>
+    <div class="chat" id="chat">
+      <div class="bubble a"><div class="who">Lina</div><div class="tl line">Karim! I can't believe it's been five years. So, are you still working at the bank in Cairo?</div></div>
+      <div class="bubble b"><div class="who">Karim</div><div class="tl line">I am, actually. Do you remember that offer I got from the tech start-up in Berlin? I turned it down.</div></div>
+      <div class="bubble a"><div class="who">Lina</div><div class="tl line">Of course I remember. Everyone thought you'd go. Do you ever regret it?</div></div>
+      <div class="bubble b"><div class="who">Karim</div><div class="tl line">Honestly? Sometimes. If I had accepted, I would have learned a lot more about software. I might even have started my own company by now.</div></div>
+      <div class="bubble a"><div class="who">Lina</div><div class="tl line">So why didn't you go? You're usually the one who takes risks.</div></div>
+      <div class="bubble b"><div class="who">Karim</div><div class="tl line">My father was ill that year. If I had moved abroad, I wouldn't have been able to look after him. <span class="gloss" title="بالنظر إلى ما حدث لاحقًا">In hindsight</span>, it was the right call.</div></div>
+      <div class="bubble a"><div class="who">Lina</div><div class="tl line">That makes sense. You shouldn't blame yourself. And anyway, the start-up closed two years later, didn't it?</div></div>
+      <div class="bubble b"><div class="who">Karim</div><div class="tl line">It did! So if I had gone, I could have ended up unemployed in a foreign country. That would have been a nightmare.</div></div>
+      <div class="bubble a"><div class="who">Lina</div><div class="tl line">Sounds like a <span class="gloss" title="نجاة بأعجوبة">narrow escape</span>. For me, the <span class="gloss" title="نقطة تحوّل">turning point</span> was the opposite. I almost didn't apply for my master's. I had second thoughts until the very last day.</div></div>
+      <div class="bubble b"><div class="who">Karim</div><div class="tl line">And if you hadn't applied?</div></div>
+      <div class="bubble a"><div class="who">Lina</div><div class="tl line">I would have <span class="gloss" title="رضيتُ بأقل مما أريد">settled for</span> a job I didn't enjoy, and I would never have met the team I work with now. I booked the flight to Toronto on the spur of the moment, and it changed my life.</div></div>
+      <div class="bubble b"><div class="who">Karim</div><div class="tl line">Well, I guess we both made the most of the choices we had. Let's not wait another five years, though.</div></div>
+    </div>
+    <details><summary>🔎 Comprehension check (open after listening)</summary>
+      <ol>
+        <li>Why did Karim turn down the job? <i>— His father was ill and he wanted to look after him.</i></li>
+        <li>What happened to the start-up? <i>— It closed two years later.</i></li>
+        <li>What would Lina have done if she hadn't applied? <i>— She would have settled for a job she didn't enjoy.</i></li>
+      </ol>
+    </details>
+  </section>
+
+  <!-- 10. Practice -->
+  <section id="practice">
+    <h2>🏋️ Practice</h2>
+
+    <div class="ex quiz" data-explain="Third conditional: if + had + past participle.">
+      <div class="q"><span class="instr">1. Choose the correct form:</span> <span class="tl">If she ___ earlier, she wouldn't have missed the train.</span><span class="instr-ar">اختر الصيغة الصحيحة.</span></div>
+      <button class="option tl">left</button>
+      <button class="option tl" data-correct="true">had left</button>
+      <button class="option tl">would have left</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="Never use 'would' in the if-clause.">
+      <div class="q"><span class="instr">2. Which sentence is correct?</span><span class="instr-ar">أي جملة صحيحة؟</span></div>
+      <button class="option tl">If I would have known, I would have called you.</button>
+      <button class="option tl">If I knew yesterday, I would call you.</button>
+      <button class="option tl" data-correct="true">If I had known, I would have called you.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="'d + past participle (told) = had; 'd + have = would.">
+      <div class="q"><span class="instr">3. What do the two 'd mean?</span> <span class="tl">If you'd told me, I'd have helped.</span> <button class="say" data-text="If you'd told me, I'd have helped.">🔊</button><span class="instr-ar">ماذا تعني كل 'd؟</span></div>
+      <button class="option tl">would ... would</button>
+      <button class="option tl" data-correct="true">had ... would</button>
+      <button class="option tl">would ... had</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex quiz" data-explain="'might have' = a possible (not certain) imagined result.">
+      <div class="q"><span class="instr">4. Choose the best meaning:</span> <span class="tl">If we had taken the other road, we might have arrived on time.</span><span class="instr-ar">اختر المعنى الأقرب.</span></div>
+      <button class="option tl">We definitely would have arrived on time.</button>
+      <button class="option tl" data-correct="true">It's possible we would have arrived on time.</button>
+      <button class="option tl">We arrived on time.</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex fill">
+      <div class="q"><span class="instr">5. Put the verbs in the correct form.</span><span class="instr-ar">ضع الأفعال بين القوسين في الصيغة الصحيحة.</span></div>
+      <p class="tl">If we <input class="blank" data-answer="had taken|'d taken"> (take) a taxi, we <input class="blank" data-answer="would have arrived|'d have arrived|would've arrived"> (arrive) on time.</p>
+      <p class="tl">He <input class="blank" data-answer="wouldn't have failed|would not have failed"> (not / fail) the exam if he <input class="blank" data-answer="had studied|'d studied"> (study) harder.</p>
+      <p class="tl">If they <input class="blank" data-answer="hadn't turned down|had not turned down"> (not / turn down) the offer, they <input class="blank" data-answer="could have bought|could've bought"> (could / buy) a bigger house.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex fill">
+      <div class="q"><span class="instr">6. Error correction: rewrite the sentence correctly.</span><span class="instr-ar">صحّح الخطأ واكتب الجملة كاملة.</span></div>
+      <p class="tl">❌ If I would have studied harder, I would have passed.</p>
+      <input class="blank wide tl" data-answer="If I had studied harder, I would have passed|If I'd studied harder, I would have passed|If I had studied harder, I'd have passed|If I'd studied harder, I'd have passed|If I had studied harder, I would've passed|If I'd studied harder, I would've passed">
+      <br><button class="btn check-fill" style="margin-top:8px">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex fill">
+      <div class="q"><span class="instr">7. Paraphrase: complete the second sentence so it means the same as the first.</span><span class="instr-ar">أكمل الجملة الثانية بحيث يكون معناها مثل الأولى.</span></div>
+      <p class="tl">I didn't know about the meeting, so I didn't go.</p>
+      <p class="tl">→ If I <input class="blank" data-answer="had known|'d known"> about the meeting, I <input class="blank" data-answer="would have gone|'d have gone|would've gone"> .</p>
+      <p class="tl">She missed the flight because the traffic was terrible.</p>
+      <p class="tl">→ If the traffic <input class="blank" data-answer="hadn't been|had not been"> terrible, she <input class="blank" data-answer="wouldn't have missed|would not have missed"> the flight.</p>
+      <button class="btn check-fill">Check ✓</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex builder" data-answer="If he had taken the job, he would have moved to Berlin">
+      <div class="q"><span class="instr">8. Put the words in order.</span><span class="instr-ar">رتّب الكلمات لتكوّن جملة صحيحة.</span></div>
+      <div class="pool tl"></div>
+      <div class="answer tl"></div>
+      <button class="btn check-build">Check ✓</button>
+      <button class="btn ghost reset-build">↺ Reset</button>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="ex speak-check" data-text="If I had known I would have told you">
+      <div class="q"><span class="instr">9. Say it out loud 🎤:</span> <span class="tl">If I had known, I would have told you.</span> <button class="say" data-text="If I had known, I would have told you.">🔊</button><span class="instr-ar">قل الجملة بصوتك. ركّز على الصيغ الضعيفة.</span></div>
+      <button class="btn mic">🎤 Start speaking</button>
+      <div class="feedback heard"></div>
+    </div>
+
+    <h3>🔄 Recycling from B1</h3>
+    <div class="ex quiz" data-explain="Present unreal (2nd conditional) + advice with should (B1 lessons 6 &amp; 9).">
+      <div class="q"><span class="instr">10. Second or third?</span> <span class="tl">You look exhausted. If I ___ you, I'd see a doctor.</span><span class="instr-ar">مراجعة: الشرط الثاني (الدرس 6 من B1).</span></div>
+      <button class="option tl" data-correct="true">were</button>
+      <button class="option tl">had been</button>
+      <button class="option tl">would be</button>
+      <div class="feedback"></div>
+    </div>
+    <div class="ex quiz" data-explain="Passive past (B1 lesson 7) inside a third conditional: hadn't been + past participle.">
+      <div class="q"><span class="instr">11. Choose the correct passive form:</span> <span class="tl">If the bridge ___ in 1990, the town would have stayed isolated.</span><span class="instr-ar">مراجعة: المبني للمجهول (الدرس 7 من B1).</span></div>
+      <button class="option tl">hadn't built</button>
+      <button class="option tl" data-correct="true">hadn't been built</button>
+      <button class="option tl">wasn't built</button>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <!-- 11. Writing task -->
+  <section id="task">
+    <h2>✍️ Writing task (120–180 words)</h2>
+    <p><b>Write about a turning point in your life.</b> Describe a decision you made (or didn't make). What would have happened if you had chosen differently? Do you regret it, or are you relieved?</p>
+    <ul>
+      <li>Use at least <b>three</b> third-conditional sentences.</li>
+      <li>Use <span class="tl">could have</span> or <span class="tl">might have</span> at least once.</li>
+      <li>Use at least <b>four</b> words from this lesson.</li>
+    </ul>
+    <p class="ar-block">أرسل لي ما تكتبه في المحادثة وسأصححه لك خطوة بخطوة.</p>
+    <details><summary>👀 Model answer (158 words)</summary>
+      <p class="tl">Three years ago, I had to choose between studying engineering in my hometown and accepting a scholarship in Germany. I was terrified of living alone, so I almost turned the scholarship down. In the end, I took the risk, and it became a real turning point in my life.</p>
+      <p class="tl">If I had stayed at home, I would have been more comfortable, but I would never have learned German, and I might not have discovered how independent I can be. I also wouldn't have met my closest friends, who come from five different countries.</p>
+      <p class="tl">Of course, there were difficult moments. If my family hadn't supported me, I could easily have given up during the first winter. In hindsight, though, I have no regrets. I look back on that decision with pride, and I try to make the most of every opportunity that comes my way.</p>
+    </details>
+  </section>
+
+  <!-- 12. Common mistakes -->
+  <section id="mistakes">
+    <h2>🚫 Common mistakes of Arabic speakers</h2>
+    <table>
+      <tr><th>❌ Wrong</th><th>✅ Correct</th><th>Why?</th></tr>
+      <tr><td class="tl">If I would have known, ...</td><td class="tl">If I had known, ...</td><td>No <i>would</i> in the if-clause.</td></tr>
+      <tr><td class="tl">If I knew yesterday, I would come.</td><td class="tl">If I had known yesterday, I would have come.</td><td>Past unreal = <i>had + V3</i> / <i>would have + V3</i>. <span class="ar">العامية تستخدم الماضي البسيط فقط.</span></td></tr>
+      <tr><td class="tl">I would of helped you.</td><td class="tl">I would have (would've) helped you.</td><td>"of" is only the sound, not the word.</td></tr>
+      <tr><td class="tl">If he had came, ...</td><td class="tl">If he had come, ...</td><td>Use the <b>past participle</b> (V3), not the past simple.</td></tr>
+      <tr><td class="tl">I would have go.</td><td class="tl">I would have gone.</td><td><i>have</i> is always followed by V3.</td></tr>
+      <tr><td class="tl">If I had known I would have left earlier. (written, first)</td><td class="tl">If I had known, I would have left earlier.</td><td>Comma after the if-clause when it comes first.</td></tr>
+    </table>
+  </section>
+
+  <!-- 13. Summary -->
+  <section id="summary">
+    <h2>📌 Summary</h2>
+    <ul>
+      <li>Third conditional = an <b>imagined past</b>: <span class="tl">If + had + V3, would have + V3</span>.</li>
+      <li><span class="tl">could have</span> = imagined ability; <span class="tl">might have</span> = imagined possibility.</li>
+      <li>Never put <span class="tl">would</span> after <span class="tl">if</span>.</li>
+      <li><span class="tl">'d + V3 = had</span>; <span class="tl">'d have = would have</span>.</li>
+      <li>In speech: <span class="tl">would've /ˈwʊdəv/</span> — but never write "would of".</li>
+      <li><span class="ar">فكّر بالتركيب العربي «لو كنتُ قد... لكنتُ...» فهو يطابق الإنجليزية.</span></li>
+    </ul>
+  </section>
+
+  <!-- 14. Quick review -->
+  <section id="review">
+    <h2>🔁 Quick review</h2>
+    <table>
+      <tr><th>This lesson</th><th>From B1 (recycled)</th></tr>
+      <tr><td class="tl">regret · in hindsight · turn down · take a risk · miss out on</td><td class="tl">Have you ever...? (L1) · used to (L3)</td></tr>
+      <tr><td class="tl">a turning point · look back on · consequence · settle for</td><td class="tl">If I were you... (L6) · It's made in... (L7)</td></tr>
+      <tr><td class="tl">a wake-up call · second thoughts · on the spur of the moment</td><td class="tl">The man who helped me (L8) · You should... (L9)</td></tr>
+    </table>
+  </section>
+
+  <!-- 15. Next -->
+  <section id="next">
+    <h2>➡️ Next lesson</h2>
+    <p><b>Lesson 2: If I had studied medicine, I'd be a doctor now</b> — <i>Mixed conditionals</i>. You'll connect a past decision with a present result.</p>
+    <p class="ar-block">اكتب «التالي» لتبدأ الدرس 2، أو أرسل مهمة الكتابة لأصححها لك.</p>
+  </section>
+
+</div>
+
+<footer>Study With Me · English B2 · Learn step by step 🌍</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: "default", fontFamily: "Noto Sans, Cairo, sans-serif" }); }
+
+  var TL = document.body.getAttribute("data-tl") || "en-US";
+  var rate = 1, score = 0, total = 0, voices = [];
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’‘]/g, "'").replace(/[.,!?;:"«»¿¡،؟。、！？]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function addScore(ok) {
+    total++; if (ok) { score++; }
+    document.getElementById("score").textContent = score + " / " + total;
+  }
+
+  // Audio (text to speech)
+  function loadVoices() { voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function utter(text, lang) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || TL; u.rate = rate;
+    var base = u.lang.split("-")[0];
+    var v = voices.filter(function (x) { return x.lang.replace("_", "-") === u.lang; })[0] ||
+            voices.filter(function (x) { return x.lang.indexOf(base) === 0; })[0];
+    if (v) { u.voice = v; }
+    return u;
+  }
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { alert("Your browser does not support audio. Try Chrome or Edge."); return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter(text, lang));
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say");
+    if (b) { speak(b.getAttribute("data-text"), b.getAttribute("data-lang")); }
+  });
+  document.getElementById("btnSpeed").onclick = function () {
+    rate = rate === 1 ? 0.7 : 1;
+    this.textContent = rate === 1 ? "🔊 Speed: normal" : "🐢 Speed: slow";
+  };
+  var pd = document.getElementById("playDialogue");
+  if (pd) {
+    pd.onclick = function () {
+      if (!window.speechSynthesis) { return; }
+      speechSynthesis.cancel();
+      document.querySelectorAll("#chat .line").forEach(function (l) { speechSynthesis.speak(utter(l.textContent)); });
+    };
+  }
+
+  // Flashcards
+  document.querySelectorAll(".flashcard").forEach(function (c) {
+    c.addEventListener("click", function (e) {
+      if (e.target.closest(".say")) { return; }
+      c.classList.toggle("flipped");
+    });
+  });
+
+  // Can-do checklist (saved in the browser)
+  document.querySelectorAll(".cando input").forEach(function (cb, i) {
+    var key = "cando:" + document.title + ":" + i;
+    try { cb.checked = localStorage.getItem(key) === "1"; } catch (err) {}
+    cb.onchange = function () { try { localStorage.setItem(key, cb.checked ? "1" : "0"); } catch (err) {} };
+  });
+
+  // Multiple choice
+  document.querySelectorAll(".quiz").forEach(function (q) {
+    var fb = q.querySelector(".feedback");
+    q.querySelectorAll(".option").forEach(function (btn) {
+      btn.onclick = function () {
+        q.querySelectorAll(".option").forEach(function (b) { b.disabled = true; });
+        var ok = btn.getAttribute("data-correct") === "true";
+        btn.classList.add(ok ? "correct" : "wrong");
+        if (!ok) { q.querySelector('[data-correct="true"]').classList.add("correct"); }
+        fb.textContent = (ok ? "✅ Correct! " : "❌ Not quite. ") + (q.getAttribute("data-explain") || "");
+        addScore(ok);
+      };
+    });
+  });
+
+  // Fill the blank
+  document.querySelectorAll(".fill").forEach(function (ex) {
+    ex.querySelector(".check-fill").onclick = function () {
+      var right = 0, inputs = ex.querySelectorAll(".blank");
+      inputs.forEach(function (inp) {
+        var answers = inp.getAttribute("data-answer").split("|").map(norm);
+        var ok = answers.indexOf(norm(inp.value)) !== -1;
+        inp.classList.remove("ok", "no"); inp.classList.add(ok ? "ok" : "no");
+        if (!ok) { inp.title = "Answer: " + inp.getAttribute("data-answer").split("|")[0]; }
+        if (ok) { right++; }
+        addScore(ok);
+      });
+      ex.querySelector(".feedback").textContent = "✅ " + right + " / " + inputs.length + (right < inputs.length ? " · Hover over a red box to see the answer." : " · Excellent!");
+      this.disabled = true;
+    };
+  });
+
+  // Sentence builder
+  document.querySelectorAll(".builder").forEach(function (ex) {
+    var words = ex.getAttribute("data-words") ? ex.getAttribute("data-words").split("|") : ex.getAttribute("data-answer").split(" ");
+    var pool = ex.querySelector(".pool"), ans = ex.querySelector(".answer"), fb = ex.querySelector(".feedback");
+    function build() {
+      pool.innerHTML = ""; ans.innerHTML = ""; fb.textContent = "";
+      var mixed = words.slice();
+      for (var i = mixed.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = mixed[i]; mixed[i] = mixed[j]; mixed[j] = t; }
+      if (mixed.join("|") === words.join("|") && mixed.length > 1) { mixed.reverse(); }
+      mixed.forEach(function (w) {
+        var c = document.createElement("button");
+        c.className = "wchip"; c.textContent = w;
+        c.onclick = function () { (c.parentNode === pool ? ans : pool).appendChild(c); };
+        pool.appendChild(c);
+      });
+    }
+    ex.querySelector(".check-build").onclick = function () {
+      var got = Array.prototype.map.call(ans.querySelectorAll(".wchip"), function (c) { return norm(c.textContent); });
+      var ok = got.join("|") === words.map(norm).join("|");
+      fb.textContent = ok ? "✅ Excellent! The order is correct." : "❌ Not yet. Correct order: " + words.join(" ");
+      addScore(ok);
+    };
+    ex.querySelector(".reset-build").onclick = build;
+    build();
+  });
+
+  // Speaking check (speech recognition)
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll(".speak-check").forEach(function (box) {
+    var btn = box.querySelector(".mic"), out = box.querySelector(".heard");
+    if (!SR) { btn.disabled = true; out.textContent = "Speech recognition is not supported in this browser. Try Chrome."; return; }
+    btn.onclick = function () {
+      var r = new SR();
+      r.lang = TL; r.interimResults = false; r.maxAlternatives = 1;
+      out.textContent = "🎙️ Listening...";
+      r.onresult = function (ev) {
+        var said = ev.results[0][0].transcript;
+        var target = norm(box.getAttribute("data-text"));
+        var heard = norm(said).replace(/i'd have/g, "i would have").replace(/i'd known/g, "i had known").replace(/would've/g, "would have");
+        var ok = heard === target;
+        out.textContent = (ok ? "✅ Excellent! I heard: " : "🔁 I heard: ") + said + (ok ? "" : " · Try again.");
+        addScore(ok);
+      };
+      r.onerror = function () { out.textContent = "❌ I couldn't hear you. Check microphone permission and try again."; };
+      r.start();
+    };
+  });
+
+  document.getElementById("btnPrint").onclick = function () { window.print(); };
+</script>
+</body>
+</html>

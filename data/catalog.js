@@ -276,6 +276,19 @@ window.STUDY_CATALOG = [
         durationMinutes: 30,
         level: "B1",
         tags: ["should · ought to · had better", "English B2 level"]
+      },
+      {
+        id: "en-b2-1",
+        order: 1,
+        subfolder: "English B2",
+        file: "English/English B2/lesson-english-b2-1.html",
+        title: "B2 · الدرس 1: لو كنتُ أعرف...",
+        titleEn: "If only I had known...",
+        description: "تحدّث عن قراراتك في الماضي والندم والطرق التي لم تسلكها، مع خريطة مستوى B2 كاملة.",
+        duration: "30 دقيقة",
+        durationMinutes: 30,
+        level: "B2",
+        tags: ["Third conditional · could / might have", "English B2"]
       }
     ]
   },
